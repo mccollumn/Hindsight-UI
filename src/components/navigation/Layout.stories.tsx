@@ -8,7 +8,7 @@ export default {
   title: "Layout",
   component: Layout,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
-  argTypes: {},
+  argTypes: { leftNavigationActions: { defaultValue: [{ label: "Action1" }] } },
 } as ComponentMeta<typeof Layout>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
