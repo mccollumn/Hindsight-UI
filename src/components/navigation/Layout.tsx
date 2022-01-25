@@ -7,6 +7,11 @@ import {
   Typography,
   Button,
   Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 
@@ -21,7 +26,9 @@ export const Layout = ({
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <NavDrawer>Yo drawer!</NavDrawer>
+          <NavDrawer leftNavigationActions={leftNavigationActions}>
+            Yo drawer!
+          </NavDrawer>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {label}
           </Typography>
@@ -32,7 +39,7 @@ export const Layout = ({
   );
 };
 
-const NavDrawer = ({ children }: any) => {
+const NavDrawer = ({ leftNavigationActions = [], children }: any) => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -56,10 +63,22 @@ const NavDrawer = ({ children }: any) => {
         <Menu />
       </IconButton>
       <Drawer anchor="left" open={open} onClose={handleClose}>
+        <NavigationList navigationActions={leftNavigationActions} />
         {children}
       </Drawer>
     </React.Fragment>
   );
+};
+
+const NavigationList = ({
+  navigationActions = [],
+}: NavigationListProps): any => {
+  return navigationActions.map((action, index) => {
+    if (action.divider) {
+      return <Divider key={index} />;
+    }
+    return <div>The div</div>; // TODO: Create nav list here
+  });
 };
 
 interface LayoutProps {
@@ -70,8 +89,13 @@ interface LayoutProps {
 }
 
 interface NavigationActions {
+  key?: string;
   label?: string;
   ariaLabel?: string;
   icon?: React.Component;
   divider?: Boolean;
+}
+
+interface NavigationListProps {
+  navigationActions: Array<NavigationActions>;
 }

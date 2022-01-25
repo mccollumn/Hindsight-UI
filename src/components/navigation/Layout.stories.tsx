@@ -1,5 +1,6 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
+import HomeIcon from "@mui/icons-material/Home";
 
 import { Layout } from "./Layout";
 
@@ -8,7 +9,14 @@ export default {
   title: "Layout",
   component: Layout,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
-  argTypes: { leftNavigationActions: { defaultValue: [{ label: "Action1" }] } },
+  argTypes: {
+    leftNavigationActions: {
+      defaultValue: [
+        { key: "HOME", label: "Home", icon: HomeIcon, ariaLabel: "Home" },
+        { divider: true },
+      ],
+    },
+  },
 } as ComponentMeta<typeof Layout>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
