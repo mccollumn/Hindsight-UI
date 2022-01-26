@@ -8,7 +8,7 @@ import {
   Button,
   Drawer,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Divider,
@@ -18,17 +18,22 @@ import { Menu } from "@mui/icons-material";
 export const Layout = ({
   label,
   leftNavigationActions,
-  leftNavigationClick,
+  leftNavigationClick = () => {},
 }: LayoutProps) => {
-  console.log(leftNavigationActions);
-
+  const [selectedNav, setSelectedNav]: any = React.useState();
+  const leftNavClickHandler = (action: NavigationAction) => {
+    setSelectedNav(action);
+    leftNavigationClick(action);
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <NavDrawer leftNavigationActions={leftNavigationActions}>
-            Yo drawer!
-          </NavDrawer>
+          <NavDrawer
+            leftNavigationActions={leftNavigationActions}
+            leftNavigationClick={leftNavClickHandler}
+            selectedNav={selectedNav}
+          />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {label}
           </Typography>
@@ -39,7 +44,12 @@ export const Layout = ({
   );
 };
 
-const NavDrawer = ({ leftNavigationActions = [], children }: any) => {
+const NavDrawer = ({
+  leftNavigationActions = [],
+  leftNavigationClick,
+  selectedNav,
+  children,
+}: any) => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -63,7 +73,13 @@ const NavDrawer = ({ leftNavigationActions = [], children }: any) => {
         <Menu />
       </IconButton>
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <NavigationList navigationActions={leftNavigationActions} />
+        <List>
+          <NavigationList
+            navigationActions={leftNavigationActions}
+            navigationClick={leftNavigationClick}
+            selectedNav={selectedNav}
+          />
+        </List>
         {children}
       </Drawer>
     </React.Fragment>
@@ -72,23 +88,37 @@ const NavDrawer = ({ leftNavigationActions = [], children }: any) => {
 
 const NavigationList = ({
   navigationActions = [],
+  navigationClick = () => {},
+  selectedNav,
 }: NavigationListProps): any => {
   return navigationActions.map((action, index) => {
+    const handleClick = () => {
+      navigationClick(action);
+    };
     if (action.divider) {
       return <Divider key={index} />;
     }
-    return <div>The div</div>; // TODO: Create nav list here
+    return (
+      <ListItemButton
+        selected={action === selectedNav}
+        key={index}
+        onClick={handleClick}
+      >
+        <ListItemIcon>{action.icon}</ListItemIcon>
+        <ListItemText primary={action.label} />
+      </ListItemButton>
+    );
   });
 };
 
 interface LayoutProps {
   /* Title of application */
   label?: string;
-  leftNavigationActions?: Array<NavigationActions>;
+  leftNavigationActions?: Array<NavigationAction>;
   leftNavigationClick?: Function;
 }
 
-interface NavigationActions {
+interface NavigationAction {
   key?: string;
   label?: string;
   ariaLabel?: string;
@@ -97,5 +127,7 @@ interface NavigationActions {
 }
 
 interface NavigationListProps {
-  navigationActions: Array<NavigationActions>;
+  navigationActions: Array<NavigationAction>;
+  navigationClick: Function;
+  selectedNav: NavigationAction;
 }

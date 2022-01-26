@@ -12,8 +12,14 @@ export default {
   argTypes: {
     leftNavigationActions: {
       defaultValue: [
-        { key: "HOME", label: "Home", icon: HomeIcon, ariaLabel: "Home" },
+        { key: "HOME", label: "Home", icon: <HomeIcon />, ariaLabel: "Home" },
         { divider: true },
+        {
+          key: "HOME2",
+          label: "Home2",
+          icon: <HomeIcon />,
+          ariaLabel: "Home2",
+        },
       ],
     },
   },
