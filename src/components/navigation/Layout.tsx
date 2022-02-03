@@ -73,7 +73,7 @@ const NavDrawer = ({
         <Menu />
       </IconButton>
       <Drawer anchor="left" open={open} onClose={handleClose}>
-        <List>
+        <List sx={{ width: 200 }}>
           <NavigationList
             navigationActions={leftNavigationActions}
             navigationClick={leftNavigationClick}
@@ -105,7 +105,7 @@ const NavigationList = ({
         onClick={handleClick}
       >
         <ListItemIcon>{action.icon}</ListItemIcon>
-        <ListItemText primary={action.label} />
+        <ListItemText>{action.label}</ListItemText>
       </ListItemButton>
     );
   });
