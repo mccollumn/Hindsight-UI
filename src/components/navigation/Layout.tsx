@@ -26,7 +26,7 @@ export const Layout = ({
     leftNavigationClick(action);
   };
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} aria-label="Base application">
       <AppBar position="static">
         <Toolbar>
           <NavDrawer
@@ -67,13 +67,18 @@ const NavDrawer = ({
         size="large"
         edge="start"
         color="inherit"
-        aria-label="menu"
+        aria-label="Navigation menu"
         sx={{ mr: 2 }}
       >
         <Menu />
       </IconButton>
-      <Drawer anchor="left" open={open} onClose={handleClose}>
-        <List sx={{ width: 200 }}>
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={handleClose}
+        aria-label="Navigation drawer"
+      >
+        <List sx={{ width: 200 }} aria-label="Navigation list">
           <NavigationList
             navigationActions={leftNavigationActions}
             navigationClick={leftNavigationClick}
@@ -122,7 +127,7 @@ interface NavigationAction {
   key?: string;
   label?: string;
   ariaLabel?: string;
-  icon?: React.Component;
+  icon?: React.Component | null;
   divider?: Boolean;
 }
 
