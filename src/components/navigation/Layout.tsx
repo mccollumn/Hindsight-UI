@@ -19,6 +19,7 @@ export const Layout = ({
   label,
   leftNavigationActions,
   leftNavigationClick = () => {},
+  children,
 }: LayoutProps) => {
   const [selectedNav, setSelectedNav]: any = React.useState();
   const leftNavClickHandler = (action: NavigationAction) => {
@@ -40,6 +41,7 @@ export const Layout = ({
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
+      {children}
     </Box>
   );
 };
@@ -121,13 +123,14 @@ interface LayoutProps {
   label?: string;
   leftNavigationActions?: Array<NavigationAction>;
   leftNavigationClick?: Function;
+  children?: any;
 }
 
 interface NavigationAction {
   key?: string;
   label?: string;
   ariaLabel?: string;
-  icon?: React.Component | null;
+  icon?: React.FC | null;
   divider?: Boolean;
 }
 

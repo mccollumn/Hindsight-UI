@@ -9,12 +9,22 @@ describe("<Layout />", () => {
     );
   });
   it("Select a navigation item", async () => {
-    render(<Layout leftNavigationActions={mockNavActions} />);
+    const mockLeftNavigationClick = jest.fn();
+    render(
+      <Layout
+        leftNavigationActions={mockNavActions}
+        leftNavigationClick={mockLeftNavigationClick}
+      />
+    );
     fireEvent.click(screen.getByLabelText("Navigation menu"));
     await waitFor(() => {
       expect(screen.getByLabelText("Navigation drawer")).toHaveTextContent(
         "Home2"
       );
+    });
+    fireEvent.click(screen.getByText("Home2"));
+    await waitFor(() => {
+      expect(mockLeftNavigationClick).toBeCalledWith(mockNavActions[2]);
     });
   });
 });

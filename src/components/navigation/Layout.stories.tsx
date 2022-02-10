@@ -33,3 +33,40 @@ export const Primary = Template.bind({});
 Primary.args = {
   label: "App Name",
 };
+
+export const UsageExample = () => {
+  const ACTION_MAP = { HOME: <Home />, HOME2: <Home2 /> };
+  const [action, setAction] = React.useState("HOME");
+  const clickHandler = (navAction: any) => {
+    setAction(navAction.key);
+  };
+  let page = <Home />;
+  if (action === "HOME2") {
+    page = <Home2 />;
+  }
+  return (
+    <Layout
+      leftNavigationActions={[
+        {
+          key: "HOME",
+          label: "Home",
+          icon: () => <HomeIcon />,
+          ariaLabel: "Home",
+        },
+        { divider: true },
+        {
+          key: "HOME2",
+          label: "Home2",
+          icon: () => <HomeIcon />,
+          ariaLabel: "Home2",
+        },
+      ]}
+      leftNavigationClick={clickHandler}
+    >
+      {page}
+    </Layout>
+  );
+};
+
+const Home = () => <div>Home</div>;
+const Home2 = () => <div>Home2</div>;
