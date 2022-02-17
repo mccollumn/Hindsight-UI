@@ -50,14 +50,14 @@ export const UsageExample = () => {
         {
           key: "HOME",
           label: "Home",
-          icon: () => <HomeIcon />,
+          icon: <HomeIcon />,
           ariaLabel: "Home",
         },
         { divider: true },
         {
           key: "HOME2",
           label: "Home2",
-          icon: () => <HomeIcon />,
+          icon: <HomeIcon />,
           ariaLabel: "Home2",
         },
       ]}

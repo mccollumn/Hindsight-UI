@@ -110,7 +110,7 @@ const NavigationList = ({
     }
     return (
       <ListItemButton
-        selected={action === selectedNav}
+        selected={action.key === selectedNav?.key}
         key={index}
         onClick={handleClick}
       >
@@ -133,7 +133,7 @@ interface NavigationAction {
   key?: string;
   label?: string;
   ariaLabel?: string;
-  icon?: React.FC | null;
+  icon?: React.ReactElement | null;
   divider?: Boolean;
 }
 
