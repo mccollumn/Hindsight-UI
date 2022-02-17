@@ -85,6 +85,7 @@ const NavDrawer = ({
             navigationActions={leftNavigationActions}
             navigationClick={leftNavigationClick}
             selectedNav={selectedNav}
+            handleClose={handleClose}
           />
         </List>
         {children}
@@ -97,10 +98,12 @@ const NavigationList = ({
   navigationActions = [],
   navigationClick = () => {},
   selectedNav,
+  handleClose
 }: NavigationListProps): any => {
   return navigationActions.map((action, index) => {
     const handleClick = () => {
       navigationClick(action);
+      handleClose();
     };
     if (action.divider) {
       return <Divider key={index} />;
@@ -138,4 +141,5 @@ interface NavigationListProps {
   navigationActions: Array<NavigationAction>;
   navigationClick: Function;
   selectedNav: NavigationAction;
+  handleClose: Function;
 }
