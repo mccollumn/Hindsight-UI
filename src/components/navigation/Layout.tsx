@@ -98,7 +98,7 @@ const NavigationList = ({
   navigationActions = [],
   navigationClick = () => {},
   selectedNav,
-  handleClose
+  handleClose,
 }: NavigationListProps): any => {
   return navigationActions.map((action, index) => {
     const handleClick = () => {
@@ -135,6 +135,7 @@ interface NavigationAction {
   ariaLabel?: string;
   icon?: React.ReactElement | null;
   divider?: Boolean;
+  path?: string;
 }
 
 interface NavigationListProps {

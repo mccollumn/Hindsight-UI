@@ -1,26 +1,24 @@
 import React from "react";
 import "./App.css";
 import HomeIcon from "@mui/icons-material/Home";
-import {Layout} from "./components/navigation/Layout";
+import { Layout } from "./components/navigation/Layout";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 function App() {
-  const [action, setAction] = React.useState("HOME");
+  const navigate = useNavigate();
   const clickHandler = (navAction: any) => {
-    setAction(navAction.key);
+    navigate(navAction.path);
   };
-  let page = <Home />;
-  if (action === "HOME2") {
-    page = <Home2 />;
-  }
+
   return (
-    <div className="App">
-      <Layout
+    <Layout
       leftNavigationActions={[
         {
           key: "HOME",
           label: "Home",
           icon: <HomeIcon />,
           ariaLabel: "Home",
+          path: "/",
         },
         { divider: true },
         {
@@ -28,13 +26,16 @@ function App() {
           label: "Home2",
           icon: <HomeIcon />,
           ariaLabel: "Home2",
+          path: "/home2",
         },
       ]}
       leftNavigationClick={clickHandler}
     >
-      {page}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home2" element={<Home2 />} />
+      </Routes>
     </Layout>
-    </div>
   );
 }
 
