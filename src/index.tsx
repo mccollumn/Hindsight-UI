@@ -7,10 +7,12 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./theme";
 import { BrowserRouter } from "react-router-dom";
 
+const path = window.location.pathname;
+
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
+      <BrowserRouter basename={path}>
         <App />
       </BrowserRouter>
     </ThemeProvider>
