@@ -5,7 +5,6 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  Button,
   Drawer,
   List,
   ListItemButton,
@@ -17,33 +16,61 @@ import { Menu } from "@mui/icons-material";
 
 export const Layout = ({
   label,
-  leftNavigationActions,
+  navigationActions = [],
   leftNavigationClick = () => {},
   children,
 }: LayoutProps) => {
   const [selectedNav, setSelectedNav]: any = React.useState();
-  const leftNavClickHandler = (action: NavigationAction) => {
+  const navClickHandler = (action: NavigationAction) => {
     setSelectedNav(action);
     leftNavigationClick(action);
   };
+  const topNavActions = navigationActions.filter((a) => a.position === "top");
+  const leftNavActions = navigationActions.filter((a) => a.position !== "top");
+  const appBarNavigationActions = AppBarNavigationActions({
+    topNavActions,
+    navClickHandler,
+    selectedNav,
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }} aria-label="Base application">
       <AppBar position="static">
         <Toolbar>
           <NavDrawer
-            leftNavigationActions={leftNavigationActions}
-            leftNavigationClick={leftNavClickHandler}
+            leftNavigationActions={leftNavActions}
+            leftNavigationClick={navClickHandler}
             selectedNav={selectedNav}
           />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {label}
           </Typography>
-          <Button color="inherit">Login</Button>
+          {appBarNavigationActions}
         </Toolbar>
       </AppBar>
       {children}
     </Box>
   );
+};
+
+const AppBarNavigationActions = ({
+  topNavActions = [],
+  navClickHandler = () => {},
+  selectedNav = {},
+}: AppBarNavigationActionsProps) => {
+  return topNavActions.map((a) => {
+    const clickHandler = () => navClickHandler(a);
+    const selected = a.key === selectedNav.key;
+    return (
+      <IconButton
+        color={selected ? "secondary" : "inherit"}
+        key={a.key}
+        onClick={clickHandler}
+      >
+        {a.icon}
+      </IconButton>
+    );
+  });
 };
 
 const NavDrawer = ({
@@ -124,7 +151,8 @@ const NavigationList = ({
 interface LayoutProps {
   /* Title of application */
   label?: string;
-  leftNavigationActions?: Array<NavigationAction>;
+  /* List of all navigation actions in left navigation and app bar */
+  navigationActions?: Array<NavigationAction>;
   leftNavigationClick?: Function;
   children?: any;
 }
@@ -136,6 +164,8 @@ interface NavigationAction {
   icon?: React.ReactElement | null;
   divider?: Boolean;
   path?: string;
+  /* Define which navigation area to disaply the action */
+  position?: "left" | "top";
 }
 
 interface NavigationListProps {
@@ -143,4 +173,10 @@ interface NavigationListProps {
   navigationClick: Function;
   selectedNav: NavigationAction;
   handleClose: Function;
+}
+
+interface AppBarNavigationActionsProps {
+  topNavActions?: Array<NavigationAction>;
+  navClickHandler?: Function;
+  selectedNav?: NavigationAction;
 }

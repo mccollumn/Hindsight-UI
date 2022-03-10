@@ -12,7 +12,7 @@ describe("<Layout />", () => {
     const mockLeftNavigationClick = jest.fn();
     render(
       <Layout
-        leftNavigationActions={mockNavActions}
+        navigationActions={mockNavActions}
         leftNavigationClick={mockLeftNavigationClick}
       />
     );

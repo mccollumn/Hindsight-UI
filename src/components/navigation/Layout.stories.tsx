@@ -10,7 +10,7 @@ export default {
   component: Layout,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
-    leftNavigationActions: {
+    navigationActions: {
       defaultValue: [
         { key: "HOME", label: "Home", icon: <HomeIcon />, ariaLabel: "Home" },
         { divider: true },
@@ -19,6 +19,20 @@ export default {
           label: "Home2",
           icon: <HomeIcon />,
           ariaLabel: "Home2",
+        },
+        {
+          key: "Avatar",
+          label: "Avatar",
+          icon: <HomeIcon />,
+          ariaLabel: "Avatar",
+          position: "top",
+        },
+        {
+          key: "Avatar2",
+          label: "Avatar2",
+          icon: <HomeIcon />,
+          ariaLabel: "Avatar",
+          position: "top",
         },
       ],
     },
@@ -46,12 +60,13 @@ export const UsageExample = () => {
   }
   return (
     <Layout
-      leftNavigationActions={[
+      navigationActions={[
         {
           key: "HOME",
           label: "Home",
           icon: <HomeIcon />,
           ariaLabel: "Home",
+          position: "left",
         },
         { divider: true },
         {

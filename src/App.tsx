@@ -12,7 +12,7 @@ function App() {
 
   return (
     <Layout
-      leftNavigationActions={[
+      navigationActions={[
         {
           key: "HOME",
           label: "Home",
@@ -27,6 +27,13 @@ function App() {
           icon: <HomeIcon />,
           ariaLabel: "Home2",
           path: "/home2",
+        },
+        {
+          key: "Avatar",
+          label: "Avatar",
+          icon: <HomeIcon />,
+          ariaLabel: "Avatar",
+          position: "top",
         },
       ]}
       leftNavigationClick={clickHandler}
