@@ -151,7 +151,9 @@ const NavigationList = ({
 interface LayoutProps {
   /* Title of application */
   label?: string;
-  /* List of all navigation actions in left navigation and app bar */
+  /**
+   * List of all navigation actions in left navigation and app bar
+   */
   navigationActions?: Array<NavigationAction>;
   leftNavigationClick?: Function;
   children?: any;
