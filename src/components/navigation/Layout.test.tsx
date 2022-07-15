@@ -1,14 +1,12 @@
 import { Layout } from "./Layout";
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen} from "@testing-library/react";
 
 describe("<Layout />", () => {
-  xit("Should load without error", async () => {
+  it("Should load without error", async () => {
     render(<Layout />);
-    expect(screen.getByLabelText("Base application")).toHaveTextContent(
-      "Login"
-    );
+    expect(screen.getByLabelText("Base application")).toBeInTheDocument();
   });
-  xit("Select a navigation item", async () => {
+  it("Select a navigation item", async () => {
     const mockLeftNavigationClick = jest.fn();
     render(
       <Layout
