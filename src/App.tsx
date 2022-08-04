@@ -1,6 +1,13 @@
 import React from "react";
 import "./App.css";
-import HomeIcon from "@mui/icons-material/Home";
+import {
+  Home,
+  Person,
+  Notifications,
+  Settings,
+  Assessment,
+  Apps,
+} from "@mui/icons-material";
 import { Layout } from "./components/navigation/Layout";
 import { Routes, Route, useNavigate } from "react-router-dom";
 
@@ -16,22 +23,43 @@ function App() {
         {
           key: "HOME",
           label: "Home",
-          icon: <HomeIcon />,
+          icon: <Home />,
           ariaLabel: "Home",
           path: "/",
         },
         { divider: true },
         {
-          key: "HOME2",
-          label: "Home2",
-          icon: <HomeIcon />,
-          ariaLabel: "Home2",
-          path: "/home2",
+          key: "Profiles",
+          label: "Profiles",
+          icon: <Apps />,
+          ariaLabel: "Profiles",
+          path: "/profiles",
+        },
+        {
+          key: "Reports",
+          label: "Reports",
+          icon: <Assessment />,
+          ariaLabel: "Reports",
+          path: "/reports",
+        },
+        {
+          key: "Notifications",
+          label: "Notifications",
+          icon: <Notifications />,
+          ariaLabel: "Notifications",
+          position: "top",
+        },
+        {
+          key: "Settings",
+          label: "Settings",
+          icon: <Settings />,
+          ariaLabel: "Settings",
+          position: "top",
         },
         {
           key: "Avatar",
           label: "Avatar",
-          icon: <HomeIcon />,
+          icon: <Person />,
           ariaLabel: "Avatar",
           position: "top",
         },
@@ -39,14 +67,16 @@ function App() {
       leftNavigationClick={clickHandler}
     >
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home2" element={<Home2 />} />
+        <Route path="/" element={<Homepage />} />
+        <Route path="/profiles" element={<Profiles />} />
+        <Route path="/reports" element={<Reports />} />
       </Routes>
     </Layout>
   );
 }
 
-const Home = () => <div>Home</div>;
-const Home2 = () => <div>Home2</div>;
+const Homepage = () => <div>Home</div>;
+const Profiles = () => <div>Reports</div>;
+const Reports = () => <div>Reports</div>;
 
 export default App;
