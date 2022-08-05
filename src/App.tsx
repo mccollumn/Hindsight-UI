@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { Layout } from "./components/navigation/Layout";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import logo from "./logo.svg";
 
 function App() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function App() {
           icon: <Home />,
           ariaLabel: "Home",
           path: "/",
+          Component: <Logo />,
         },
         { divider: true },
         {
@@ -78,5 +80,10 @@ function App() {
 const Homepage = () => <div>Home</div>;
 const Profiles = () => <div>Reports</div>;
 const Reports = () => <div>Reports</div>;
+const Logo = () => (
+  <div>
+    <img src={logo} alt="Logo" />
+  </div>
+);
 
 export default App;

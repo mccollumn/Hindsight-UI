@@ -135,6 +135,9 @@ const NavigationList = ({
     if (action.divider) {
       return <Divider key={index} />;
     }
+    if (action.Component) {
+      return action.Component;
+    }
     return (
       <ListItemButton
         selected={action.key === selectedNav?.key}
@@ -166,8 +169,14 @@ interface NavigationAction {
   icon?: React.ReactElement | null;
   divider?: Boolean;
   path?: string;
-  /* Define which navigation area to disaply the action */
+  /**
+   * Define which navigation area to display the action
+   */
   position?: "left" | "top";
+  /**
+   * Render component instead of drawer menu item
+   */
+  Component?: React.ReactElement | null;
 }
 
 interface NavigationListProps {
