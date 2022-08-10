@@ -22,11 +22,6 @@ function App() {
     <Layout
       navigationActions={[
         {
-          key: "HOME",
-          label: "Home",
-          icon: <Home />,
-          ariaLabel: "Home",
-          path: "/",
           Component: <Logo />,
         },
         { divider: true },

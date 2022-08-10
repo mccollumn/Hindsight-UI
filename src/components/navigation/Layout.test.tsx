@@ -1,11 +1,12 @@
 import { Layout } from "./Layout";
-import { render, fireEvent, waitFor, screen} from "@testing-library/react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 
 describe("<Layout />", () => {
   it("Should load without error", async () => {
     render(<Layout />);
     expect(screen.getByLabelText("Base application")).toBeInTheDocument();
   });
+
   it("Select a navigation item", async () => {
     const mockLeftNavigationClick = jest.fn();
     render(
@@ -25,7 +26,17 @@ describe("<Layout />", () => {
       expect(mockLeftNavigationClick).toBeCalledWith(mockNavActions[2]);
     });
   });
+
+  it("should override with component", () => {
+    render(<Layout navigationActions={mockNavActions} />);
+    fireEvent.click(screen.getByLabelText("Navigation menu"));
+    expect(screen.getByText("Mock Logo")).toBeInTheDocument();
+  });
 });
+
+const MockLogo = () => {
+  return <div>Mock Logo</div>;
+};
 
 const mockNavActions = [
   {
@@ -40,5 +51,9 @@ const mockNavActions = [
     label: "Home2",
     icon: null,
     ariaLabel: "Home2",
+  },
+  {
+    key: "component",
+    Component: <MockLogo />,
   },
 ];

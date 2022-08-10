@@ -136,7 +136,7 @@ const NavigationList = ({
       return <Divider key={index} />;
     }
     if (action.Component) {
-      return action.Component;
+      return <ComponentOverride component={action.Component} key={index} />;
     }
     return (
       <ListItemButton
@@ -149,6 +149,10 @@ const NavigationList = ({
       </ListItemButton>
     );
   });
+};
+
+const ComponentOverride = ({ component }: any) => {
+  return <div>{component}</div>;
 };
 
 interface LayoutProps {
