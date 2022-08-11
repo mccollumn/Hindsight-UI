@@ -166,7 +166,7 @@ interface LayoutProps {
   children?: any;
 }
 
-interface NavigationAction {
+export interface NavigationAction {
   key?: string;
   label?: string;
   ariaLabel?: string;
