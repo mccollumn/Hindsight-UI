@@ -1,8 +1,57 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import HomeIcon from "@mui/icons-material/Home";
+import {
+  Person,
+  Notifications,
+  Settings,
+  Assessment,
+  Apps,
+} from "@mui/icons-material";
+import logo from "../../logo.svg";
 
-import { Layout } from "./Layout";
+import { Layout, NavigationAction } from "./Layout";
+
+const defaultNavActions: Array<NavigationAction> = [
+  {
+    Component: <Logo />,
+  },
+  { divider: true },
+  {
+    key: "Profiles",
+    label: "Profiles",
+    icon: <Apps />,
+    ariaLabel: "Profiles",
+    path: "/profiles",
+  },
+  {
+    key: "Reports",
+    label: "Reports",
+    icon: <Assessment />,
+    ariaLabel: "Reports",
+    path: "/reports",
+  },
+  {
+    key: "Notifications",
+    label: "Notifications",
+    icon: <Notifications />,
+    ariaLabel: "Notifications",
+    position: "top",
+  },
+  {
+    key: "Settings",
+    label: "Settings",
+    icon: <Settings />,
+    ariaLabel: "Settings",
+    position: "top",
+  },
+  {
+    key: "Avatar",
+    label: "Avatar",
+    icon: <Person />,
+    ariaLabel: "Avatar",
+    position: "top",
+  },
+];
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -11,30 +60,7 @@ export default {
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
     navigationActions: {
-      defaultValue: [
-        { key: "HOME", label: "Home", icon: <HomeIcon />, ariaLabel: "Home" },
-        { divider: true },
-        {
-          key: "HOME2",
-          label: "Home2",
-          icon: <HomeIcon />,
-          ariaLabel: "Home2",
-        },
-        {
-          key: "Avatar",
-          label: "Avatar",
-          icon: <HomeIcon />,
-          ariaLabel: "Avatar",
-          position: "top",
-        },
-        {
-          key: "Avatar2",
-          label: "Avatar2",
-          icon: <HomeIcon />,
-          ariaLabel: "Avatar",
-          position: "top",
-        },
-      ],
+      defaultValue: defaultNavActions,
     },
   },
 } as ComponentMeta<typeof Layout>;
@@ -49,39 +75,29 @@ Primary.args = {
 };
 
 export const UsageExample = () => {
-  const ACTION_MAP = { HOME: <Home />, HOME2: <Home2 /> };
-  const [action, setAction] = React.useState("HOME");
+  const [action, setAction] = React.useState();
   const clickHandler = (navAction: any) => {
-    setAction(navAction.key);
+    setAction(navAction);
   };
-  let page = <Home />;
-  if (action === "HOME2") {
-    page = <Home2 />;
-  }
+
   return (
     <Layout
-      navigationActions={[
-        {
-          key: "HOME",
-          label: "Home",
-          icon: <HomeIcon />,
-          ariaLabel: "Home",
-          position: "left",
-        },
-        { divider: true },
-        {
-          key: "HOME2",
-          label: "Home2",
-          icon: <HomeIcon />,
-          ariaLabel: "Home2",
-        },
-      ]}
+      navigationActions={defaultNavActions}
       leftNavigationClick={clickHandler}
     >
-      {page}
+      <DisplaySelectedAction action={action} />
     </Layout>
   );
 };
 
-const Home = () => <div>Home</div>;
-const Home2 = () => <div>Home2</div>;
+const DisplaySelectedAction = ({ action }: any) => {
+  return <div>{action?.label}</div>;
+};
+
+function Logo() {
+  return (
+    <div>
+      <img src={logo} alt="Logo" />
+    </div>
+  );
+}
