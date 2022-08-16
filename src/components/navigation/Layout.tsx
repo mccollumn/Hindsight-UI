@@ -171,7 +171,7 @@ export interface NavigationAction {
   label?: string;
   ariaLabel?: string;
   icon?: React.ReactElement | null;
-  divider?: Boolean;
+  divider: Boolean;
   path?: string;
   /**
    * Define which navigation area to display the action
