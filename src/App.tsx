@@ -2,8 +2,8 @@ import React from "react";
 import "./App.css";
 import {
   Person,
-  Notifications,
-  Settings,
+  Notifications as NotificationsIcon,
+  Settings as SettingsIcon,
   Assessment,
   Apps,
 } from "@mui/icons-material";
@@ -41,16 +41,18 @@ function App() {
         {
           key: "Notifications",
           label: "Notifications",
-          icon: <Notifications />,
+          icon: <NotificationsIcon />,
           ariaLabel: "Notifications",
           position: "top",
+          path: "/notifications",
         },
         {
           key: "Settings",
           label: "Settings",
-          icon: <Settings />,
+          icon: <SettingsIcon />,
           ariaLabel: "Settings",
           position: "top",
+          path: "/settings",
         },
         {
           key: "Avatar",
@@ -58,6 +60,7 @@ function App() {
           icon: <Person />,
           ariaLabel: "Avatar",
           position: "top",
+          path: "/user",
         },
       ]}
       leftNavigationClick={clickHandler}
@@ -66,14 +69,20 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/profiles" element={<Profiles />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/user" element={<User />} />
       </Routes>
     </Layout>
   );
 }
 
 const Homepage = () => <div>Home</div>;
-const Profiles = () => <div>Reports</div>;
+const Profiles = () => <div>Profiles</div>;
 const Reports = () => <div>Reports</div>;
+const Notifications = () => <div>Notifications</div>;
+const Settings = () => <div>Settings</div>;
+const User = () => <div>User</div>;
 const Logo = () => (
   <div>
     <img src={logo} alt="Logo" />
