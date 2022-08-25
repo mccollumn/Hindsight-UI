@@ -34,8 +34,8 @@ export const Layout = ({
   });
 
   return (
-    <Box sx={{ flexGrow: 1 }} aria-label="Base application">
-      <AppBar position="static">
+    <Box sx={{ display: "flex", flexGrow: 1 }} aria-label="Base application">
+      <AppBar position="absolute" sx={{ left: "64px" }}>
         <Toolbar>
           <NavDrawer
             leftNavigationActions={leftNavActions}
@@ -48,7 +48,7 @@ export const Layout = ({
           {appBarNavigationActions}
         </Toolbar>
       </AppBar>
-      {children}
+      <Box sx={{ marginTop: "64px" }}>{children}</Box>
     </Box>
   );
 };
@@ -106,6 +106,7 @@ const NavDrawer = ({
         open={open}
         onClose={handleClose}
         aria-label="Navigation drawer"
+        variant="permanent"
       >
         <List sx={{ width: 200 }} aria-label="Navigation list">
           <NavigationList
