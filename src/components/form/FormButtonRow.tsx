@@ -4,6 +4,11 @@ import {
   Button
 } from '@mui/material';
 
+import {
+  ButtonRB,
+  ButtonRBProps
+} from '../button/ButtonRB';
+
 export const FormButtonRow = ({
   submitButtonText,
   resetButtonText,
@@ -41,14 +46,13 @@ const SubmitButton = ({
   }
 
   return (
-    <Button>
+    <ButtonRB>
       {submitButtonText}
-    </Button>
+    </ButtonRB>
   );
 }
 
 const ResetButton = ({
-  submitButtonText,
   resetButtonText
 }: any) => {
 
@@ -57,9 +61,10 @@ const ResetButton = ({
   }
 
   return (
-    <Button>
+    <ButtonRB
+      color={'inherit'}>
       {resetButtonText}
-    </Button>
+    </ButtonRB>
   );
 }
 
