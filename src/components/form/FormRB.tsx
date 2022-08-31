@@ -5,6 +5,7 @@ import {
   UseFormReturn,
   UseFormReset
 } from 'react-hook-form';
+import { styled } from '@mui/system';
 import { Box, BoxProps } from '@mui/material';
 import { FormButtonRow } from './FormButtonRow';
 
@@ -39,7 +40,7 @@ export const FormRB = ({
         noValidate
         onSubmit={formMethods.handleSubmit(submitHandler)}>
 
-        <Box
+        <UploadContainerStyled
           className={classNames.filter(f => f).join(' ')}
           {...props}>
 
@@ -50,13 +51,24 @@ export const FormRB = ({
             resetButtonText={resetButtonText}
           />
 
-        </Box>
+        </UploadContainerStyled>
 
       </form>
     </FormProvider >
   );
 
 }
+
+const UploadContainerStyled = styled(Box)(({
+
+}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  width: '100%',
+  padding: '24px',
+  gap: '24px'
+}));
 
 export interface FormRBProps extends BoxProps {
   /**

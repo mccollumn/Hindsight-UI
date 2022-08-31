@@ -3,7 +3,7 @@ import {
   BoxProps,
   Button
 } from '@mui/material';
-
+import { styled } from '@mui/system';
 import {
   ButtonRB,
   ButtonRBProps
@@ -24,7 +24,7 @@ export const FormButtonRow = ({
   }
 
   return (
-    <Box className="rb-form-button-row">
+    <ButtonRowStyled className="rb-form-button-row">
 
       <ResetButton
         resetButtonText={resetButtonText}
@@ -33,7 +33,7 @@ export const FormButtonRow = ({
       <SubmitButton
         submitButtonText={submitButtonText}
       />
-    </Box>
+    </ButtonRowStyled>
   );
 }
 
@@ -67,6 +67,19 @@ const ResetButton = ({
     </ButtonRB>
   );
 }
+
+const ButtonRowStyled = styled(Box)(({
+
+}) => ({
+  background: 'grey',
+  display: 'flex',
+  //flexDirection: 'column',
+  //height: '100%',
+  //width: '100%',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+  gap: '24px'
+}));
 
 export interface FormButtonRow {
   /**
