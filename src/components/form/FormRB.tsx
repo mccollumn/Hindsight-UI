@@ -6,6 +6,7 @@ import {
   UseFormReset
 } from 'react-hook-form';
 import { Box, BoxProps } from '@mui/material';
+import { FormButtonRow } from './FormButtonRow';
 
 export const FormRB = ({
   methods,
@@ -13,6 +14,8 @@ export const FormRB = ({
   children,
   className,
   onSubmit = () => { },
+  submitButtonText,
+  resetButtonText,
   ...props
 }: FormRBProps) => {
   let formMethods = useForm({
@@ -41,6 +44,11 @@ export const FormRB = ({
           {...props}>
 
           {children}
+
+          <FormButtonRow
+            submitButtonText={submitButtonText}
+            resetButtonText={resetButtonText}
+          />
 
         </Box>
 
@@ -80,6 +88,16 @@ export interface FormRBProps extends BoxProps {
    * All methods from React-Hook-Forms for this form instance
    */
   methods?: UseFormReturn,
+  /**
+   * Displays submit button with given text
+   * Submits form on click
+   */
+  submitButtonText?: string
+  /**
+   * Displays reset button with given text
+   * Resets form with default values on click
+   */
+  resetButtonText?: string
   /** 
    * All children
    */

@@ -13,7 +13,7 @@ export default {
   },
 } as ComponentMeta<typeof FormRB>;
 
-//const Template: ComponentStory<typeof FormRB> = (args) => <FormRB {...args} />;
+// const Template: ComponentStory<typeof FormRB> = (args) => <FormRB {...args} />;
 // export const Primary = Template.bind({});
 
 export const Example: ComponentStory<typeof FormRB> = (args) => {
