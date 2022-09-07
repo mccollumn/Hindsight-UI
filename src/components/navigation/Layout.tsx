@@ -20,6 +20,7 @@ export const Layout = ({
   leftNavigationClick = () => {},
   children,
 }: LayoutProps) => {
+  const [open, setOpen] = React.useState(false);
   const [selectedNav, setSelectedNav]: any = React.useState();
   const navClickHandler = (action: NavigationAction) => {
     setSelectedNav(action);
@@ -35,12 +36,19 @@ export const Layout = ({
 
   return (
     <Box sx={{ display: "flex", flexGrow: 1 }} aria-label="Base application">
-      <AppBar position="absolute" sx={{ left: "64px" }}>
+      <AppBar
+        position="absolute"
+        sx={{
+          left: open ? "200px" : "64px",
+        }}
+      >
         <Toolbar>
           <NavDrawer
             leftNavigationActions={leftNavActions}
             leftNavigationClick={navClickHandler}
             selectedNav={selectedNav}
+            open={open}
+            setOpen={setOpen}
           />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {label}
@@ -48,7 +56,14 @@ export const Layout = ({
           {appBarNavigationActions}
         </Toolbar>
       </AppBar>
-      <Box sx={{ marginTop: "64px" }}>{children}</Box>
+      <Box
+        sx={{
+          marginTop: "64px",
+          marginLeft: open ? "200px" : "64px",
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 };
@@ -77,10 +92,10 @@ const NavDrawer = ({
   leftNavigationActions = [],
   leftNavigationClick,
   selectedNav,
+  open,
+  setOpen,
   children,
 }: any) => {
-  const [open, setOpen] = React.useState(false);
-
   const handleOpen = () => {
     setOpen(true);
   };
@@ -108,7 +123,14 @@ const NavDrawer = ({
         aria-label="Navigation drawer"
         variant="permanent"
       >
-        <List sx={{ width: 200 }} aria-label="Navigation list">
+        <List
+          className="ListContainer"
+          sx={{
+            width: open ? "200px" : "64px",
+            overflowX: "hidden",
+          }}
+          aria-label="Navigation list"
+        >
           <NavigationList
             navigationActions={leftNavigationActions}
             navigationClick={leftNavigationClick}
