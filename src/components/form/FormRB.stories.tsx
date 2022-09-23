@@ -23,6 +23,7 @@ export const Example: ComponentStory<typeof FormRB> = (args) => {
 
       <TextFieldRB
         label='Text1'
+        name='heyyou'
       />
 
     </FormRB>

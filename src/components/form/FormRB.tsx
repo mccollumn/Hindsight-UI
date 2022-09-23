@@ -19,16 +19,18 @@ export const FormRB = ({
   resetButtonText,
   ...props
 }: FormRBProps) => {
-  let formMethods = useForm({
-        defaultValues
-    });
 
-    // Use form methods from parent
-    if (methods) {
-      formMethods = methods;
-    }
+  let formMethods = useForm({
+    defaultValues
+  });
+
+  // Use form methods from parent
+  if (methods) {
+    formMethods = methods;
+  }
 
   const submitHandler = (values: any) => {
+    console.log('sdfdsfsdfdsfsfdsf', values);
     onSubmit(values, formMethods.reset);
   }
 
@@ -41,8 +43,7 @@ export const FormRB = ({
         onSubmit={formMethods.handleSubmit(submitHandler)}>
 
         <UploadContainerStyled
-          className={classNames.filter(f => f).join(' ')}
-          {...props}>
+          className={classNames.filter(f => f).join(' ')}>
 
           {children}
 

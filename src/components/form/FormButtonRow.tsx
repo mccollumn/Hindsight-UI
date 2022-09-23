@@ -46,7 +46,7 @@ const SubmitButton = ({
   }
 
   return (
-    <ButtonRB>
+    <ButtonRB type="submit">
       {submitButtonText}
     </ButtonRB>
   );
