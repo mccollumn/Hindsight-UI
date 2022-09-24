@@ -25,6 +25,8 @@ export const Example: ComponentStory<typeof FormWrapper> = (args) => {
     <FormWrapper
       onSuccess={onSuccess}
       defaultValues={defaultValues}
+      title="Title"
+      description="Fill out this form"
     >
         <TextFieldElement
           label='Text1'

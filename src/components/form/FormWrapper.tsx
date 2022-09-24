@@ -1,5 +1,9 @@
 import { FormContainer } from 'react-hook-form-mui'
-import { Box, BoxProps } from '@mui/material';
+import {
+  Box,
+  BoxProps,
+  Typography
+} from '@mui/material';
 import { FormButtonRow } from './FormButtonRow';
 
 /**
@@ -11,6 +15,8 @@ export const FormWrapper = ({
   defaultValues,
   submitButtonText,
   resetButtonText,
+  title,
+  description,
   children
 }: FormWrapperProps) => {
   return (
@@ -25,11 +31,18 @@ export const FormWrapper = ({
           flexDirection: 'column',
           gap: '24px',
           '.MuiFormHelperText-root.Mui-error': {
-            background: 'green',
             position: 'absolute',
             bottom: '-22px'
           }
         }}>
+
+        <FormTitle
+          title={title}
+        />
+
+        <FormDescription
+          description={description}
+        />
 
         {children}
 
@@ -41,6 +54,36 @@ export const FormWrapper = ({
       </Box>
 
     </FormContainer>
+  )
+}
+
+const FormTitle = ({
+  title
+}: any) => {
+  if(!title) {
+    return null;
+  }
+
+  return (
+    <Typography
+      className='form-wrapper-title'>
+      {title}
+    </Typography>
+  )
+}
+
+const FormDescription = ({
+  description
+}: any) => {
+  if(!description) {
+    return null;
+  }
+
+  return (
+    <Typography
+      className='form-wrapper-description'>
+      {description}
+    </Typography>
   )
 }
 
@@ -56,6 +99,14 @@ export interface FormWrapperProps {
    * Form default values
    */
   defaultValues: any
+  /**
+   * Form title
+   */
+  title?: string
+  /**
+   * Descriptive text for form
+   */
+  description?: string
   /**
    * Displays submit button with given text
    * Submits form on click
