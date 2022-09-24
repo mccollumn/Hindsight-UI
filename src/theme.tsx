@@ -8,5 +8,5 @@ import "@fontsource/roboto/700.css";
 export const theme = createTheme({
   typography: {
     fontFamily: "Roboto",
-  },
+  }
 });

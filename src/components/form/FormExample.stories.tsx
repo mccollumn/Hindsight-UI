@@ -1,8 +1,7 @@
 import React from "react";
-import { Box, BoxProps } from '@mui/material';
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
-import { FormButtonRow } from './FormButtonRow';
+import { TextFieldElement } from 'react-hook-form-mui'
+import { FormWrapper } from './FormWrapper'
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -11,9 +10,9 @@ export default {
   argTypes: {
 
   },
-} as ComponentMeta<typeof FormContainer>;
+} as ComponentMeta<typeof FormWrapper>;
 
-export const Example: ComponentStory<typeof FormContainer> = (args) => {
+export const Example: ComponentStory<typeof FormWrapper> = (args) => {
   const defaultValues = {
     name: 'doood'
   };
@@ -23,18 +22,10 @@ export const Example: ComponentStory<typeof FormContainer> = (args) => {
   }
 
   return (
-    <FormContainer
+    <FormWrapper
       onSuccess={onSuccess}
       defaultValues={defaultValues}
-      {...args} >
-
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px'
-        }}>
-
+    >
         <TextFieldElement
           label='Text1'
           name='name'
@@ -59,12 +50,6 @@ export const Example: ComponentStory<typeof FormContainer> = (args) => {
           }}
         />
 
-        <FormButtonRow
-        
-        />
-
-      </Box>
-
-    </FormContainer>
+    </FormWrapper>
   )
 }
