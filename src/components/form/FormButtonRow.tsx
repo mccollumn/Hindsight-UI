@@ -10,8 +10,8 @@ import {
 } from '../button/ButtonRB';
 
 export const FormButtonRow = ({
-  submitButtonText,
-  resetButtonText,
+  submitButtonText = 'Submit',
+  resetButtonText = 'Cancel',
 }: FormButtonRow) => {
 
   const isShowButtons = [
@@ -71,11 +71,7 @@ const ResetButton = ({
 const ButtonRowStyled = styled(Box)(({
 
 }) => ({
-  background: 'grey',
   display: 'flex',
-  //flexDirection: 'column',
-  //height: '100%',
-  //width: '100%',
   justifyContent: 'flex-end',
   alignItems: 'center',
   gap: '24px'
