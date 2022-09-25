@@ -66,6 +66,10 @@ const FormTitle = ({
 
   return (
     <Typography
+      sx={{
+        fontWeight: 500
+      }}
+      variant={'h5'}
       className='form-wrapper-title'>
       {title}
     </Typography>
@@ -81,6 +85,11 @@ const FormDescription = ({
 
   return (
     <Typography
+      sx={{
+        marginTop: '-24px',
+        fontWeight: 400
+      }}
+      variant={'subtitle2'}
       className='form-wrapper-description'>
       {description}
     </Typography>

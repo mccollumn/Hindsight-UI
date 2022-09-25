@@ -25,32 +25,30 @@ export const Example: ComponentStory<typeof FormWrapper> = (args) => {
     <FormWrapper
       onSuccess={onSuccess}
       defaultValues={defaultValues}
-      title="Title"
-      description="Fill out this form"
-    >
-        <TextFieldElement
-          label='Text1'
-          name='name'
-          validation={{
-            maxLength: {
-              value: 2,
-              message: 'Oh no you dih nt'
-            },
-            required: 'Hey fool'
-          }}
-        />
+      title="Login"
+      description="Example login page">
 
-        <TextFieldElement
-          label='Text2'
-          name='name2'
-          validation={{
-            maxLength: {
-              value: 2,
-              message: 'Oh no you dih nt'
-            },
-            required: 'Hey fool'
-          }}
-        />
+      <TextFieldElement
+        label='Username/Email'
+        name='username'
+        validation={{
+          required: 'Username is required'
+        }}
+      />
+
+      <TextFieldElement
+        label='Password'
+        name='password'
+        type={'password'}
+        validation={{
+          required: 'Password is required',
+          validate: {
+            hello: (hey: any) => {
+              console.log('pooty', hey);
+            }
+          }
+        }}
+      />
 
     </FormWrapper>
   )
