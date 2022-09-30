@@ -1,6 +1,9 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { TextFieldElement } from 'react-hook-form-mui'
+import {
+  TextFieldElement,
+  PasswordElement,
+} from 'react-hook-form-mui'
 import { FormWrapper } from './FormWrapper'
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
@@ -12,9 +15,9 @@ export default {
   },
 } as ComponentMeta<typeof FormWrapper>;
 
-export const Example: ComponentStory<typeof FormWrapper> = (args) => {
+export const Login: ComponentStory<typeof FormWrapper> = (args) => {
   const defaultValues = {
-    name: 'doood'
+    username: ''
   };
 
   const onSuccess = (values: any) => {
@@ -36,17 +39,12 @@ export const Example: ComponentStory<typeof FormWrapper> = (args) => {
         }}
       />
 
-      <TextFieldElement
+      <PasswordElement
         label='Password'
         name='password'
         type={'password'}
         validation={{
-          required: 'Password is required',
-          validate: {
-            hello: (hey: any) => {
-              console.log('pooty', hey);
-            }
-          }
+          required: 'Password is required'
         }}
       />
 
