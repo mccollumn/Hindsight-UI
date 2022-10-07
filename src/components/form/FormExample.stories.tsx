@@ -6,10 +6,8 @@ import {
 } from 'react-hook-form-mui'
 import { FormWrapper } from './FormWrapper'
 
-// More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: "Form/FormExample",
-  // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
 
   },
@@ -29,7 +27,9 @@ export const Login: ComponentStory<typeof FormWrapper> = (args) => {
       onSuccess={onSuccess}
       defaultValues={defaultValues}
       title="Login"
-      description="Example login page">
+      description="Example login page"
+      resetButtonText="Cancel"
+    >
 
       <TextFieldElement
         label='Username/Email'

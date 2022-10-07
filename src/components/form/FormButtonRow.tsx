@@ -11,7 +11,7 @@ import {
 
 export const FormButtonRow = ({
   submitButtonText = 'Submit',
-  resetButtonText = 'Cancel',
+  resetButtonText = '',
 }: FormButtonRow) => {
 
   const isShowButtons = [
