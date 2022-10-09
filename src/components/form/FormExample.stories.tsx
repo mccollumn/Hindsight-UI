@@ -28,6 +28,7 @@ export const Login: ComponentStory<typeof FormWrapper> = (args) => {
       defaultValues={defaultValues}
       title="Login"
       description="Example login page"
+      errorMessage="Am Error"
       resetButtonText="Cancel"
     >
 

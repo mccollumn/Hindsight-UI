@@ -4,6 +4,7 @@ import {
   BoxProps,
   Typography
 } from '@mui/material';
+import { styled } from '@mui/system';
 import { FormButtonRow } from './FormButtonRow';
 
 /**
@@ -17,6 +18,7 @@ export const FormWrapper = ({
   resetButtonText,
   title,
   description,
+  errorMessage,
   children
 }: FormWrapperProps) => {
   return (
@@ -32,7 +34,8 @@ export const FormWrapper = ({
           gap: '24px',
           '.MuiFormHelperText-root.Mui-error': {
             position: 'absolute',
-            bottom: '-22px'
+            bottom: '-22px',
+            right: 0
           }
         }}>
 
@@ -42,6 +45,10 @@ export const FormWrapper = ({
 
         <FormDescription
           description={description}
+        />
+
+        <Error
+          errorMessage={errorMessage}
         />
 
         {children}
@@ -84,21 +91,47 @@ const FormDescription = ({
   }
 
   return (
-    <Typography
-      sx={{
-        marginTop: '-24px',
-        fontWeight: 400
-      }}
+    <DescriptionStyled
       variant={'subtitle2'}
       className='form-wrapper-description'>
       {description}
-    </Typography>
+    </DescriptionStyled>
   )
 }
 
-/**
- *
- */
+const Error = ({
+  errorMessage
+}: any) => {
+  if(!errorMessage) {
+    return null;
+  }
+
+  return (
+    <ErrorStyled
+      variant={'subtitle2'}
+      color={'error'}
+      className='form-wrapper-error'>
+      {errorMessage}
+    </ErrorStyled>
+  )
+}
+
+const DescriptionStyled = styled(Typography)(({
+  theme
+}) => ({
+  marginTop: theme.spacing(-3),
+  fontWeight: 400,
+}));
+
+const ErrorStyled = styled(Typography)(({
+  theme
+}) => ({
+  marginTop: theme.spacing(-3),
+  fontWeight: 400,
+  textAlign: 'right',
+  
+}));
+
 export interface FormWrapperProps {
   /**
    * Form submit handler
@@ -116,6 +149,10 @@ export interface FormWrapperProps {
    * Descriptive text for form
    */
   description?: string
+  /**
+   * Display an error message
+   */
+  errorMessage?: string
   /**
    * Displays submit button with given text
    * Submits form on click
