@@ -1,197 +1,200 @@
 import React from "react";
 import {
-  AppBar,
   Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Divider,
 } from "@mui/material";
-import { Menu } from "@mui/icons-material";
+import { TopNavBar } from './TopNavBar'
+import { LeftNavDrawer } from './LeftNavDrawer'
+import { filterNavigationActions } from './navigation.util';
 
 export const Layout = ({
   label,
   navigationActions = [],
-  leftNavigationClick = () => {},
+  navigationClick = () => {},
+  topNavHeight = 64,
+  leftNavMinWidth = 64,
+  leftNavMaxWidth = 240,
+  isAuthorized,
   children,
 }: LayoutProps) => {
+  const [open, setOpen] = React.useState(false);
   const [selectedNav, setSelectedNav]: any = React.useState();
+
+  const expandNav = () => setOpen(true);
+  const collapseNav = () => setOpen(false);
+
   const navClickHandler = (action: NavigationAction) => {
     setSelectedNav(action);
-    leftNavigationClick(action);
+    navigationClick(action);
   };
-  const topNavActions = navigationActions.filter((a) => a.position === "top");
-  const leftNavActions = navigationActions.filter((a) => a.position !== "top");
-  const appBarNavigationActions = AppBarNavigationActions({
+
+  const {
     topNavActions,
-    navClickHandler,
-    selectedNav,
-  });
+    leftNavActions,
+    leftNavCount
+  } = getNavigationActions(
+    navigationActions,
+    isAuthorized
+  );
+
+  let baseClassNames = ['base-application'];
+  baseClassNames.push(open ? 'expanded' : 'contracted');
 
   return (
-    <Box sx={{ flexGrow: 1 }} aria-label="Base application">
-      <AppBar position="static">
-        <Toolbar>
-          <NavDrawer
-            leftNavigationActions={leftNavActions}
-            leftNavigationClick={navClickHandler}
-            selectedNav={selectedNav}
-          />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {label}
-          </Typography>
-          {appBarNavigationActions}
-        </Toolbar>
-      </AppBar>
-      {children}
+    <Box
+      className={baseClassNames.join(' ')}
+      sx={{
+        display: "flex",
+        flexGrow: 1
+      }}
+      aria-label="Base application">
+
+      <TopNavBar
+        isAuthorized={isAuthorized}
+        topNavActions={topNavActions}
+        navClickHandler={navClickHandler}
+        selectedNav={selectedNav}
+        label={label}
+        expandNav={expandNav}
+        open={open}
+        showMenu={!!leftNavCount}
+        topNavHeight={topNavHeight}
+        maxWidth={leftNavMaxWidth}
+      />
+
+      <LeftNavDrawer
+        isAuthorized={isAuthorized}
+        leftNavigationActions={leftNavActions}
+        leftNavigationClick={navClickHandler}
+        selectedNav={selectedNav}
+        open={open}
+        showDrawer={!!leftNavCount}
+        collapseNav={collapseNav}
+        minWidth={leftNavMinWidth}
+        maxWidth={leftNavMaxWidth}
+        topNavHeight={topNavHeight}
+      />
+
+      <Box
+        className={'base-page-container'}
+        sx={{
+          marginTop: `${topNavHeight}px`,
+          marginLeft: open ? `${leftNavMaxWidth}px` : `${leftNavMinWidth}px`,
+          width: '100%',
+          height: '100%',
+          padding: '24px'
+        }}
+      >
+
+        {children}
+
+      </Box>
     </Box>
   );
 };
 
-const AppBarNavigationActions = ({
-  topNavActions = [],
-  navClickHandler = () => {},
-  selectedNav = {},
-}: AppBarNavigationActionsProps) => {
-  return topNavActions.map((a) => {
-    const clickHandler = () => navClickHandler(a);
-    const selected = a.key === selectedNav.key;
-    return (
-      <IconButton
-        color={selected ? "secondary" : "inherit"}
-        key={a.key}
-        onClick={clickHandler}
-      >
-        {a.icon}
-      </IconButton>
-    );
-  });
-};
+const getNavigationActions = (
+  navigationActions: Array<NavigationAction>,
+  isAuthorized: boolean
+) => {
+  const topNavActions = navigationActions
+    .filter((a: NavigationAction) => a.position === "top")
+    .filter((a: NavigationAction) => {
+      return filterNavigationActions({
+        action: a,
+        isAuthorized
+      })
+    });
 
-const NavDrawer = ({
-  leftNavigationActions = [],
-  leftNavigationClick,
-  selectedNav,
-  children,
-}: any) => {
-  const [open, setOpen] = React.useState(false);
+  const leftNavActions = navigationActions
+    .filter((a: NavigationAction) => a.position !== "top")
+    .filter((a: NavigationAction) => {
+      return filterNavigationActions({
+        action: a,
+        isAuthorized
+      })
+    });
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  return {
+    topNavActions,
+    leftNavActions,
+    // Filter any dividers
+    leftNavCount: leftNavActions.filter((a: NavigationAction) => !a.divider).length
+  }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  return (
-    <React.Fragment>
-      <IconButton
-        onClick={handleOpen}
-        size="large"
-        edge="start"
-        color="inherit"
-        aria-label="Navigation menu"
-        sx={{ mr: 2 }}
-      >
-        <Menu />
-      </IconButton>
-      <Drawer
-        anchor="left"
-        open={open}
-        onClose={handleClose}
-        aria-label="Navigation drawer"
-      >
-        <List sx={{ width: 200 }} aria-label="Navigation list">
-          <NavigationList
-            navigationActions={leftNavigationActions}
-            navigationClick={leftNavigationClick}
-            selectedNav={selectedNav}
-            handleClose={handleClose}
-          />
-        </List>
-        {children}
-      </Drawer>
-    </React.Fragment>
-  );
-};
-
-const NavigationList = ({
-  navigationActions = [],
-  navigationClick = () => {},
-  selectedNav,
-  handleClose,
-}: NavigationListProps): any => {
-  return navigationActions.map((action, index) => {
-    const handleClick = () => {
-      navigationClick(action);
-      handleClose();
-    };
-    if (action.divider) {
-      return <Divider key={index} />;
-    }
-    if (action.Component) {
-      return <ComponentOverride component={action.Component} key={index} />;
-    }
-    return (
-      <ListItemButton
-        selected={action.key === selectedNav?.key}
-        key={index}
-        onClick={handleClick}
-      >
-        <ListItemIcon>{action.icon}</ListItemIcon>
-        <ListItemText>{action.label}</ListItemText>
-      </ListItemButton>
-    );
-  });
-};
-
-const ComponentOverride = ({ component }: any) => {
-  return <div>{component}</div>;
-};
+}
 
 interface LayoutProps {
-  /* Title of application */
+  /**
+     Title of application
+   */
   label?: string;
   /**
    * List of all navigation actions in left navigation and app bar
    */
   navigationActions?: Array<NavigationAction>;
-  leftNavigationClick?: Function;
+  /**
+   * Current user authorized status
+   */
+  isAuthorized: boolean,
+  /**
+   * Event when navigation is clicked, returns navigation item
+   */
+  navigationClick?: Function;
+  /**
+   * Top navigation bar height
+   */
+  topNavHeight?: number,
+  /**
+   * Left navigation drawer collapsed width
+   */
+  leftNavMinWidth?: number,
+  /**
+   * Left navigation drawer expanded width
+   */
+  leftNavMaxWidth?: number,
+  /**
+   * All child elements
+   */
   children?: any;
 }
 
 export interface NavigationAction {
   key?: string;
+  /**
+   * Display actions on authorization state
+   * always: Always show regardless of auth status
+   * authorized: Only show when user is authorized
+   * unauthorized: Only show when user is not authorized
+   */
+  authFilter: "always" | "authorized" | "unauthorized";
+  /**
+   * Display text to the user
+   */
   label?: string;
+  /**
+   * Aria text
+   */
   ariaLabel?: string;
+  /**
+   * MUI Icon to display
+   */
   icon?: React.ReactElement | null;
+  /**
+   * Display a divider in navigation
+   */
   divider?: Boolean;
+  /**
+   * Path to redirect to on nav click
+   */
   path?: string;
   /**
    * Define which navigation area to display the action
+   * left: Left navigation drawer
+   * top: Top app navigation
    */
-  position?: "left" | "top";
+  position: "left" | "top";
   /**
    * Render component instead of drawer menu item
    */
   Component?: React.ReactElement | null;
-}
-
-interface NavigationListProps {
-  navigationActions: Array<NavigationAction>;
-  navigationClick: Function;
-  selectedNav: NavigationAction;
-  handleClose: Function;
-}
-
-interface AppBarNavigationActionsProps {
-  topNavActions?: Array<NavigationAction>;
-  navClickHandler?: Function;
-  selectedNav?: NavigationAction;
 }
