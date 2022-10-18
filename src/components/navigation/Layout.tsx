@@ -194,7 +194,11 @@ export interface NavigationAction {
    */
   position: "left" | "top";
   /**
-   * Render component instead of drawer menu item
+   * Render custom nav component
    */
   Component?: React.ReactElement | null;
+  /**
+   * Snap custom component to position in app bar
+   */
+  snapPosition?: "left" | "center" | "right";
 }

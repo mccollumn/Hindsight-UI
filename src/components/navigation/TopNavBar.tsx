@@ -77,6 +77,9 @@ const TopBarNavigationActions = ({
 }: TopNavigationListProps) => {
   return topNavActions
     .map((a: NavigationAction) => {
+      if (a.Component) {
+        return a.Component;
+      }
       const clickHandler = () => navClickHandler(a);
       const selected = a.key === selectedNav?.key;
       return (

@@ -6,10 +6,19 @@ import {
   Apps,
   Login,
 } from "@mui/icons-material";
-import logo from "../../../logo.svg";
 import { NavigationAction } from "../Layout";
 
 export const mockNavActions: Array<NavigationAction> = [
+  {
+    key: "Search",
+    label: "Search",
+    icon: <Apps />,
+    ariaLabel: "Search",
+    authFilter: "always",
+    position: "top",
+    Component: <SearchBox />,
+    snapPosition: "center"
+  },
   {
     key: "Profiles",
     label: "Profiles",
@@ -60,9 +69,13 @@ export const mockNavActions: Array<NavigationAction> = [
   {
     key: "Login",
     label: "Login",
-    icon: <Login/>,
+    icon: <Login />,
     ariaLabel: "Login",
     authFilter: "unauthorized",
     position: "top",
   },
 ];
+
+function SearchBox() {
+  return <div>Search</div>;
+}
