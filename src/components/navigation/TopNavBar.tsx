@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -21,23 +22,20 @@ export const TopNavBar = ({
   maxWidth,
   showMenu,
 }: any) => {
-
-  const topBarNavigationActions = TopBarNavigationActions({
+  
+  const { left, center, right } = TopBarNavigationActions({
     topNavActions,
     navClickHandler,
     selectedNav,
   });
 
   return (
-    <AppBarStyled
-      data-max={maxWidth}
-      data-open={open}>
-
+    <AppBarStyled data-max={maxWidth} data-open={open}>
       <Toolbar
         sx={{
-          height: topNavHeight
-        }}>
-
+          height: topNavHeight,
+        }}
+      >
         <Box className="top-nav-left">
           <IconButton
             onClick={expandNav}
@@ -46,8 +44,8 @@ export const TopNavBar = ({
             color="inherit"
             aria-label="Expand Left Navigation"
             sx={{
-              display: (open || !showMenu) ? 'none' : 'block',
-              height: 48
+              display: open || !showMenu ? "none" : "block",
+              height: 48,
             }}
           >
             <Menu />
@@ -57,55 +55,61 @@ export const TopNavBar = ({
             variant="h6"
             component="div"
             sx={{
-              flexGrow: 1
-            }}>
-
+              flexGrow: 1,
+            }}
+          >
             {label}
-
           </Typography>
+          {left}
         </Box>
 
-        <Box className="top-nav-center"></Box>
+        <Box className="top-nav-center">{center}</Box>
 
-        <Box className="top-nav-right">
-          {topBarNavigationActions}
-        </Box>
-
+        <Box className="top-nav-right">{right}</Box>
       </Toolbar>
-
     </AppBarStyled>
   );
-}
+};
 
 const TopBarNavigationActions = ({
   topNavActions = [],
   navClickHandler = () => {},
   selectedNav
 }: TopNavigationListProps) => {
-  return topNavActions
-    .map((a: NavigationAction) => {
-      if (a.Component) {
-        return a.Component;
-      }
-      const clickHandler = () => navClickHandler(a);
-      const selected = a.key === selectedNav?.key;
-      return (
-        <Tooltip
-          key={a.key}
-          title={a.label || ''}>
+  const left = topNavActions.filter(n => n.snapPosition === "left");
+  const center = topNavActions.filter(n => n.snapPosition === "center");
+  const right = topNavActions.filter(n => n.snapPosition === "right" || !n.snapPosition);
 
-          <IconButton
-            color={selected ? "secondary" : "inherit"}
-            key={a.key}
-            onClick={clickHandler}
-            aria-label={a.ariaLabel}
-          >
-            {a.icon}
-          </IconButton>
+  return {
+    left: left.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
+    center: center.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
+    right: right.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
+  };
 
-        </Tooltip>
-      );
-    });
+};
+
+const mapNavigationAction = (
+  action: NavigationAction,
+  navClickHandler: Function,
+  selectedNav?: NavigationAction
+) => {
+  if (action.Component) {
+    return React.cloneElement(action.Component, {key: action.key});
+  }
+  const clickHandler = () => navClickHandler(action);
+  const selected = action.key === selectedNav?.key;
+  return (
+    <Tooltip key={action.key} title={action.label || ""}>
+      <IconButton
+        color={selected ? "secondary" : "inherit"}
+        key={action.key}
+        onClick={clickHandler}
+        aria-label={action.ariaLabel}
+      >
+        {action.icon}
+      </IconButton>
+    </Tooltip>
+  );
 };
 
 const AppBarStyled = styled(AppBar)(({
