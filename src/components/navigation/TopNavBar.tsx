@@ -4,6 +4,7 @@ import {
   IconButton,
   Typography,
   Tooltip,
+  Box
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 import { styled } from '@mui/material/styles';
@@ -37,32 +38,38 @@ export const TopNavBar = ({
           height: topNavHeight
         }}>
 
-        <IconButton
-          onClick={expandNav}
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="Expand Left Navigation"
-          sx={{
-            display: (open || !showMenu) ? 'none' : 'block',
-            height: 48
-          }}
-        >
-          <Menu />
-        </IconButton>
+        <Box className="top-nav-left">
+          <IconButton
+            onClick={expandNav}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="Expand Left Navigation"
+            sx={{
+              display: (open || !showMenu) ? 'none' : 'block',
+              height: 48
+            }}
+          >
+            <Menu />
+          </IconButton>
 
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            flexGrow: 1
-          }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flexGrow: 1
+            }}>
 
-          {label}
+            {label}
 
-        </Typography>
+          </Typography>
+        </Box>
 
-        {topBarNavigationActions}
+        <Box className="top-nav-center"></Box>
+
+        <Box className="top-nav-right">
+          {topBarNavigationActions}
+        </Box>
 
       </Toolbar>
 
@@ -110,12 +117,31 @@ const AppBarStyled = styled(AppBar)(({
   const max = props['data-max'];
 
   return {
-    width: open ? `calc(100% - ${max}px)` : '100%',
-    transition: theme.transitions.create(['width', 'margin'], {
+    width: open ? `calc(100% - ${max}px)` : "100%",
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
-  }
+
+    ".top-nav-left": {
+      display: "flex",
+      flexGrow: 1,
+      justifyContent: "flex-start",
+      alignItems: "center",
+    },
+    ".top-nav-center": {
+      display: "flex",
+      flexGrow: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    ".top-nav-right": {
+      display: "flex",
+      flexGrow: 1,
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+  };
 
 });
 
