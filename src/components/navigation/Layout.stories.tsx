@@ -12,7 +12,7 @@ import { mockNavActions } from "./mocks/navActions";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: "Layout",
+  title: "Navigation/Layout",
   component: Layout,
   decorators: [
     (Story) => (
