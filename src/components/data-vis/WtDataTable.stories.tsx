@@ -5,7 +5,7 @@ import {
   pageData,
   referringSiteData,
   browserVersionsData,
-} from "../../../mock-data/agg";
+} from "../../mock-data/agg";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

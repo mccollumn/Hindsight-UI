@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import ReportCategoryTabs from "./ReportCategoryTabs";
 import ReportItem from "./ReportItem";
-import SearchInput from "../navigation/SearchInput";
+import SearchInput from "../form/SearchInput";
 import { ProfileReportsProps } from "../../interfaces/interfaces";
 
 const TabPanel = ({
@@ -75,7 +75,7 @@ const ReportSelectionPanel = ({ reports, handleSelection }: ReportSelectionPanel
   React.useEffect(() => {}, [filteredReports]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", width: "100%", marginTop: "1rem" }}>
       <Box sx={{ display: "flex" }}>
         <ReportCategoryTabs
           categories={categories}

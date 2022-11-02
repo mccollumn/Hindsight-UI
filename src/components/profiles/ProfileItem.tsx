@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
 import { Button } from "@mui/material";
-import KeyMetrics from "./KeyMetrics";
+import KeyMetricsLabel from "./KeyMetricsLabel";
 import { styled } from "@mui/material/styles";
 
 const ProfileButton = styled(Button)(({ theme }) => ({
@@ -25,7 +25,7 @@ const ProfileItem = ({ children, clickHandler }: ProfileItemProps) => {
   return (
     <ProfileButton variant="outlined" onClick={handleClick}>
       {children}
-      <KeyMetrics />
+      <KeyMetricsLabel />
     </ProfileButton>
   );
 };
