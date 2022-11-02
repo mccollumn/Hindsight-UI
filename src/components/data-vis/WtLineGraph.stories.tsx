@@ -4,7 +4,7 @@ import {
   pageData,
   referringSiteData,
   browserVersionsData,
-} from "../../../mock-data/agg";
+} from "../../mock-data/agg";
 
 const config = {
   xScale: {

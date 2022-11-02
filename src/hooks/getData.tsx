@@ -4,7 +4,7 @@ import {
   pageData,
   referringSiteData,
   browserVersionsData,
-} from "../../mock-data/agg.js";
+} from "../mock-data/agg.js";
 
 const WT_DX_SERVER = process.env.REACT_APP_DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${WT_DX_SERVER}/v2_0/ReportService`;

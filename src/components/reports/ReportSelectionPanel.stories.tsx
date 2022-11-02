@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ReportSelectionPanel from "./ReportSelectionPanel";
-import { reports } from "../../../mock-data/reports";
+import { reports } from "../../mock-data/reports";
 import { ProfileReportsProps } from "../../interfaces/interfaces";
 
 const handleSelection = (selectedReport: ProfileReportsProps) => {

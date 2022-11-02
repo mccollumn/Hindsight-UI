@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ReportModal from "./ReportModal";
-import { pageData } from "../../../mock-data/agg";
+import { pageData } from "../../mock-data/agg";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

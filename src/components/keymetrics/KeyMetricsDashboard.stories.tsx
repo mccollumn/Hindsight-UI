@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import KeyMetricsDashboard from "./KeyMetricsDashboard";
-import { keyMetrics } from "../../../mock-data/keyMetrics";
+import { keyMetrics } from "../../mock-data/keyMetrics";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

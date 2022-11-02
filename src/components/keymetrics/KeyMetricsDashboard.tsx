@@ -62,7 +62,7 @@ const KeyMetricsDashboard = ({ keyMetricsData }: KeyMetricsDashboardProps) => {
   const measureNames = getMeasures(keyMetricsData);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, marginBottom: "2rem" }}>
       <Grid
         container
         spacing={2}
