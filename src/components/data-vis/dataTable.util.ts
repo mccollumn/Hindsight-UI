@@ -35,7 +35,7 @@ export const getMeasureNames = (reportData: ReportProps) => {
 };
 
 export const generateColumnDefs = (reportData: ReportProps) => {
-  if (reportData.definition === undefined) return [];
+  if (reportData?.definition === undefined) return [];
   const columnNames = [...getMeasureNames(reportData)];
   const columns = [...getMeasures(reportData)];
   return columnNames.reduce((colDefs: ColumnDefProps[], colName, index) => {
@@ -53,7 +53,7 @@ export const generateColumnDefs = (reportData: ReportProps) => {
 };
 
 export const getTotals = (reportData: ReportProps) => {
-  if (reportData.definition === undefined) return [];
+  if (reportData?.definition === undefined) return [];
   return [Object.values(reportData.data)[0].measures];
 };
 
@@ -69,13 +69,13 @@ export const getDimensionAttributes = (row: ReportSubRowProps) => {
 };
 
 export const getDimColumnHeader = (reportData: ReportProps) => {
-  if (reportData.definition === undefined) return "";
+  if (reportData?.definition === undefined) return "";
   const dimNames = getDimensionNames(reportData);
   return dimNames.join(" > ");
 };
 
 export const getTableData = (reportData: ReportProps) => {
-  if (reportData.definition === undefined) return [];
+  if (!reportData || reportData?.definition === undefined) return [];
   let tableData: Array<RowProps> = [];
 
   const getRow = (
@@ -83,6 +83,7 @@ export const getTableData = (reportData: ReportProps) => {
     level = 0,
     prevColValues: Array<string> = []
   ) => {
+    if (allRows === null) return;
     Object.keys(allRows).forEach((entry) => {
       const attributeStr = getDimensionAttributes(allRows[entry] as any);
 
@@ -111,7 +112,10 @@ export const getTableData = (reportData: ReportProps) => {
   };
 
   const allRows = Object.values(reportData.data)[0].SubRows;
-  getRow(allRows);
+  // Instead of SubRows being null, a report with no data doesn't include SubRows
+  if (allRows !== undefined) {
+    getRow(allRows);
+  }
 
   return tableData;
 };

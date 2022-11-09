@@ -5,11 +5,11 @@ import {
   IconButton,
   Typography,
   Tooltip,
-  Box
+  Box,
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
-import { styled } from '@mui/material/styles';
-import { NavigationAction } from './Layout';
+import { styled } from "@mui/material/styles";
+import { NavigationAction } from "./Layout";
 
 export const TopNavBar = ({
   topNavActions,
@@ -22,7 +22,6 @@ export const TopNavBar = ({
   maxWidth,
   showMenu,
 }: any) => {
-  
   const { left, center, right } = TopBarNavigationActions({
     topNavActions,
     navClickHandler,
@@ -74,18 +73,25 @@ export const TopNavBar = ({
 const TopBarNavigationActions = ({
   topNavActions = [],
   navClickHandler = () => {},
-  selectedNav
+  selectedNav,
 }: TopNavigationListProps) => {
-  const left = topNavActions.filter(n => n.snapPosition === "left");
-  const center = topNavActions.filter(n => n.snapPosition === "center");
-  const right = topNavActions.filter(n => n.snapPosition === "right" || !n.snapPosition);
+  const left = topNavActions.filter((n) => n.snapPosition === "left");
+  const center = topNavActions.filter((n) => n.snapPosition === "center");
+  const right = topNavActions.filter(
+    (n) => n.snapPosition === "right" || !n.snapPosition
+  );
 
   return {
-    left: left.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
-    center: center.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
-    right: right.map((action) => mapNavigationAction(action, navClickHandler, selectedNav)),
+    left: left.map((action) =>
+      mapNavigationAction(action, navClickHandler, selectedNav)
+    ),
+    center: center.map((action) =>
+      mapNavigationAction(action, navClickHandler, selectedNav)
+    ),
+    right: right.map((action) =>
+      mapNavigationAction(action, navClickHandler, selectedNav)
+    ),
   };
-
 };
 
 const mapNavigationAction = (
@@ -94,7 +100,7 @@ const mapNavigationAction = (
   selectedNav?: NavigationAction
 ) => {
   if (action.Component) {
-    return React.cloneElement(action.Component, {key: action.key});
+    return React.cloneElement(action.Component, { key: action.key });
   }
   const clickHandler = () => navClickHandler(action);
   const selected = action.key === selectedNav?.key;
@@ -112,13 +118,9 @@ const mapNavigationAction = (
   );
 };
 
-const AppBarStyled = styled(AppBar)(({
-  theme,
-  ...props
-}: any) => {
-
-  const open = props['data-open'];
-  const max = props['data-max'];
+const AppBarStyled = styled(AppBar)(({ theme, ...props }: any) => {
+  const open = props["data-open"];
+  const max = props["data-max"];
 
   return {
     width: open ? `calc(100% - ${max}px)` : "100%",
@@ -129,9 +131,10 @@ const AppBarStyled = styled(AppBar)(({
 
     ".top-nav-left": {
       display: "flex",
-      flexGrow: 1,
+      // flexGrow: 1,
       justifyContent: "flex-start",
       alignItems: "center",
+      // gap: theme.spacing(8),
     },
     ".top-nav-center": {
       display: "flex",
@@ -144,9 +147,10 @@ const AppBarStyled = styled(AppBar)(({
       flexGrow: 1,
       justifyContent: "flex-end",
       alignItems: "center",
+      gap: theme.spacing(8),
     },
+    ".MuiAutocomplete-root": { marginLeft: "6rem" },
   };
-
 });
 
 interface TopNavigationListProps {

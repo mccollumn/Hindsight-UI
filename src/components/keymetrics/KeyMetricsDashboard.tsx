@@ -1,12 +1,13 @@
+import React from "react";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
+import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ResponsiveLine } from "@nivo/line";
 import { formatISO } from "date-fns";
-import { KeyMetricsProps } from "../../interfaces/interfaces";
 import Title from "../Title";
-import { Typography } from "@mui/material";
+import useGetData from "../../hooks/getData";
+import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
+import { DateContext } from "../../providers/DateProvider";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -58,8 +59,24 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
   );
 };
 
-const KeyMetricsDashboard = ({ keyMetricsData }: KeyMetricsDashboardProps) => {
-  const measureNames = getMeasures(keyMetricsData);
+const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
+  const { response, loading, error, status, getKeyMetrics } = useGetData();
+  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
+
+  React.useEffect(() => {
+    getKeyMetrics({
+      profileID: profile?.ID,
+      params: { start_period: wtStartDate, end_period: wtEndDate },
+    });
+  }, [getKeyMetrics, profile?.ID, wtEndDate, wtStartDate]);
+  console.log("Key metrics:", response);
+  console.log("WT start date:", wtStartDate);
+  console.log("WT end date:", wtEndDate);
+
+  const [measureNames, setMeasureNames] = React.useState<string[]>([]);
+  React.useEffect(() => {
+    setMeasureNames(getMeasures(response));
+  }, [response]);
 
   return (
     <Box sx={{ flexGrow: 1, marginBottom: "2rem" }}>
@@ -72,10 +89,7 @@ const KeyMetricsDashboard = ({ keyMetricsData }: KeyMetricsDashboardProps) => {
         {measureNames.map((name, index) => (
           <Grid xs={12} sm={6} md={4} xl={3} key={index}>
             <Item>
-              <KeyMetricTile
-                metricName={name}
-                keyMetricsData={keyMetricsData}
-              />
+              <KeyMetricTile metricName={name} keyMetricsData={response} />
             </Item>
           </Grid>
         ))}
@@ -112,6 +126,7 @@ const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 };
 
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
+  if (keyMetricsData === null || keyMetricsData === undefined) return [];
   return Object.keys(Object.values(keyMetricsData.data)[0].measures);
 };
 
@@ -121,7 +136,7 @@ interface KeyMetricTileProps {
 }
 
 interface KeyMetricsDashboardProps {
-  keyMetricsData: KeyMetricsProps;
+  profile: ProfileProps;
 }
 
 interface Measures {

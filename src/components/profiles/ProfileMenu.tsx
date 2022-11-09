@@ -1,5 +1,5 @@
 import * as React from "react";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Autocomplete, AutocompleteProps } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { ProfileProps } from "../../interfaces/interfaces";
 
@@ -21,8 +21,16 @@ const ProfileMenu = ({
       disablePortal
       id="profile-menu"
       options={profiles}
-      sx={{ width: 300 }}
-      getOptionLabel={(option) => option.name}
+      sx={{
+        width: 300,
+        "& .MuiInputBase-root": { backgroundColor: "white" },
+        //TODO: Decide how this should be styled
+        "& .MuiFormLabel-root.Mui-focused": {
+          color: "black",
+          backgroundColor: "white",
+        },
+      }}
+      getOptionLabel={(option) => option?.name || ""}
       renderInput={(params) => (
         <TextField {...params} label="Select a Profile" />
       )}
@@ -40,8 +48,9 @@ interface ProfileMenuProps {
   profiles: ProfileProps[];
   handleSelection: (
     event: React.SyntheticEvent<Element, Event>,
-    value: ProfileProps | null
+    value: ProfileProps
   ) => void;
+  [x: string]: any;
 }
 
 export default ProfileMenu;

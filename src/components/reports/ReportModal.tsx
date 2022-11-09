@@ -15,7 +15,13 @@ import { GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
-import { ReportProps, WtLineProps } from "../../interfaces/interfaces";
+import useGetData from "../../hooks/getData";
+import {
+  WtLineProps,
+  ProfileProps,
+  ProfileReportsProps,
+} from "../../interfaces/interfaces";
+import { DateContext } from "../../providers/DateProvider";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -52,15 +58,35 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
 
 const ReportModal = ({
   isOpen,
-  data,
+  onClose,
+  profile,
+  report,
   tableConfig = {},
   graphConfig = {},
   ...props
 }: ReportModalProps) => {
-  const [open, setOpen] = React.useState(isOpen);
+  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
+
+  const {
+    response: data,
+    loading,
+    error,
+    status,
+    getWtData: getReport,
+  } = useGetData();
+
+  React.useEffect(() => {
+    if (!report) return;
+    getReport({
+      profileID: profile?.ID,
+      reportID: report?.ID,
+      params: { start_period: wtStartDate, end_period: wtEndDate },
+    });
+  }, [getReport, profile, report, wtEndDate, wtStartDate]);
+  console.log("Report:", report);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
@@ -71,7 +97,7 @@ const ReportModal = ({
   }, []);
 
   const handleClose = () => {
-    setOpen(false);
+    onClose();
   };
 
   const gridCallback = React.useCallback(
@@ -86,21 +112,17 @@ const ReportModal = ({
     gridRef?.current?.api.exportDataAsCsv({ fileName: reportName });
   };
 
-  React.useEffect(() => {
-    setOpen(isOpen);
-  }, [isOpen]);
-
   return (
     <BootstrapDialog
       onClose={handleClose}
       aria-labelledby="report-title"
-      open={open}
+      open={isOpen}
       maxWidth={"xl"}
       fullWidth={true}
       {...props}
     >
       <BootstrapDialogTitle id="report-title" onClose={handleClose}>
-        {data.definition.name || ""}
+        {data?.definition?.name || ""}
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>
@@ -154,10 +176,29 @@ interface DialogTitleProps {
 }
 
 interface ReportModalProps {
+  /**
+   * Is the modal currently displayed
+   */
   isOpen: boolean;
-  data: ReportProps;
-  tableConfig: GridOptions;
-  graphConfig: WtLineProps;
+  onClose: () => void;
+  /**
+   * Profile object from DX API v2.0
+   */
+  profile: ProfileProps;
+  /**
+   * Report object from DX API v2.0
+   */
+  report: ProfileReportsProps | null;
+  /**
+   * AG Grid options.
+   * https://www.ag-grid.com/react-data-grid/grid-options/
+   */
+  tableConfig?: GridOptions;
+  /**
+   * Nivo line graph options.
+   * https://nivo.rocks/line/
+   */
+  graphConfig?: WtLineProps;
 }
 
 export default ReportModal;

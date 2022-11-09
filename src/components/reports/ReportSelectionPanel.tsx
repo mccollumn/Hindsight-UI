@@ -4,12 +4,13 @@ import Grid from "@mui/material/Grid";
 import ReportCategoryTabs from "./ReportCategoryTabs";
 import ReportItem from "./ReportItem";
 import SearchInput from "../form/SearchInput";
-import { ProfileReportsProps } from "../../interfaces/interfaces";
+import { ProfileReportsProps, ProfileProps } from "../../interfaces/interfaces";
+import useGetData from "../../hooks/getData";
 
 const TabPanel = ({
   value,
   index,
-  reports,
+  reports = [],
   setSelectedReport,
   ...props
 }: TabPanelProps) => {
@@ -43,11 +44,35 @@ const TabPanel = ({
   );
 };
 
-const ReportSelectionPanel = ({ reports, handleSelection }: ReportSelectionPanelProps) => {
+const ReportSelectionPanel = ({
+  profile,
+  handleSelection,
+}: ReportSelectionPanelProps) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedReport, setSelectedReport] =
     React.useState<ProfileReportsProps | undefined>();
-  const [filteredReports, setFilteredReports] = React.useState(reports);
+
+  const {
+    response: profileReports = [],
+    loading,
+    error,
+    status,
+    getWtData: getProfileReports,
+  } = useGetData();
+
+  React.useEffect(() => {
+    if (Object.keys(profile).length === 0) return;
+    getProfileReports({ profileID: profile?.ID });
+  }, [getProfileReports, profile]);
+  console.log("Reports:", profileReports);
+
+  const [reports, setReports] = React.useState(profileReports);
+  const [filteredReports, setFilteredReports] = React.useState(profileReports);
+
+  React.useEffect(() => {
+    if (profileReports.length === 0) return;
+    setReports(profileReports);
+  }, [profileReports]);
 
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
@@ -68,14 +93,26 @@ const ReportSelectionPanel = ({ reports, handleSelection }: ReportSelectionPanel
   const categories: string[] = getCategories(reports);
 
   React.useEffect(() => {
+    if (selectedReport === undefined) return;
     if (selectedReport) {
       handleSelection(selectedReport);
     }
   }, [selectedReport, handleSelection]);
-  React.useEffect(() => {}, [filteredReports]);
+
+  React.useEffect(() => {
+    if (reports.length === 0) return;
+    setFilteredReports(reports);
+  }, [reports]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", width: "100%", marginTop: "1rem" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        marginTop: "1rem",
+      }}
+    >
       <Box sx={{ display: "flex" }}>
         <ReportCategoryTabs
           categories={categories}
@@ -122,6 +159,7 @@ const ReportSelectionPanel = ({ reports, handleSelection }: ReportSelectionPanel
 };
 
 const getCategories = (reports: ProfileReportsProps[]) => {
+  if (reports === undefined) return [];
   const categories = [
     ...new Set(
       reports.map((report: ProfileReportsProps) => {
@@ -139,6 +177,8 @@ const getCategoryReports = (
   categories: string[],
   tabIndex: number
 ) => {
+  if (reports === undefined) return [];
+
   const category =
     categories[tabIndex] === "Standard" ? null : categories[tabIndex];
 
@@ -172,9 +212,9 @@ interface TabPanelProps {
 
 interface ReportSelectionPanelProps {
   /**
-   * Array of report objects returned from DX API v2
+   * Profile object returned from DX API v2.0
    */
-  reports: ProfileReportsProps[];
+  profile: ProfileProps;
   handleSelection: (selectedReport: ProfileReportsProps) => void;
 }
 

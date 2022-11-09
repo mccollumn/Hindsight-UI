@@ -8,6 +8,7 @@ import {
   DateRange,
 } from "@mui/x-date-pickers-pro/DateRangePicker";
 import Box from "@mui/material/Box";
+import { DateContext } from "../../providers/DateProvider";
 
 const DatePicker = ({
   handleDateChange,
@@ -16,10 +17,15 @@ const DatePicker = ({
   ...props
 }: DatePickerProps) => {
   const [value, setValue] = React.useState<DateRange<any>>([null, null]);
+  const { setStartDate, setEndDate } = React.useContext(DateContext);
 
   const handleAccept = (newDateRange: DateRange<any>) => {
     setValue(newDateRange);
-    handleDateChange(newDateRange);
+    setStartDate(newDateRange[0]);
+    setEndDate(newDateRange[1]);
+    if (handleDateChange) {
+      handleDateChange(newDateRange);
+    }
   };
 
   return (
@@ -51,17 +57,17 @@ const DatePicker = ({
 };
 
 interface DatePickerProps {
-  handleDateChange: (dateRange: DateRange<any>[]) => void;
+  handleDateChange?: (dateRange: DateRange<any>[]) => void;
   /**
    * Maximum date that can be picked.
    * If not provided, today's date is used.
    */
-  maxDate: any;
+  maxDate?: any;
   /**
    * Minimum date that can be picked.
    * If not provided, no minimum date will be used.
    */
-  minDate: any;
+  minDate?: any;
 }
 
 export default DatePicker;
