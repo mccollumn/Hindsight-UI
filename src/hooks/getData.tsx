@@ -46,7 +46,7 @@ const useGetData = () => {
         ? `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
         : `${WT_DX_2_0_ENDPOINT}/profiles/`;
       const res = await getAxios(url, params);
-      return res.data;
+      return res;
     },
     []
   );
