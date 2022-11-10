@@ -1,7 +1,8 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ReportModal from "./ReportModal";
-import { pageData } from "../../mock-data/agg";
+import { profiles } from "../../mock-data/profiles";
+import { reports } from "../../mock-data/reports";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -15,4 +16,4 @@ const Template: ComponentStory<typeof ReportModal> = (args) => (
 );
 
 export const Primary = Template.bind({});
-Primary.args = { isOpen: true, data: pageData };
+Primary.args = { isOpen: true, profile: profiles[0], report: reports[0] };

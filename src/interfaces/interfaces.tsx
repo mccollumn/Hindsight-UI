@@ -92,10 +92,10 @@ export interface GridDimensionProps {
 }
 
 export interface ProfileProps {
-  ID: string;
-  name: string;
-  AccountID: number;
-  TimeZoneID: number;
+  ID?: string;
+  name?: string;
+  AccountID?: number;
+  TimeZoneID?: number;
 }
 
 export interface ProfileReportsProps {

@@ -1,7 +1,13 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import KeyMetricsDashboard from "./KeyMetricsDashboard";
-import { keyMetrics } from "../../mock-data/keyMetrics";
+
+const profile = {
+  ID: "QM3oqOS1Ak8",
+  name: "Webtrends.com  (test)",
+  AccountID: 1,
+  TimeZoneID: 0,
+};
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -15,4 +21,4 @@ const Template: ComponentStory<typeof KeyMetricsDashboard> = (args) => (
 );
 
 export const Primary = Template.bind({});
-Primary.args = { keyMetricsData: keyMetrics };
+Primary.args = { profile: profile };

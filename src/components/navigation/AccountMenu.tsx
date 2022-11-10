@@ -70,7 +70,7 @@ const AccountMenu = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem>
+        <MenuItem component={Link} href="/">
           <ListItemIcon>
             <HomeIcon fontSize="small" />
           </ListItemIcon>

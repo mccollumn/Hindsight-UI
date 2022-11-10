@@ -20,6 +20,7 @@ import {
 } from "../../interfaces/interfaces";
 
 export const getSearchString = (dimensions: GridDimensionProps[]) => {
+  if (dimensions.length === 0) return "";
   return dimensions
     .reduce((result: string[], dimension) => {
       if (dimension.rowIndex <= 5) {
@@ -49,7 +50,7 @@ const getPeriodStr = (wtDate: string) => {
   return "";
 };
 
-const generateWtDate = (
+export const generateWtDate = (
   year: Date | number,
   month: Date | number = 0,
   day: Date | number = 0,
@@ -66,12 +67,12 @@ const generateWtDate = (
 };
 
 export const getProfileID = (reportData: ReportProps) => {
-  if (Object.keys(reportData).length === 0) return "";
-  return reportData.definition.profileID;
+  if (!reportData || Object.keys(reportData).length === 0) return "";
+  return reportData?.definition?.profileID;
 };
 
 export const getReportID = (reportData: ReportProps) => {
-  if (Object.keys(reportData).length === 0) return "";
+  if (!reportData || Object.keys(reportData).length === 0) return "";
   return reportData.definition.ID;
 };
 
@@ -177,7 +178,7 @@ const getHourlyPeriods = (interval: Interval) => {
 };
 
 export const getTrendPeriods = (reportData: ReportProps) => {
-  if (Object.keys(reportData).length === 0) return [];
+  if (!reportData || Object.keys(reportData).length === 0) return [];
   const dateRange = getDateRange(reportData);
   if (dateRange === null) return [];
   const startPeriod = getPeriodStr(dateRange.startperiod);

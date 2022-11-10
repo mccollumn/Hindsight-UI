@@ -1,12 +1,12 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ReportSelectionPanel from "./ReportSelectionPanel";
-import { reports } from "../../mock-data/reports";
+import { profiles } from "../../mock-data/profiles";
 import { ProfileReportsProps } from "../../interfaces/interfaces";
 
 const handleSelection = (selectedReport: ProfileReportsProps) => {
   console.log("Selected Report:", selectedReport);
-}
+};
 
 export default {
   /* 👇 The title prop is optional.
@@ -24,4 +24,4 @@ const Template: ComponentStory<typeof ReportSelectionPanel> = (args) => (
 
 // 👇 Each story then reuses that template
 export const Primary = Template.bind({});
-Primary.args = { reports: reports, handleSelection};
+Primary.args = { profile: profiles[0], handleSelection };
