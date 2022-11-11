@@ -88,7 +88,6 @@ const ReportModal = ({
     });
   }, [getReport, profile, report, wtEndDate, wtStartDate]);
   console.log("Report:", report);
-  // const loading = true;
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
