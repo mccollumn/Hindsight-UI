@@ -108,7 +108,7 @@ const WtDataTable = ({
       // Callbacks
       getDataPath: (data: any) => data.Dimensions,
     }),
-    [dimHeader, cellClickedListener]
+    [dimHeader, totals, cellClickedListener, updateTotals, getRenderedNodes]
   );
 
   const [gridOptions, setGridOptions] = useState({
@@ -121,21 +121,20 @@ const WtDataTable = ({
       ...defaultGridOptions,
       ...config,
     });
-  }, [dimHeader]);
+  }, [config, defaultGridOptions, dimHeader]);
 
   return (
     <React.Fragment>
-      {/* <button onClick={onBtnExport} style={{ width: 100 }}>
-        Export
-      </button> */}
       <div className="ag-theme-alpine" style={{ height: 500 }}>
-        <DataTable
-          data={rowData}
-          columns={columnDefs}
-          config={gridOptions}
-          gridRefCallback={gridCallback}
-          {...props}
-        />
+        {gridOptions.autoGroupColumnDef?.headerName && (
+          <DataTable
+            data={rowData}
+            columns={columnDefs}
+            config={gridOptions}
+            gridRefCallback={gridCallback}
+            {...props}
+          />
+        )}
       </div>
     </React.Fragment>
   );
@@ -143,7 +142,7 @@ const WtDataTable = ({
 
 interface WTDataTableProps extends GridOptions {
   /**
-   * JSON output from the WT Analytics OP Dx API v2.
+   * JSON output from the WT Analytics OP DX API v2.
    * https://onpremises.webtrends.help/docs/about-the-data-extraction-api
    */
   data: ReportProps;
