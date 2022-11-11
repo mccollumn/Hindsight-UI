@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Skeleton,
 } from "@mui/material";
 import { GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -122,48 +123,64 @@ const ReportModal = ({
       {...props}
     >
       <BootstrapDialogTitle id="report-title" onClose={handleClose}>
-        {data?.definition?.name || ""}
+        {loading ? (
+          <Skeleton height={32} width="30%" />
+        ) : (
+          data?.definition?.name || ""
+        )}
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>
           {/* Graph */}
           <Grid item xs={12} md={12} lg={12}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                height: 500,
-              }}
-            >
-              <WtLineGraph
-                data={data}
-                dimensions={gridDimensions}
-                config={graphConfig}
-              />
-            </Paper>
+            {loading ? (
+              <Skeleton height={500} />
+            ) : (
+              <Paper
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  height: 500,
+                }}
+              >
+                <WtLineGraph
+                  data={data}
+                  dimensions={gridDimensions}
+                  config={graphConfig}
+                />
+              </Paper>
+            )}
           </Grid>
           {/* Table */}
           <Grid item xs={12} md={12} lg={12}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <WtDataTable
-                data={data}
-                config={tableConfig}
-                renderedNodesCallback={getGridDimensions}
-                gridRefCallback={gridCallback}
-              />
-            </Paper>
+            {loading ? (
+              <Skeleton height={500} />
+            ) : (
+              <Paper
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <WtDataTable
+                  data={data}
+                  config={tableConfig}
+                  renderedNodesCallback={getGridDimensions}
+                  gridRefCallback={gridCallback}
+                />
+              </Paper>
+            )}
           </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={exportCSV}>Export</Button>
+        {loading ? (
+          <Skeleton height={36} width="10%" />
+        ) : (
+          <Button onClick={exportCSV}>Export</Button>
+        )}
       </DialogActions>
     </BootstrapDialog>
   );
