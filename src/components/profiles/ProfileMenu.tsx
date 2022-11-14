@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Autocomplete, AutocompleteProps } from "@mui/material";
+import { Autocomplete } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { ProfileProps } from "../../interfaces/interfaces";
 
@@ -13,7 +13,7 @@ const ProfileMenu = ({
     value: ProfileProps | null
   ) => {
     if (value === null) return;
-    handleSelection(event, value);
+    handleSelection(value, event);
   };
 
   return (
@@ -47,8 +47,8 @@ interface ProfileMenuProps {
    */
   profiles: ProfileProps[];
   handleSelection: (
-    event: React.SyntheticEvent<Element, Event>,
-    value: ProfileProps
+    value: ProfileProps,
+    event: React.SyntheticEvent<Element, Event>
   ) => void;
   [x: string]: any;
 }

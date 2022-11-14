@@ -4,12 +4,13 @@ import ProfileMenu from "./ProfileMenu";
 import { profiles } from "../../mock-data/profiles";
 import { ProfileProps } from "../../interfaces/interfaces";
 
-// const profiles: any[] = [];
-
-const handleSelection = (event: React.SyntheticEvent<Element, Event>, value: ProfileProps | null) => {
-    console.log("Event:", event);
-    console.log("Value:", value);
-}
+const handleSelection = (
+  value: ProfileProps | null,
+  event: React.SyntheticEvent<Element, Event>
+) => {
+  console.log("Event:", event);
+  console.log("Value:", value);
+};
 
 export default {
   /* 👇 The title prop is optional.
