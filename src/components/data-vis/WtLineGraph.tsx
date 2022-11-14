@@ -1,37 +1,34 @@
 import React, { useEffect, useState, useMemo } from "react";
 import LineGraph from "./LineGraph";
 import {
-  ReportProps,
+  ReportDefinitionProps,
   GridDimensionProps,
-  DimensionProps,
   WtLineProps,
 } from "../../interfaces/interfaces";
 import {
   getSearchString,
-  getDateRange,
-  getProfileID,
-  getReportID,
   getLineGraphData,
   getTrendPeriods,
 } from "./lineGraph.util";
 import useGetData from "../../hooks/getData";
 import { Serie } from "@nivo/line";
+import { DateContext } from "../../providers/DateProvider";
 
 const WtLineGraph = ({
-  data,
+  reportDefinition,
   dimensions = [],
   config = {},
   ...props
 }: WtLineGraphProps) => {
+  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = useState<any[]>([]);
-  const [dateRange, setDateRange] = useState<DimensionProps["Range"]>(
-    getDateRange(data)
-  );
   const [searchString, setSearchString] = useState("");
-  const [profileID, setProfileID] = useState(getProfileID(data));
-  const [reportID, setReportID] = useState(getReportID(data));
+  const [profileID, setProfileID] = useState(reportDefinition?.profileID);
+  const [reportID, setReportID] = useState(reportDefinition?.ID);
   const [measure, setMeasure] = useState("measure1");
-  const [periods, setPeriods] = useState(getTrendPeriods(data));
+  const [periods, setPeriods] = useState(
+    getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
+  );
   const [lineGraphData, setLineGraphData] = useState<Serie[]>([]);
 
   const [graphOptions, setGraphOptions] = useState({
@@ -47,16 +44,16 @@ const WtLineGraph = ({
   }, [dimensions]);
 
   useEffect(() => {
-    if (data === null || data === undefined) return;
-    // Get date range
-    setDateRange(getDateRange(data));
+    if (reportDefinition === null || reportDefinition === undefined) return;
     // Get profile ID
-    setProfileID(getProfileID(data));
+    setProfileID(reportDefinition?.profileID);
     // Get report ID
-    setReportID(getReportID(data));
+    setReportID(reportDefinition?.ID);
     // Get periods for trend
-    setPeriods(getTrendPeriods(data));
-  }, [data]);
+    setPeriods(
+      getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
+    );
+  }, [reportDefinition]);
 
   const { response, loading, error, status, getWtData } = useGetData();
 
@@ -104,13 +101,12 @@ const WtLineGraph = ({
 
   useEffect(() => {
     // If the report has no data then don't make requests for trend periods.
-    if (data === undefined || Object.values(data.data)[0].SubRows === undefined)
-      return;
+    // if (data === undefined || Object.values(data.data)[0].SubRows === undefined)
+    //   return;
     if (profileID && reportID && periods) {
       getTrendData();
     }
-    // }, [profileID, reportID, periods, getTrendData, data]);
-  }, [profileID, reportID, periods, data]);
+  }, [profileID, reportID, periods]);
 
   return (
     <React.Fragment>
@@ -181,10 +177,10 @@ const defaultGraphOptions = {
 
 interface WtLineGraphProps {
   /**
-   * JSON output from the WT Analytics OP Dx API v2.
-   * https://onpremises.webtrends.help/docs/about-the-data-extraction-api
+   * Report definition JSON from the WT Analytics OP Dx API v2
+   * https://onpremises.webtrends.help/docs/get-report-definition
    */
-  data: ReportProps;
+  reportDefinition: ReportDefinitionProps;
   /**
    * Array of dimensions
    */

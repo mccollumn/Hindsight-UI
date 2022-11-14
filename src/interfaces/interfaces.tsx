@@ -26,11 +26,11 @@ export interface ReportPropertyProps {
   internalID: string;
   IsRealTimeCompatible: boolean;
   ProfileCategory: string | null;
-  totals: string;
-  ContainsRealtimeData: boolean;
-  LastUpdate: string;
-  datasource: string;
-  enginesearchtime: string;
+  totals?: string;
+  ContainsRealtimeData?: boolean;
+  LastUpdate?: string;
+  datasource?: string;
+  enginesearchtime?: string;
 }
 
 export interface ReportDefinitionProps {

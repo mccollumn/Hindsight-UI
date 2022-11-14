@@ -1,10 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import WtLineGraph from "./WtLineGraph";
-import {
-  pageData,
-  referringSiteData,
-  browserVersionsData,
-} from "../../mock-data/agg";
+import { reportDefinition } from "../../mock-data/reportDefinition";
 
 const config = {
   xScale: {
@@ -77,4 +73,7 @@ const Template: ComponentStory<typeof WtLineGraph> = (args) => (
 
 export const Primary = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-Primary.args = { data: pageData, dimensions: [] };
+Primary.args = {
+  reportDefinition: reportDefinition,
+  dimensions: [],
+};

@@ -51,6 +51,15 @@ const useGetData = () => {
     []
   );
 
+  const getReportDefinition = React.useCallback(
+    async ({ params = {}, profileID = "", reportID = "" }: getWtDataProps) => {
+      const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
+      const res = await getAxios(url, params);
+      return res;
+    },
+    []
+  );
+
   const getKeyMetrics = React.useCallback(
     async ({ params = {}, profileID = "" }: getWtDataProps) => {
       const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
@@ -64,7 +73,15 @@ const useGetData = () => {
     []
   );
 
-  return { response, loading, error, status, getWtData, getKeyMetrics };
+  return {
+    response,
+    loading,
+    error,
+    status,
+    getWtData,
+    getReportDefinition,
+    getKeyMetrics,
+  };
 };
 
 interface getWtDataProps {
