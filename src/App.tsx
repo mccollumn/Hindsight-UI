@@ -3,11 +3,10 @@ import "./App.css";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import logo from "./logo.svg";
 import KeyMetrics from "./pages/KeyMetrics";
+import Profiles from "./pages/Profiles";
 import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
-import { DateRange } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { ProfileProps } from "./interfaces/interfaces";
 import useGetData from "./hooks/getData";
 
@@ -19,9 +18,9 @@ function App() {
 
   const {
     response: profiles,
-    loading,
-    error,
-    status,
+    // loading,
+    // error,
+    // status,
     getWtData,
   } = useGetData();
 
@@ -34,19 +33,13 @@ function App() {
     {}
   );
   const onProfileSelect = (
-    event: React.SyntheticEvent<Element, Event>,
-    value: ProfileProps
+    value: ProfileProps,
+    event?: React.SyntheticEvent<Element, Event>
   ) => {
     console.log("Selected profile:", value);
     setSelectedProfile(value);
     navigate("/profile");
   };
-
-  // const [selectedDate, setSelectedDate] = React.useState<DateRange<any>[]>([]);
-  // const onDateSelect = (date: DateRange<any>[]) => {
-  //   setSelectedDate(date);
-  //   console.log("Period:", date);
-  // };
 
   return (
     <Layout
@@ -89,12 +82,18 @@ function App() {
       navigationClick={clickHandler}
     >
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route
+          path="/"
+          element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+        />
         <Route
           path="/profile"
           element={<KeyMetrics profile={selectedProfile} />}
         />
-        <Route path="/profiles" element={<Profiles />} />
+        <Route
+          path="/profiles"
+          element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+        />
         <Route path="/reports" element={<Reports />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
@@ -104,16 +103,9 @@ function App() {
   );
 }
 
-const Homepage = () => <div>Home</div>;
-const Profiles = () => <div>Profiles</div>;
 const Reports = () => <div>Reports</div>;
 const Notifications = () => <div>Notifications</div>;
 const Settings = () => <div>Settings</div>;
 const User = () => <div>User</div>;
-const Logo = () => (
-  <div>
-    <img src={logo} alt="Logo" />
-  </div>
-);
 
 export default App;
