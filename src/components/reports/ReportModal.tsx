@@ -71,11 +71,32 @@ const ReportModal = ({
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
 
+  console.log("Report:", report);
+
+  // Get report info
+  const {
+    response: reportDefinition,
+    loading: loadingDefinition,
+    // error,
+    // status,
+    getReportDefinition,
+  } = useGetData();
+
+  React.useEffect(() => {
+    if (!report) return;
+    getReportDefinition({
+      profileID: profile?.ID,
+      reportID: report?.ID,
+    });
+  }, [getReportDefinition, profile, report]);
+  console.log("Report info:", reportDefinition);
+
+  // Get report data
   const {
     response: data,
     loading,
-    error,
-    status,
+    // error,
+    // status,
     getWtData: getReport,
   } = useGetData();
 
@@ -87,7 +108,6 @@ const ReportModal = ({
       params: { start_period: wtStartDate, end_period: wtEndDate },
     });
   }, [getReport, profile, report, wtEndDate, wtStartDate]);
-  console.log("Report:", report);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
@@ -133,7 +153,7 @@ const ReportModal = ({
         <Grid container spacing={3}>
           {/* Graph */}
           <Grid item xs={12} md={12} lg={12}>
-            {loading ? (
+            {loadingDefinition ? (
               <Skeleton height={500} />
             ) : (
               <Paper
@@ -145,7 +165,7 @@ const ReportModal = ({
                 }}
               >
                 <WtLineGraph
-                  data={data}
+                  reportDefinition={reportDefinition}
                   dimensions={gridDimensions}
                   config={graphConfig}
                 />

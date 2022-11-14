@@ -177,12 +177,26 @@ const getHourlyPeriods = (interval: Interval) => {
   return periods;
 };
 
-export const getTrendPeriods = (reportData: ReportProps) => {
-  if (!reportData || Object.keys(reportData).length === 0) return [];
-  const dateRange = getDateRange(reportData);
-  if (dateRange === null) return [];
-  const startPeriod = getPeriodStr(dateRange.startperiod);
-  const endPeriod = getPeriodStr(dateRange.endperiod);
+export const getTrendPeriods = ({
+  reportData,
+  wtStartPeriod,
+  wtEndPeriod,
+}: any) => {
+  let startPeriod;
+  let endPeriod;
+
+  if (reportData) {
+    if (Object.keys(reportData).length === 0) return [];
+    const dateRange = getDateRange(reportData);
+    if (dateRange === null) return [];
+    startPeriod = getPeriodStr(dateRange.startperiod);
+    endPeriod = getPeriodStr(dateRange.endperiod);
+  } else if (wtStartPeriod && wtEndPeriod) {
+    startPeriod = getPeriodStr(wtStartPeriod);
+    endPeriod = getPeriodStr(wtEndPeriod);
+  }
+
+  if (!startPeriod || !endPeriod) return [];
   const interval: Interval = {
     start: new Date(startPeriod),
     end: new Date(endPeriod),
