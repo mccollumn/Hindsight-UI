@@ -14,11 +14,14 @@ const useGetData = () => {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [status, setStatus] = React.useState(200);
+  const [controllers, setControllers] = React.useState<AbortController[]>([]);
 
   const getAxios = async (url: string, params: any) => {
     try {
       const urlParams = { ...params, format: "json" };
 
+      const axiosController = new AbortController();
+      setControllers((prev: any) => [...prev, axiosController]);
       setLoading(true);
       const res = await axios.get(url, {
         params: urlParams,
@@ -26,6 +29,7 @@ const useGetData = () => {
           username: WT_DX_USERNAME || "",
           password: WT_DX_PASSWORD || "",
         },
+        signal: axiosController.signal,
       });
       setResponse(res.data);
       setStatus(res.status);
@@ -73,14 +77,23 @@ const useGetData = () => {
     []
   );
 
+  const cancelAllRequests = React.useCallback(() => {
+    controllers?.forEach((controller) => {
+      controller.abort();
+      console.log("Aborting:", controller);
+    });
+  }, [controllers]);
+
   return {
     response,
     loading,
     error,
     status,
+    controllers,
     getWtData,
     getReportDefinition,
     getKeyMetrics,
+    cancelAllRequests,
   };
 };
 

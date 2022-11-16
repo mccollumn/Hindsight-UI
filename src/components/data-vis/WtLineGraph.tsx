@@ -10,14 +10,15 @@ import {
   getLineGraphData,
   getTrendPeriods,
 } from "./lineGraph.util";
-import useGetData from "../../hooks/getData";
 import { Serie } from "@nivo/line";
 import { DateContext } from "../../providers/DateProvider";
+import useGetData from "../../hooks/getData";
 
 const WtLineGraph = ({
   reportDefinition,
   dimensions = [],
   config = {},
+  requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
@@ -30,11 +31,15 @@ const WtLineGraph = ({
     getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
   );
   const [lineGraphData, setLineGraphData] = useState<Serie[]>([]);
-
   const [graphOptions, setGraphOptions] = useState({
     ...defaultGraphOptions,
     ...config,
   });
+  const { cancelAllRequests, getWtData } = useGetData();
+
+  if (requestControllersCallback) {
+    requestControllersCallback(cancelAllRequests);
+  }
 
   // Generate search string from Dimensions
   useEffect(() => {
@@ -54,8 +59,6 @@ const WtLineGraph = ({
       getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
     );
   }, [reportDefinition]);
-
-  const { response, loading, error, status, getWtData } = useGetData();
 
   const sortByDate = async (data: any[]) => {
     return data.sort((a: any, b: any) => {
@@ -190,6 +193,10 @@ interface WtLineGraphProps {
    * https://nivo.rocks/line/
    */
   config?: WtLineProps;
+  /**
+   * cancelAllRequests function from useGetData
+   */
+  requestControllersCallback?: (cancelAllRequests: any) => void;
 }
 
 export default WtLineGraph;

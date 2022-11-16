@@ -11,11 +11,17 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
   const [selectedReport, setSelectedReport] =
     React.useState<ProfileReportsProps | null>(null);
 
+  const cancelApiRequests: any = React.useRef();
+  const getCancelRequests = (cancelAllRequests: any) => {
+    cancelApiRequests.current = cancelAllRequests;
+  };
+
   const handleReportModalOpen = () => {
     setIsReportModalOpen(true);
   };
 
   const handleReportModalClose = () => {
+    cancelApiRequests.current();
     setSelectedReport(null);
     setIsReportModalOpen(false);
   };
@@ -41,6 +47,7 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
           onClose={handleReportModalClose}
           profile={profile}
           report={selectedReport}
+          cancelRequestsCallback={getCancelRequests}
         />
       )}
     </Box>
