@@ -16,13 +16,13 @@ import { GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
-import useGetData from "../../hooks/getData";
 import {
   WtLineProps,
   ProfileProps,
   ProfileReportsProps,
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
+import useGetData from "../../hooks/getData";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -64,6 +64,7 @@ const ReportModal = ({
   report,
   tableConfig = {},
   graphConfig = {},
+  cancelRequestsCallback: requestControllersCallback,
   ...props
 }: ReportModalProps) => {
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
@@ -71,16 +72,14 @@ const ReportModal = ({
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
 
-  console.log("Report:", report);
-
-  // Get report info
+  const { response: data, loading, getWtData: getReport } = useGetData();
   const {
     response: reportDefinition,
     loading: loadingDefinition,
-    // error,
-    // status,
     getReportDefinition,
   } = useGetData();
+
+  console.log("Report:", report);
 
   React.useEffect(() => {
     if (!report) return;
@@ -90,15 +89,6 @@ const ReportModal = ({
     });
   }, [getReportDefinition, profile, report]);
   console.log("Report info:", reportDefinition);
-
-  // Get report data
-  const {
-    response: data,
-    loading,
-    // error,
-    // status,
-    getWtData: getReport,
-  } = useGetData();
 
   React.useEffect(() => {
     if (!report) return;
@@ -168,6 +158,7 @@ const ReportModal = ({
                   reportDefinition={reportDefinition}
                   dimensions={gridDimensions}
                   config={graphConfig}
+                  requestControllersCallback={requestControllersCallback}
                 />
               </Paper>
             )}
@@ -236,6 +227,10 @@ interface ReportModalProps {
    * https://nivo.rocks/line/
    */
   graphConfig?: WtLineProps;
+  /**
+   * cancelAllRequests function from useGetData
+   */
+  cancelRequestsCallback?: (cancelAllRequests: any) => void;
 }
 
 export default ReportModal;
