@@ -77,6 +77,34 @@ const useGetData = () => {
     []
   );
 
+  const getDataQuery = async (parameters: Params) => {
+    const [_key, { profileID = "", reportID = "", params = {} }] =
+      parameters.queryKey;
+    const url = profileID
+      ? `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
+      : `${WT_DX_2_0_ENDPOINT}/profiles/`;
+    const res = await getAxios(url, params);
+    return res;
+  };
+
+  const getReportDefinitionQuery = async (parameters: Params) => {
+    const [_key, { profileID = "", reportID = "", params = {} }] =
+      parameters.queryKey;
+    const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
+    const res = await getAxios(url, params);
+    return res;
+  };
+
+  const getKeyMetricsQuery = async (parameters: Params) => {
+    const [_key, { params = {}, profileID = "" }] = parameters.queryKey;
+    const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
+    // const res = await getAxios(url, params);
+    // return res;
+
+    // Sending mock data until API is fixed
+    return keyMetrics;
+  };
+
   const cancelAllRequests = React.useCallback(() => {
     controllers?.forEach((controller) => {
       controller.abort();
@@ -93,6 +121,9 @@ const useGetData = () => {
     getWtData,
     getReportDefinition,
     getKeyMetrics,
+    getDataQuery,
+    getReportDefinitionQuery,
+    getKeyMetricsQuery,
     cancelAllRequests,
   };
 };
@@ -102,5 +133,10 @@ interface getWtDataProps {
   profileID?: string;
   reportID?: string;
 }
+
+type Params = {
+  queryKey: [string, { profileID?: string; reportID?: string; params?: any }];
+  signal?: any;
+};
 
 export default useGetData;

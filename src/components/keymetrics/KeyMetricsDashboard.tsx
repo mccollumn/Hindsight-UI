@@ -4,6 +4,7 @@ import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ResponsiveLine } from "@nivo/line";
 import { formatISO } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
 import Title from "../Title";
 import useGetData from "../../hooks/getData";
 import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
@@ -60,21 +61,32 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 };
 
 const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
-  const { response, loading, error, status, getKeyMetrics } = useGetData();
+  const { getKeyMetricsQuery } = useGetData();
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
 
-  React.useEffect(() => {
-    getKeyMetrics({
-      profileID: profile?.ID,
-      params: { start_period: wtStartDate, end_period: wtEndDate },
-    });
-  }, [getKeyMetrics, profile?.ID, wtEndDate, wtStartDate]);
+  const {
+    isLoading,
+    isError,
+    data: response,
+    error,
+  } = useQuery(
+    [
+      "keyMetrics",
+      {
+        profileID: profile?.ID,
+        params: { start_period: wtStartDate, end_period: wtEndDate },
+      },
+    ],
+    getKeyMetricsQuery
+  );
+
   console.log("Key metrics:", response);
   console.log("WT start date:", wtStartDate);
   console.log("WT end date:", wtEndDate);
 
   const [measureNames, setMeasureNames] = React.useState<string[]>([]);
   React.useEffect(() => {
+    if (!response) return;
     setMeasureNames(getMeasures(response));
   }, [response]);
 
@@ -89,7 +101,9 @@ const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
         {measureNames.map((name, index) => (
           <Grid xs={12} sm={6} md={4} xl={3} key={index}>
             <Item>
-              <KeyMetricTile metricName={name} keyMetricsData={response} />
+              {response && (
+                <KeyMetricTile metricName={name} keyMetricsData={response} />
+              )}
             </Item>
           </Grid>
         ))}

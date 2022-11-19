@@ -1,6 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
+import { useQuery } from "@tanstack/react-query";
 import ReportCategoryTabs from "./ReportCategoryTabs";
 import ReportItem from "./ReportItem";
 import SearchInput from "../form/SearchInput";
@@ -51,23 +52,20 @@ const ReportSelectionPanel = ({
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedReport, setSelectedReport] =
     React.useState<ProfileReportsProps | undefined>();
-
+  const { getDataQuery: getProfileReports } = useGetData();
   const {
-    response: profileReports = [],
-    loading,
+    isLoading,
+    isError,
+    data: profileReports = [],
     error,
-    status,
-    getWtData: getProfileReports,
-  } = useGetData();
-
-  React.useEffect(() => {
-    if (Object.keys(profile).length === 0) return;
-    getProfileReports({ profileID: profile?.ID });
-  }, [getProfileReports, profile]);
-  console.log("Reports:", profileReports);
-
+  } = useQuery(
+    ["reportDefinition", { profileID: profile?.ID }],
+    getProfileReports
+  );
   const [reports, setReports] = React.useState(profileReports);
   const [filteredReports, setFilteredReports] = React.useState(profileReports);
+
+  console.log("Reports:", profileReports);
 
   React.useEffect(() => {
     if (profileReports.length === 0) return;
