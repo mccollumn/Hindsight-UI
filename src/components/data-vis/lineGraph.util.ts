@@ -221,4 +221,5 @@ export const getTrendPeriods = ({
   if (differenceDays === 0) {
     return getDailyPeriods(interval);
   }
+  return [];
 };

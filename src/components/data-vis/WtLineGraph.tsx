@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import LineGraph from "./LineGraph";
 import {
   ReportDefinitionProps,
@@ -13,6 +13,7 @@ import {
 import { Serie } from "@nivo/line";
 import { DateContext } from "../../providers/DateProvider";
 import useGetData from "../../hooks/getData";
+import { useQueries } from "@tanstack/react-query";
 
 const WtLineGraph = ({
   reportDefinition,
@@ -58,58 +59,41 @@ const WtLineGraph = ({
     setPeriods(
       getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
     );
-  }, [reportDefinition]);
+  }, [reportDefinition, wtEndDate, wtStartDate]);
 
-  const sortByDate = async (data: any[]) => {
-    return data.sort((a: any, b: any) => {
-      const aDate = new Date(a.x);
-      const bDate = new Date(b.x);
-      if (aDate > bDate) {
-        return 1;
-      }
-      if (aDate < bDate) {
-        return -1;
-      }
-      return 0;
-    });
-  };
-
-  const mergeLineData = React.useCallback((data: Serie[], newData: Serie[]) => {
-    if (data.length === 0) {
-      return newData;
-    }
-    return data.map((item: any) => {
-      newData.forEach(async (point: any) => {
-        if (point.id === item.id) {
-          item.data.push(point.data[0]);
-        }
-        await sortByDate(item.data);
-      });
-      return item;
-    });
-  }, []);
+  const trendPeriodQueries = useQueries({
+    queries: periods.map((period) => {
+      const params = { ...period, range: 5 /*search: searchString*/ };
+      return {
+        queryKey: [
+          "report",
+          { profileID: profileID, reportID: reportID, params: params },
+        ],
+        queryFn: () =>
+          getWtData({
+            profileID: profileID,
+            reportID: reportID,
+            params: params,
+          }),
+      };
+    }),
+  });
 
   const getTrendData = React.useCallback(async () => {
-    if (periods === undefined) return;
     let graphData = lineGraphData;
-    periods?.forEach(async (period) => {
-      const params = { ...period, range: 5 /*search: searchString*/ };
-      const res = await getWtData({ params, profileID, reportID });
-      const newData = getLineGraphData(res);
+    trendPeriodQueries.forEach(({ data }) => {
+      if (!data) return;
+      const newData = getLineGraphData(data);
+      if (isMerged(graphData, newData)) return;
       const merged = mergeLineData(graphData, newData);
       graphData = merged;
       setLineGraphData(graphData);
     });
-  }, [getWtData, lineGraphData, mergeLineData, periods, profileID, reportID]);
+  }, [lineGraphData, trendPeriodQueries]);
 
   useEffect(() => {
-    // If the report has no data then don't make requests for trend periods.
-    // if (data === undefined || Object.values(data.data)[0].SubRows === undefined)
-    //   return;
-    if (profileID && reportID && periods) {
-      getTrendData();
-    }
-  }, [profileID, reportID, periods]);
+    getTrendData();
+  }, [getTrendData]);
 
   return (
     <React.Fragment>
@@ -118,6 +102,45 @@ const WtLineGraph = ({
       </div>
     </React.Fragment>
   );
+};
+
+const isMerged = (graphData: any, newData: any) => {
+  if (graphData.length === 0) {
+    return false;
+  }
+  if (newData.length === 0) {
+    return true;
+  }
+  return graphData[0].data.some((p: any) => p.x === newData[0].data[0].x);
+};
+
+const sortByDate = async (data: any[]) => {
+  return data.sort((a: any, b: any) => {
+    const aDate = new Date(a.x);
+    const bDate = new Date(b.x);
+    if (aDate > bDate) {
+      return 1;
+    }
+    if (aDate < bDate) {
+      return -1;
+    }
+    return 0;
+  });
+};
+
+const mergeLineData = (data: Serie[], newData: Serie[]) => {
+  if (data.length === 0) {
+    return newData;
+  }
+  return data.map((item: any) => {
+    newData.forEach(async (point: any) => {
+      if (point.id === item.id) {
+        item.data.push(point.data[0]);
+      }
+      await sortByDate(item.data);
+    });
+    return item;
+  });
 };
 
 const defaultGraphOptions = {

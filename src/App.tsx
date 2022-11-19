@@ -9,29 +9,27 @@ import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
 import useGetData from "./hooks/getData";
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
+  const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
+    {}
+  );
   const navigate = useNavigate();
+  const { getDataQuery } = useGetData();
+  const {
+    isLoading,
+    isError,
+    data: profiles,
+    error,
+  } = useQuery(["profiles", {}], getDataQuery);
+
+  console.log("Profiles:", profiles);
+
   const clickHandler = (navAction: any) => {
     navigate(navAction.path);
   };
 
-  const {
-    response: profiles,
-    // loading,
-    // error,
-    // status,
-    getWtData,
-  } = useGetData();
-
-  React.useEffect(() => {
-    getWtData({});
-  }, [getWtData]);
-  console.log("Profiles:", profiles);
-
-  const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
-    {}
-  );
   const onProfileSelect = (
     value: ProfileProps,
     event?: React.SyntheticEvent<Element, Event>

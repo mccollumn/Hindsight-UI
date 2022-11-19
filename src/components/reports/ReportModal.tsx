@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
+import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
 import {
@@ -72,32 +73,36 @@ const ReportModal = ({
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
 
-  const { response: data, loading, getWtData: getReport } = useGetData();
+  const { getReportDefinitionQuery, getDataQuery: getReport } = useGetData();
   const {
-    response: reportDefinition,
-    loading: loadingDefinition,
-    getReportDefinition,
-  } = useGetData();
+    isLoading: loadingDefinition,
+    isError: reportDefinitionisError,
+    data: reportDefinition,
+    error: reportDefinitionError,
+  } = useQuery(
+    ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
+    getReportDefinitionQuery
+  );
+
+  const {
+    isLoading: loading,
+    isError,
+    data,
+    error,
+  } = useQuery(
+    [
+      "report",
+      {
+        profileID: profile?.ID,
+        reportID: report?.ID,
+        params: { start_period: wtStartDate, end_period: wtEndDate },
+      },
+    ],
+    getReport
+  );
 
   console.log("Report:", report);
-
-  React.useEffect(() => {
-    if (!report) return;
-    getReportDefinition({
-      profileID: profile?.ID,
-      reportID: report?.ID,
-    });
-  }, [getReportDefinition, profile, report]);
   console.log("Report info:", reportDefinition);
-
-  React.useEffect(() => {
-    if (!report) return;
-    getReport({
-      profileID: profile?.ID,
-      reportID: report?.ID,
-      params: { start_period: wtStartDate, end_period: wtEndDate },
-    });
-  }, [getReport, profile, report, wtEndDate, wtStartDate]);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
