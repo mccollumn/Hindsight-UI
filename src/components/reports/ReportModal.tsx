@@ -98,7 +98,8 @@ const ReportModal = ({
         params: { start_period: wtStartDate, end_period: wtEndDate },
       },
     ],
-    getReport
+    getReport,
+    { staleTime: 30 * 60 * 1000 }
   );
 
   console.log("Report:", report);
