@@ -38,6 +38,8 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
       {Object.keys(profile).length !== 0 && (
         <ReportSelectionPanel
           profile={profile}
+          selectedReport={selectedReport}
+          setSelectedReport={setSelectedReport}
           handleSelection={onReportSelect}
         />
       )}
