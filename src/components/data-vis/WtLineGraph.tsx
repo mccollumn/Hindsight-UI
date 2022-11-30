@@ -61,7 +61,7 @@ const WtLineGraph = ({
     );
   }, [reportDefinition, wtEndDate, wtStartDate]);
 
-  const trendPeriodQueries = useQueries({
+  useQueries({
     queries: periods.map((period) => {
       const params = { ...period, range: 5 /*search: searchString*/ };
       return {
@@ -75,25 +75,23 @@ const WtLineGraph = ({
             reportID: reportID,
             params: params,
           }),
+        onSuccess: (data: any) => {
+          addTrendData(data);
+        },
+        staleTime: 30 * 60 * 1000,
       };
     }),
   });
 
-  const getTrendData = React.useCallback(async () => {
+  const addTrendData = (data: any) => {
+    if (!data) return;
     let graphData = lineGraphData;
-    trendPeriodQueries.forEach(({ data }) => {
-      if (!data) return;
-      const newData = getLineGraphData(data);
-      if (isMerged(graphData, newData)) return;
-      const merged = mergeLineData(graphData, newData);
-      graphData = merged;
-      setLineGraphData(graphData);
-    });
-  }, [lineGraphData, trendPeriodQueries]);
-
-  useEffect(() => {
-    getTrendData();
-  }, [getTrendData]);
+    const newData = getLineGraphData(data);
+    if (isMerged(graphData, newData)) return;
+    const merged = mergeLineData(graphData, newData);
+    graphData = merged;
+    setLineGraphData(graphData);
+  };
 
   return (
     <React.Fragment>
