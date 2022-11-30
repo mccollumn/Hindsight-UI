@@ -16,9 +16,9 @@ const TabPanel = ({
   ...props
 }: TabPanelProps) => {
   const handleReportClick = (event: any, children: any) => {
-    const report: ProfileReportsProps | undefined = reports.find(
-      (report: ProfileReportsProps) => report.name === children
-    );
+    const report: ProfileReportsProps | null =
+      reports.find((report: ProfileReportsProps) => report.name === children) ||
+      null;
     setSelectedReport(report);
   };
 
@@ -47,11 +47,11 @@ const TabPanel = ({
 
 const ReportSelectionPanel = ({
   profile,
+  selectedReport,
+  setSelectedReport,
   handleSelection,
 }: ReportSelectionPanelProps) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
-  const [selectedReport, setSelectedReport] =
-    React.useState<ProfileReportsProps | undefined>();
   const { getDataQuery: getProfileReports } = useGetData();
   const {
     isLoading,
@@ -91,7 +91,7 @@ const ReportSelectionPanel = ({
   const categories: string[] = getCategories(reports);
 
   React.useEffect(() => {
-    if (selectedReport === undefined) return;
+    if (selectedReport === null) return;
     if (selectedReport) {
       handleSelection(selectedReport);
     }
@@ -204,7 +204,7 @@ interface TabPanelProps {
   value: number;
   reports: [];
   setSelectedReport: React.Dispatch<
-    React.SetStateAction<ProfileReportsProps | undefined>
+    React.SetStateAction<ProfileReportsProps | null>
   >;
 }
 
@@ -213,6 +213,13 @@ interface ReportSelectionPanelProps {
    * Profile object returned from DX API v2.0
    */
   profile: ProfileProps;
+  /**
+   * Report object returned from DX API v2.0
+   */
+  selectedReport: ProfileReportsProps | null;
+  setSelectedReport: React.Dispatch<
+    React.SetStateAction<ProfileReportsProps | null>
+  >;
   handleSelection: (selectedReport: ProfileReportsProps) => void;
 }
 
