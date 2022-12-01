@@ -16,8 +16,12 @@ const DatePicker = ({
   minDate = null,
   ...props
 }: DatePickerProps) => {
-  const [value, setValue] = React.useState<DateRange<any>>([null, null]);
-  const { setStartDate, setEndDate } = React.useContext(DateContext);
+  const { startDate, setStartDate, endDate, setEndDate } =
+    React.useContext(DateContext);
+  const [value, setValue] = React.useState<DateRange<any>>([
+    startDate,
+    endDate,
+  ]);
 
   const handleAccept = (newDateRange: DateRange<any>) => {
     setValue(newDateRange);
@@ -40,9 +44,10 @@ const DatePicker = ({
           date: DateRange<any>,
           keyboardInputValue?: string | undefined
         ): void {}}
-        disableFuture={true}
+        // disableFuture={true}
         minDate={minDate}
         maxDate={maxDate}
+        // defaultCalendarMonth={now}
         renderInput={(startProps, endProps) => (
           <React.Fragment>
             <TextField {...startProps} />
