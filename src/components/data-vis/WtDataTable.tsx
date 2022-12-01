@@ -76,6 +76,7 @@ const WtDataTable = ({
         sortable: true,
         resizable: true,
         filter: true,
+        cellStyle: { "white-space": "pre" },
       },
       pagination: true,
       paginationAutoPageSize: true,
