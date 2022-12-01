@@ -4,7 +4,13 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { GridOptions, ColumnApi, GridApi } from "ag-grid-community";
+import {
+  GridOptions,
+  ColumnApi,
+  GridApi,
+  GridReadyEvent,
+  FirstDataRenderedEvent,
+} from "ag-grid-community";
 
 const DataTable = ({
   data = [],
@@ -31,12 +37,14 @@ const DataTable = ({
     gridRefCallback(gridRef);
   });
 
-  const onGridReady = (params: any) => {
+  const onGridReady = (params: GridReadyEvent) => {
     setGridApi(params.api);
     setColumnApi(params.columnApi);
   };
 
-  const onFirstDataRendered = (params: any) => {};
+  const onFirstDataRendered = (params: FirstDataRenderedEvent) => {
+    params.api.sizeColumnsToFit();
+  };
 
   return (
     <AgGridReact<any>
