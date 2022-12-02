@@ -17,6 +17,8 @@ import { AgGridReact } from "ag-grid-react";
 import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
+import { GRAPH_HEIGHT } from "../../constants/lineGraph";
+import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
 import {
   WtLineProps,
   ProfileProps,
@@ -150,14 +152,14 @@ const ReportModal = ({
           {/* Graph */}
           <Grid item xs={12} md={12} lg={12}>
             {loadingDefinition ? (
-              <Skeleton height={500} />
+              <Skeleton height={GRAPH_HEIGHT} />
             ) : (
               <Paper
                 sx={{
                   p: 2,
                   display: "flex",
                   flexDirection: "column",
-                  height: 500,
+                  height: GRAPH_HEIGHT,
                 }}
               >
                 <WtLineGraph
@@ -172,7 +174,7 @@ const ReportModal = ({
           {/* Table */}
           <Grid item xs={12} md={12} lg={12}>
             {loading ? (
-              <Skeleton height={500} />
+              <Skeleton height={DEFAULT_TABLE_HEIGHT} />
             ) : (
               <Paper
                 sx={{
