@@ -17,6 +17,7 @@ import {
   ReportProps,
   GridDimensionProps,
   ReportDateRangeProps,
+  ReportDefinitionProps,
 } from "../../interfaces/interfaces";
 
 export const getSearchString = (dimensions: GridDimensionProps[]) => {
@@ -81,7 +82,23 @@ const getDimensions = (reportData: ReportProps) => {
 };
 
 const getPrimaryMeasure = (reportData: ReportProps) => {
-  return reportData.definition.measures[0];
+  const measures = reportData.definition.measures;
+  const measure =
+    measures.find((element) => element.columnID === 0) || measures[0];
+  return measure;
+};
+
+export const getPrimaryMeasureFromReportDef = (
+  reportDefinition: ReportDefinitionProps
+) => {
+  return reportDefinition.measures[0];
+};
+
+const shorten = (str: string, len = 20) => {
+  if (str.length > len) {
+    return `...${str.slice(-len - 3)}`;
+  }
+  return str;
 };
 
 export const getLineGraphData = (reportData: ReportProps) => {
@@ -96,7 +113,7 @@ export const getLineGraphData = (reportData: ReportProps) => {
 
   Object.entries(dimensions).forEach(([key, value]) => {
     lineGraphData.push({
-      id: key,
+      id: shorten(key),
       data: [{ x: period, y: Number(value.measures[measureName]) }],
     });
   });

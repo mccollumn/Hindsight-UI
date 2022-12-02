@@ -13,6 +13,7 @@ import {
   getTotals,
   generateColumnDefs,
 } from "./dataTable.util";
+import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
 import { ReportProps } from "../../interfaces/interfaces";
 
 const WtDataTable = ({
@@ -76,7 +77,7 @@ const WtDataTable = ({
         sortable: true,
         resizable: true,
         filter: true,
-        cellStyle: { "white-space": "pre" },
+        cellStyle: { whiteSpace: "pre" },
       },
       pagination: true,
       paginationAutoPageSize: true,
@@ -126,7 +127,7 @@ const WtDataTable = ({
 
   return (
     <React.Fragment>
-      <div className="ag-theme-alpine" style={{ height: 500 }}>
+      <div className="ag-theme-alpine" style={{ height: DEFAULT_TABLE_HEIGHT }}>
         {gridOptions.autoGroupColumnDef?.headerName && (
           <DataTable
             data={rowData}

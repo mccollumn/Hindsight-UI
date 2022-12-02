@@ -9,6 +9,7 @@ import {
   getSearchString,
   getLineGraphData,
   getTrendPeriods,
+  getPrimaryMeasureFromReportDef,
 } from "./lineGraph.util";
 import { Serie } from "@nivo/line";
 import { DateContext } from "../../providers/DateProvider";
@@ -22,6 +23,78 @@ const WtLineGraph = ({
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
+  const defaultGraphOptions = {
+    margin: { top: 20, right: 50, bottom: 100, left: 50 },
+    xScale: {
+      type: "time",
+      format: "%Y-%m-%d",
+      useUTC: false,
+      precision: "day",
+    },
+    xFormat: "time:%Y-%m-%d",
+    yScale: {
+      type: "linear",
+      min: 0,
+      max: "auto",
+      stacked: false,
+      reverse: false,
+    },
+    // yFormat: " >-.2f",
+    axisLeft: {
+      orient: "left",
+      tickSize: 5,
+      tickPadding: 5,
+      tickRotation: 0,
+      legend: getPrimaryMeasureFromReportDef(reportDefinition).name,
+      legendOffset: -40,
+      legendPosition: "middle",
+    },
+    axisBottom: {
+      format: "%b %d",
+      tickValues: "every 2 days",
+      orient: "bottom",
+      tickSize: 5,
+      tickPadding: 5,
+      tickRotation: 90,
+    },
+    enablePointLabel: false,
+    pointSize: 10,
+    pointBorderWidth: 1,
+    pointBorderColor: {
+      from: "color",
+      modifiers: [["darker", 0.3]],
+    },
+    useMesh: true,
+    enableSlices: false,
+    tooltip: formatPointLabels,
+    legends: [
+      {
+        anchor: "bottom",
+        direction: "row",
+        justify: false,
+        translateX: 0,
+        translateY: 70,
+        itemsSpacing: 5,
+        itemDirection: "left-to-right",
+        itemWidth: 150,
+        itemHeight: 20,
+        itemOpacity: 0.75,
+        symbolSize: 12,
+        symbolShape: "circle",
+        symbolBorderColor: "rgba(0, 0, 0, .5)",
+        effects: [
+          {
+            on: "hover",
+            style: {
+              itemBackground: "rgba(0, 0, 0, .03)",
+              itemOpacity: 1,
+            },
+          },
+        ],
+      },
+    ],
+  };
+
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = useState<any[]>([]);
   const [searchString, setSearchString] = useState("");
@@ -61,7 +134,7 @@ const WtLineGraph = ({
     );
   }, [reportDefinition, wtEndDate, wtStartDate]);
 
-  useQueries({
+  const trendDataQueries = useQueries({
     queries: periods.map((period) => {
       const params = { ...period, range: 5 /*search: searchString*/ };
       return {
@@ -75,39 +148,46 @@ const WtLineGraph = ({
             reportID: reportID,
             params: params,
           }),
-        onSuccess: (data: any) => {
-          addTrendData(data);
-        },
+        // onSuccess: (data: any) => {
+        //   addTrendData(data);
+        // },
         staleTime: 30 * 60 * 1000,
       };
     }),
   });
 
-  const addTrendData = (data: any) => {
-    if (!data) return;
-    let graphData = lineGraphData;
-    const newData = getLineGraphData(data);
-    if (isMerged(graphData, newData)) return;
-    const merged = mergeLineData(graphData, newData);
-    graphData = merged;
-    setLineGraphData(graphData);
-  };
+  const addTrendData = React.useCallback(
+    (data: any) => {
+      if (!data) return;
+      let graphData = lineGraphData;
+      const newData = getLineGraphData(data);
+      if (isMerged(graphData, newData)) return;
+      const merged = mergeLineData(graphData, newData);
+      graphData = merged;
+      setLineGraphData(graphData);
+    },
+    [lineGraphData]
+  );
+
+  React.useEffect(() => {
+    trendDataQueries.forEach(({ data }) => {
+      addTrendData(data);
+    });
+  }, [addTrendData, trendDataQueries]);
 
   return (
     <React.Fragment>
-      <div style={{ height: 400 }}>
-        <LineGraph data={lineGraphData} config={graphOptions} {...props} />
-      </div>
+      <LineGraph data={lineGraphData} config={graphOptions} {...props} />
     </React.Fragment>
   );
 };
 
 const isMerged = (graphData: any, newData: any) => {
-  if (graphData.length === 0) {
-    return false;
-  }
   if (newData.length === 0) {
     return true;
+  }
+  if (graphData.length === 0) {
+    return false;
   }
   return graphData[0].data.some((p: any) => p.x === newData[0].data[0].x);
 };
@@ -141,62 +221,8 @@ const mergeLineData = (data: Serie[], newData: Serie[]) => {
   });
 };
 
-const defaultGraphOptions = {
-  xScale: {
-    type: "time",
-    format: "%Y-%m-%d",
-    useUTC: false,
-    precision: "day",
-  },
-  xFormat: "time:%Y-%m-%d",
-  yScale: {
-    type: "linear",
-  },
-  axisLeft: {
-    // legend: "linear scale",
-    legendOffset: 12,
-  },
-  axisBottom: {
-    format: "%b %d",
-    tickValues: "every 2 days",
-    // legend: "time scale",
-    legendOffset: -12,
-  },
-  enablePointLabel: true,
-  pointSize: 10,
-  pointBorderWidth: 1,
-  pointBorderColor: {
-    from: "color",
-    modifiers: [["darker", 0.3]],
-  },
-  useMesh: true,
-  enableSlices: false,
-  legends: [
-    {
-      anchor: "bottom-right",
-      direction: "column",
-      justify: false,
-      translateX: 100,
-      translateY: 0,
-      itemsSpacing: 0,
-      itemDirection: "left-to-right",
-      itemWidth: 80,
-      itemHeight: 20,
-      itemOpacity: 0.75,
-      symbolSize: 12,
-      symbolShape: "circle",
-      symbolBorderColor: "rgba(0, 0, 0, .5)",
-      effects: [
-        {
-          on: "hover",
-          style: {
-            itemBackground: "rgba(0, 0, 0, .03)",
-            itemOpacity: 1,
-          },
-        },
-      ],
-    },
-  ],
+const formatPointLabels = (obj: any) => {
+  return obj.point.data.yFormatted;
 };
 
 interface WtLineGraphProps {

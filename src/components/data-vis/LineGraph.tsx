@@ -1,3 +1,4 @@
+import { GRAPH_HEIGHT } from "../../constants/lineGraph";
 import { ResponsiveLine, Serie } from "@nivo/line";
 
 // make sure parent container have a defined height when using
@@ -6,13 +7,8 @@ import { ResponsiveLine, Serie } from "@nivo/line";
 const LineGraph = ({ data = [], config = {}, ...props }: LineGraphProps) => {
   console.log("LineGraph data:", data);
   return (
-    <div style={{ height: 400 }}>
-      <ResponsiveLine
-        {...config}
-        data={data}
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-        {...props}
-      />
+    <div style={{ height: GRAPH_HEIGHT }}>
+      <ResponsiveLine {...config} data={data} {...props} />
     </div>
   );
 };
