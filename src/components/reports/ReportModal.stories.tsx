@@ -1,8 +1,8 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ReportModal from "./ReportModal";
-import { profiles } from "../../mock-data/profiles";
-import { reports } from "../../mock-data/reports";
+import { profiles } from "../../mocks/data/profiles";
+import { reports } from "../../mocks/data/reports";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

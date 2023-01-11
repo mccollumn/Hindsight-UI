@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 
 // Test data
-import { keyMetrics } from "../mock-data/keyMetrics";
+import { keyMetrics } from "../mocks/data/keyMetrics";
 
 const WT_DX_SERVER = process.env.REACT_APP_DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${WT_DX_SERVER}/v2_0/ReportService`;

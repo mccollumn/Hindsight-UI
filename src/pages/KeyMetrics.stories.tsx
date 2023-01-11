@@ -1,9 +1,9 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import KeyMetrics from "./KeyMetrics";
 import { ProfileReportsProps } from "../interfaces/interfaces";
-import { keyMetrics } from "../mock-data/keyMetrics.js";
-import { reports } from "../mock-data/reports";
-import { profiles } from "../mock-data/profiles";
+import { keyMetrics } from "../mocks/data/keyMetrics.js";
+import { reports } from "../mocks/data/reports";
+import { profiles } from "../mocks/data/profiles";
 
 const handleSelection = (selectedReport: ProfileReportsProps) => {
   console.log("Selected Report:", selectedReport);

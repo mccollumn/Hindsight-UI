@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import ProfileMenu from "./ProfileMenu";
-import { profiles } from "../../mock-data/profiles";
+import { profiles } from "../../mocks/data/profiles";
 import { ProfileProps } from "../../interfaces/interfaces";
 
 const handleSelection = (
