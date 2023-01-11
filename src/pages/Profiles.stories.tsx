@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import Profiles from "./Profiles";
 import { ProfileProps } from "../interfaces/interfaces";
-import { profiles } from "../mock-data/profiles";
+import { profiles } from "../mocks/data/profiles";
 
 const handleSelection = (selectedProfile: ProfileProps) => {
   console.log("Selected Profile:", selectedProfile);

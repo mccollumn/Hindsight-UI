@@ -1,6 +1,18 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import WtLineGraph from "./WtLineGraph";
-import { reportDefinition } from "../../mock-data/reportDefinition";
+import { reportDefinition } from "../../mocks/data/reportDefinition";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { handlers } from "../../mocks/handlers";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: Infinity,
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const config = {
   xScale: {
@@ -68,7 +80,9 @@ export default {
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof WtLineGraph> = (args) => (
-  <WtLineGraph {...args} />
+  <QueryClientProvider client={queryClient}>
+    <WtLineGraph {...args} />
+  </QueryClientProvider>
 );
 
 export const Primary = Template.bind({});
@@ -76,4 +90,10 @@ export const Primary = Template.bind({});
 Primary.args = {
   reportDefinition: reportDefinition,
   dimensions: [],
+};
+
+Primary.parameters = {
+  msw: {
+    handlers: handlers,
+  },
 };
