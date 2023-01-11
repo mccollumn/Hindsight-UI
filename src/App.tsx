@@ -10,6 +10,7 @@ import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
 import useGetData from "./hooks/getData";
 import { useQuery } from "@tanstack/react-query";
+import { lastDayOfMonth } from "date-fns/fp";
 
 function App() {
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
@@ -50,7 +51,7 @@ function App() {
           ariaLabel: "DatePicker",
           authFilter: "authorized",
           position: "top",
-          Component: <DatePicker /*handleDateChange={onDateSelect}*/ />,
+          Component: <DatePicker maxDate={lastDayOfMonth(new Date())} />,
           snapPosition: "right",
         },
         {
