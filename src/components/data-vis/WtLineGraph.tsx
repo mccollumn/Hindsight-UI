@@ -15,6 +15,7 @@ import { Serie } from "@nivo/line";
 import { DateContext } from "../../providers/DateProvider";
 import useGetData from "../../hooks/getData";
 import { useQueries } from "@tanstack/react-query";
+import { isEmpty } from "lodash/fp";
 
 const WtLineGraph = ({
   reportDefinition,
@@ -97,7 +98,7 @@ const WtLineGraph = ({
   };
 
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
-  const [gridDimensions, setGridDimensions] = useState<any[]>([]);
+  // const [gridDimensions, setGridDimensions] = useState<any[]>([]);
   const [searchString, setSearchString] = useState("");
   const [profileID, setProfileID] = useState(reportDefinition?.profileID);
   const [reportID, setReportID] = useState(reportDefinition?.ID);
@@ -116,12 +117,16 @@ const WtLineGraph = ({
     requestControllersCallback(cancelAllRequests);
   }
 
-  // Generate search string from Dimensions
+  // Generate initial search string from Dimensions
   useEffect(() => {
     if (dimensions.length !== 0) {
-      setSearchString(getSearchString(dimensions));
+      const primaryDimension = [dimensions[0]];
+      setSearchString(getSearchString(primaryDimension));
     }
-  }, [dimensions]);
+    if (!isEmpty(selectedCell)) {
+      setSearchString(selectedCell.selectedDimension);
+    }
+  }, [dimensions, selectedCell]);
 
   useEffect(() => {
     if (reportDefinition === null || reportDefinition === undefined) return;
@@ -137,7 +142,7 @@ const WtLineGraph = ({
 
   const trendDataQueries = useQueries({
     queries: periods.map((period) => {
-      const params = { ...period, range: 5 /*search: searchString*/ };
+      const params = { ...period, /*range: 5*/ search: searchString };
       return {
         queryKey: [
           "report",
@@ -157,24 +162,27 @@ const WtLineGraph = ({
     }),
   });
 
-  const addTrendData = React.useCallback(
-    (data: any) => {
+  React.useEffect(() => {
+    const addTrendData = (data: any) => {
       if (!data) return;
+      if (!isEmpty(selectedCell)) {
+        lineGraphData.forEach((element) => {
+          if (element.id !== selectedCell.selectedDimension) {
+            setLineGraphData([]);
+          }
+        });
+      }
       let graphData = lineGraphData;
       const newData = getLineGraphData(data);
       if (isMerged(graphData, newData)) return;
       const merged = mergeLineData(graphData, newData);
       graphData = merged;
       setLineGraphData(graphData);
-    },
-    [lineGraphData]
-  );
-
-  React.useEffect(() => {
+    };
     trendDataQueries.forEach(({ data }) => {
       addTrendData(data);
     });
-  }, [addTrendData, trendDataQueries]);
+  }, [selectedCell, trendDataQueries, lineGraphData]);
 
   console.log("Selection:", selectedCell);
 
@@ -193,6 +201,7 @@ const isMerged = (graphData: any, newData: any) => {
     return false;
   }
   return graphData[0].data.some((p: any) => p.x === newData[0].data[0].x);
+  // return isEqual(graphData, newData);
 };
 
 const sortByDate = async (data: any[]) => {

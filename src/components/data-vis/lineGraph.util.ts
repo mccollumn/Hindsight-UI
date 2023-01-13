@@ -113,7 +113,10 @@ export const getLineGraphData = (reportData: ReportProps) => {
 
   Object.entries(dimensions).forEach(([key, value]) => {
     lineGraphData.push({
-      id: shorten(key),
+      // Not shortening the values anymore since only one value will be displayed in the graph.
+      // If needed in the future, addTrendData() in WtLineGraph will have to be updated.
+      // id: shorten(key),
+      id: key,
       data: [{ x: period, y: Number(value.measures[measureName]) }],
     });
   });
