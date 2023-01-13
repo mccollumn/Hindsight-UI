@@ -19,6 +19,7 @@ import { useQueries } from "@tanstack/react-query";
 const WtLineGraph = ({
   reportDefinition,
   dimensions = [],
+  selectedCell = {},
   config = {},
   requestControllersCallback,
   ...props
@@ -175,6 +176,8 @@ const WtLineGraph = ({
     });
   }, [addTrendData, trendDataQueries]);
 
+  console.log("Selection:", selectedCell);
+
   return (
     <React.Fragment>
       <LineGraph data={lineGraphData} config={graphOptions} {...props} />
@@ -235,6 +238,7 @@ interface WtLineGraphProps {
    * Array of dimensions
    */
   dimensions?: GridDimensionProps[];
+  selectedCell?: any;
   /**
    * Nivo line graph options
    * https://nivo.rocks/line/
