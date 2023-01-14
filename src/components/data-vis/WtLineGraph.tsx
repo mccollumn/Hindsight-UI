@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import LineGraph from "./LineGraph";
 import {
   ReportDefinitionProps,
@@ -25,84 +25,87 @@ const WtLineGraph = ({
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
-  const defaultGraphOptions = {
-    margin: { top: 20, right: 50, bottom: 100, left: 50 },
-    xScale: {
-      type: "time",
-      format: "%Y-%m-%d",
-      useUTC: false,
-      precision: "day",
-    },
-    xFormat: "time:%Y-%m-%d",
-    yScale: {
-      type: "linear",
-      min: 0,
-      max: "auto",
-      stacked: false,
-      reverse: false,
-    },
-    // yFormat: " >-.2f",
-    axisLeft: {
-      orient: "left",
-      tickSize: 5,
-      tickPadding: 5,
-      tickRotation: 0,
-      legend: getPrimaryMeasureFromReportDef(reportDefinition).name,
-      legendOffset: -40,
-      legendPosition: "middle",
-    },
-    axisBottom: {
-      format: "%b %d",
-      tickValues: "every 2 days",
-      orient: "bottom",
-      tickSize: 5,
-      tickPadding: 5,
-      tickRotation: 90,
-    },
-    enablePointLabel: false,
-    pointSize: 10,
-    pointBorderWidth: 1,
-    pointBorderColor: {
-      from: "color",
-      modifiers: [["darker", 0.3]],
-    },
-    useMesh: true,
-    enableSlices: false,
-    tooltip: formatPointLabels,
-    legends: [
-      {
-        anchor: "bottom",
-        direction: "row",
-        justify: false,
-        translateX: 0,
-        translateY: 70,
-        itemsSpacing: 5,
-        itemDirection: "left-to-right",
-        itemWidth: 150,
-        itemHeight: 20,
-        itemOpacity: 0.75,
-        symbolSize: 12,
-        symbolShape: "circle",
-        symbolBorderColor: "rgba(0, 0, 0, .5)",
-        effects: [
-          {
-            on: "hover",
-            style: {
-              itemBackground: "rgba(0, 0, 0, .03)",
-              itemOpacity: 1,
-            },
-          },
-        ],
-      },
-    ],
-  };
-
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
-  // const [gridDimensions, setGridDimensions] = useState<any[]>([]);
   const [searchString, setSearchString] = useState("");
   const [profileID, setProfileID] = useState(reportDefinition?.profileID);
   const [reportID, setReportID] = useState(reportDefinition?.ID);
-  const [measure, setMeasure] = useState("measure1");
+
+  const defaultGraphOptions = useMemo(() => {
+    return {
+      margin: { top: 20, right: 50, bottom: 100, left: 50 },
+      xScale: {
+        type: "time",
+        format: "%Y-%m-%d",
+        useUTC: false,
+        precision: "day",
+      },
+      xFormat: "time:%Y-%m-%d",
+      yScale: {
+        type: "linear",
+        min: 0,
+        max: "auto",
+        stacked: false,
+        reverse: false,
+      },
+      // yFormat: " >-.2f",
+      axisLeft: {
+        orient: "left",
+        tickSize: 5,
+        tickPadding: 5,
+        tickRotation: 0,
+        legend:
+          selectedCell.selectedColumn ||
+          getPrimaryMeasureFromReportDef(reportDefinition).name,
+        legendOffset: -40,
+        legendPosition: "middle",
+      },
+      axisBottom: {
+        format: "%b %d",
+        tickValues: "every 2 days",
+        orient: "bottom",
+        tickSize: 5,
+        tickPadding: 5,
+        tickRotation: 90,
+      },
+      enablePointLabel: false,
+      pointSize: 10,
+      pointBorderWidth: 1,
+      pointBorderColor: {
+        from: "color",
+        modifiers: [["darker", 0.3]],
+      },
+      useMesh: true,
+      enableSlices: false,
+      tooltip: formatPointLabels,
+      legends: [
+        {
+          anchor: "bottom",
+          direction: "row",
+          justify: false,
+          translateX: 0,
+          translateY: 70,
+          itemsSpacing: 5,
+          itemDirection: "left-to-right",
+          itemWidth: 150,
+          itemHeight: 20,
+          itemOpacity: 0.75,
+          symbolSize: 12,
+          symbolShape: "circle",
+          symbolBorderColor: "rgba(0, 0, 0, .5)",
+          effects: [
+            {
+              on: "hover",
+              style: {
+                itemBackground: "rgba(0, 0, 0, .03)",
+                itemOpacity: 1,
+              },
+            },
+          ],
+        },
+      ],
+    };
+  }, [reportDefinition, selectedCell.selectedColumn]);
+
   const [periods, setPeriods] = useState(
     getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
   );
@@ -111,13 +114,14 @@ const WtLineGraph = ({
     ...defaultGraphOptions,
     ...config,
   });
+
   const { cancelAllRequests, getWtData } = useGetData();
 
   if (requestControllersCallback) {
     requestControllersCallback(cancelAllRequests);
   }
 
-  // Generate initial search string from Dimensions
+  // Generate search string
   useEffect(() => {
     if (dimensions.length !== 0) {
       const primaryDimension = [dimensions[0]];
@@ -173,7 +177,7 @@ const WtLineGraph = ({
         });
       }
       let graphData = lineGraphData;
-      const newData = getLineGraphData(data);
+      const newData = getLineGraphData(data, selectedCell.selectedColumn);
       if (isMerged(graphData, newData)) return;
       const merged = mergeLineData(graphData, newData);
       graphData = merged;
@@ -183,6 +187,13 @@ const WtLineGraph = ({
       addTrendData(data);
     });
   }, [selectedCell, trendDataQueries, lineGraphData]);
+
+  useEffect(() => {
+    setGraphOptions({
+      ...defaultGraphOptions,
+      ...config,
+    });
+  }, [config, defaultGraphOptions]);
 
   console.log("Selection:", selectedCell);
 
@@ -201,7 +212,6 @@ const isMerged = (graphData: any, newData: any) => {
     return false;
   }
   return graphData[0].data.some((p: any) => p.x === newData[0].data[0].x);
-  // return isEqual(graphData, newData);
 };
 
 const sortByDate = async (data: any[]) => {
@@ -247,7 +257,10 @@ interface WtLineGraphProps {
    * Array of dimensions
    */
   dimensions?: GridDimensionProps[];
-  selectedCell?: any;
+  /**
+   * Cell currently selected in the data table
+   */
+  selectedCell?: selectedCellProps | Record<string, never>;
   /**
    * Nivo line graph options
    * https://nivo.rocks/line/
@@ -257,6 +270,13 @@ interface WtLineGraphProps {
    * cancelAllRequests function from useGetData
    */
   requestControllersCallback?: (cancelAllRequests: any) => void;
+}
+
+interface selectedCellProps {
+  primaryColumn: string;
+  selectedColumn: string;
+  primaryDimension: string;
+  selectedDimension: string;
 }
 
 export default WtLineGraph;

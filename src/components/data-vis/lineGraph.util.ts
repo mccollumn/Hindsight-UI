@@ -101,13 +101,13 @@ const shorten = (str: string, len = 20) => {
   return str;
 };
 
-export const getLineGraphData = (reportData: ReportProps) => {
+export const getLineGraphData = (reportData: ReportProps, measure: string) => {
   if (reportData.data === undefined || reportData.definition === undefined)
     return [];
   const dateRange = getDateRange(reportData);
   if (dateRange === null) return [];
   const period = getPeriodStr(dateRange.startperiod);
-  const measureName = getPrimaryMeasure(reportData).name;
+  const measureName = measure ? measure : getPrimaryMeasure(reportData).name;
   const dimensions = getDimensions(reportData) || {};
   let lineGraphData: Serie[] = [];
 
