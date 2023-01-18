@@ -1,34 +1,34 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { useWtLineGraphData } from "./useWtLineGraphData";
 import LineGraph from "./LineGraph";
 import {
   ReportDefinitionProps,
   GridDimensionProps,
   WtLineProps,
+  ReportProps,
 } from "../../interfaces/interfaces";
 import {
   getSearchString,
   getLineGraphData,
-  getTrendPeriods,
   getPrimaryMeasureFromReportDef,
 } from "./lineGraph.util";
 import { Serie } from "@nivo/line";
-import { DateContext } from "../../providers/DateProvider";
-import useGetData from "../../hooks/getData";
-import { useQueries } from "@tanstack/react-query";
 import { isEmpty } from "lodash/fp";
 
 const WtLineGraph = ({
   reportDefinition,
+  reportData,
   dimensions = [],
   selectedCell = {},
   config = {},
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
-  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
   const [searchString, setSearchString] = useState("");
-  const [profileID, setProfileID] = useState(reportDefinition?.profileID);
-  const [reportID, setReportID] = useState(reportDefinition?.ID);
+  const { trendDataQueries } = useWtLineGraphData(
+    reportDefinition,
+    requestControllersCallback
+  );
 
   const defaultGraphOptions = useMemo(() => {
     return {
@@ -106,20 +106,11 @@ const WtLineGraph = ({
     };
   }, [reportDefinition, selectedCell.selectedColumn]);
 
-  const [periods, setPeriods] = useState(
-    getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
-  );
   const [lineGraphData, setLineGraphData] = useState<Serie[]>([]);
   const [graphOptions, setGraphOptions] = useState({
     ...defaultGraphOptions,
     ...config,
   });
-
-  const { cancelAllRequests, getWtData } = useGetData();
-
-  if (requestControllersCallback) {
-    requestControllersCallback(cancelAllRequests);
-  }
 
   // Generate search string
   useEffect(() => {
@@ -132,40 +123,6 @@ const WtLineGraph = ({
     }
   }, [dimensions, selectedCell]);
 
-  useEffect(() => {
-    if (reportDefinition === null || reportDefinition === undefined) return;
-    // Get profile ID
-    setProfileID(reportDefinition?.profileID);
-    // Get report ID
-    setReportID(reportDefinition?.ID);
-    // Get periods for trend
-    setPeriods(
-      getTrendPeriods({ wtStartPeriod: wtStartDate, wtEndPeriod: wtEndDate })
-    );
-  }, [reportDefinition, wtEndDate, wtStartDate]);
-
-  const trendDataQueries = useQueries({
-    queries: periods.map((period) => {
-      const params = { ...period, /*range: 5*/ search: searchString };
-      return {
-        queryKey: [
-          "report",
-          { profileID: profileID, reportID: reportID, params: params },
-        ],
-        queryFn: () =>
-          getWtData({
-            profileID: profileID,
-            reportID: reportID,
-            params: params,
-          }),
-        // onSuccess: (data: any) => {
-        //   addTrendData(data);
-        // },
-        staleTime: 30 * 60 * 1000,
-      };
-    }),
-  });
-
   React.useEffect(() => {
     const addTrendData = (data: any) => {
       if (!data) return;
@@ -176,17 +133,24 @@ const WtLineGraph = ({
           }
         });
       }
-      let graphData = lineGraphData;
-      const newData = getLineGraphData(data, selectedCell.selectedColumn);
-      if (isMerged(graphData, newData)) return;
-      const merged = mergeLineData(graphData, newData);
-      graphData = merged;
-      setLineGraphData(graphData);
+      const newData = getLineGraphData(
+        data,
+        searchString,
+        selectedCell.selectedColumn
+      );
+      if (isMerged(lineGraphData, newData)) {
+        if (isDataAlreadyIncluded(lineGraphData, newData)) {
+          return;
+        }
+        setLineGraphData([]);
+        return;
+      }
+      setLineGraphData(mergeLineData(lineGraphData, newData));
     };
     trendDataQueries.forEach(({ data }) => {
       addTrendData(data);
     });
-  }, [selectedCell, trendDataQueries, lineGraphData]);
+  }, [selectedCell, trendDataQueries, lineGraphData, searchString]);
 
   useEffect(() => {
     setGraphOptions({
@@ -247,12 +211,25 @@ const formatPointLabels = (obj: any) => {
   return obj.point.data.yFormatted;
 };
 
+const isDataAlreadyIncluded = (graphData: any, newData: any) => {
+  const x = graphData[0]?.data.find(
+    (element: any) => element.x === newData[0].data[0].x
+  );
+  return x && x.y === newData[0].data[0].y;
+};
+
 interface WtLineGraphProps {
   /**
    * Report definition JSON from the WT Analytics OP Dx API v2
    * https://onpremises.webtrends.help/docs/get-report-definition
    */
   reportDefinition: ReportDefinitionProps;
+  /**
+   * Aggregate data for the report period (i.e. what's displayed in the table).
+   * JSON output from the WT Analytics OP DX API v2.
+   * https://onpremises.webtrends.help/docs/about-the-data-extraction-api
+   */
+  reportData: ReportProps;
   /**
    * Array of dimensions
    */

@@ -76,16 +76,17 @@ const ReportModal = ({
     React.useState<React.RefObject<AgGridReact<any>>>();
   const [selectedCell, setSelectedCell] = React.useState({});
 
-  const { getReportDefinitionQuery, getDataQuery: getReport } = useGetData();
-  const {
-    isLoading: loadingDefinition,
-    isError: reportDefinitionisError,
-    data: reportDefinition,
-    error: reportDefinitionError,
-  } = useQuery(
-    ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
-    getReportDefinitionQuery
-  );
+  const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
+    useGetData();
+  // const {
+  //   isLoading: loadingDefinition,
+  //   isError: reportDefinitionisError,
+  //   data: reportDefinition,
+  //   error: reportDefinitionError,
+  // } = useQuery(
+  //   ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
+  //   getReportDefinitionQuery
+  // );
 
   const {
     isLoading: loading,
@@ -106,7 +107,7 @@ const ReportModal = ({
   );
 
   console.log("Report:", report);
-  console.log("Report info:", reportDefinition);
+  // console.log("Report info:", reportDefinition);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
@@ -180,7 +181,8 @@ const ReportModal = ({
                   }}
                 >
                   <WtLineGraph
-                    reportDefinition={reportDefinition}
+                    reportDefinition={data.definition}
+                    reportData={data}
                     dimensions={gridDimensions}
                     selectedCell={selectedCell}
                     config={graphConfig}
