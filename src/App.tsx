@@ -8,7 +8,7 @@ import Profiles from "./pages/Profiles";
 import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
-import useGetData from "./hooks/getData";
+import useGetData from "./hooks/useGetData";
 import { useQuery } from "@tanstack/react-query";
 import { lastDayOfMonth } from "date-fns/fp";
 

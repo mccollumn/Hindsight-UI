@@ -6,7 +6,7 @@ import ReportCategoryTabs from "./ReportCategoryTabs";
 import ReportItem from "./ReportItem";
 import SearchInput from "../form/SearchInput";
 import { ProfileReportsProps, ProfileProps } from "../../interfaces/interfaces";
-import useGetData from "../../hooks/getData";
+import useGetData from "../../hooks/useGetData";
 
 const TabPanel = ({
   value,

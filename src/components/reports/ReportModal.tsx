@@ -25,7 +25,7 @@ import {
   ProfileReportsProps,
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
-import useGetData from "../../hooks/getData";
+import useGetData from "../../hooks/useGetData";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -182,7 +182,6 @@ const ReportModal = ({
                 >
                   <WtLineGraph
                     reportDefinition={data.definition}
-                    reportData={data}
                     dimensions={gridDimensions}
                     selectedCell={selectedCell}
                     config={graphConfig}

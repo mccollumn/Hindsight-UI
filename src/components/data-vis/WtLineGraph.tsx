@@ -1,35 +1,22 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { useWtLineGraphQueries } from "./useWtLineGraphQueries";
 import { useWtLineGraphData } from "./useWtLineGraphData";
 import LineGraph from "./LineGraph";
 import {
   ReportDefinitionProps,
   GridDimensionProps,
   WtLineProps,
-  ReportProps,
 } from "../../interfaces/interfaces";
-import {
-  getSearchString,
-  getLineGraphData,
-  getPrimaryMeasureFromReportDef,
-} from "./lineGraph.util";
-import { Serie } from "@nivo/line";
-import { isEmpty } from "lodash/fp";
+import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
 
 const WtLineGraph = ({
   reportDefinition,
-  reportData,
   dimensions = [],
   selectedCell = {},
   config = {},
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
-  const [searchString, setSearchString] = useState("");
-  const { trendDataQueries } = useWtLineGraphData(
-    reportDefinition,
-    requestControllersCallback
-  );
-
   const defaultGraphOptions = useMemo(() => {
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
@@ -106,51 +93,19 @@ const WtLineGraph = ({
     };
   }, [reportDefinition, selectedCell.selectedColumn]);
 
-  const [lineGraphData, setLineGraphData] = useState<Serie[]>([]);
+  const { trendDataQueries } = useWtLineGraphQueries(
+    reportDefinition,
+    requestControllersCallback
+  );
+  const { lineGraphData } = useWtLineGraphData(
+    dimensions,
+    selectedCell,
+    trendDataQueries
+  );
   const [graphOptions, setGraphOptions] = useState({
     ...defaultGraphOptions,
     ...config,
   });
-
-  // Generate search string
-  useEffect(() => {
-    if (dimensions.length !== 0) {
-      const primaryDimension = [dimensions[0]];
-      setSearchString(getSearchString(primaryDimension));
-    }
-    if (!isEmpty(selectedCell)) {
-      setSearchString(selectedCell.selectedDimension);
-    }
-  }, [dimensions, selectedCell]);
-
-  React.useEffect(() => {
-    const addTrendData = (data: any) => {
-      if (!data) return;
-      if (!isEmpty(selectedCell)) {
-        lineGraphData.forEach((element) => {
-          if (element.id !== selectedCell.selectedDimension) {
-            setLineGraphData([]);
-          }
-        });
-      }
-      const newData = getLineGraphData(
-        data,
-        searchString,
-        selectedCell.selectedColumn
-      );
-      if (isMerged(lineGraphData, newData)) {
-        if (isDataAlreadyIncluded(lineGraphData, newData)) {
-          return;
-        }
-        setLineGraphData([]);
-        return;
-      }
-      setLineGraphData(mergeLineData(lineGraphData, newData));
-    };
-    trendDataQueries.forEach(({ data }) => {
-      addTrendData(data);
-    });
-  }, [selectedCell, trendDataQueries, lineGraphData, searchString]);
 
   useEffect(() => {
     setGraphOptions({
@@ -159,8 +114,6 @@ const WtLineGraph = ({
     });
   }, [config, defaultGraphOptions]);
 
-  console.log("Selection:", selectedCell);
-
   return (
     <React.Fragment>
       <LineGraph data={lineGraphData} config={graphOptions} {...props} />
@@ -168,54 +121,8 @@ const WtLineGraph = ({
   );
 };
 
-const isMerged = (graphData: any, newData: any) => {
-  if (newData.length === 0) {
-    return true;
-  }
-  if (graphData.length === 0) {
-    return false;
-  }
-  return graphData[0].data.some((p: any) => p.x === newData[0].data[0].x);
-};
-
-const sortByDate = async (data: any[]) => {
-  return data.sort((a: any, b: any) => {
-    const aDate = new Date(a.x);
-    const bDate = new Date(b.x);
-    if (aDate > bDate) {
-      return 1;
-    }
-    if (aDate < bDate) {
-      return -1;
-    }
-    return 0;
-  });
-};
-
-const mergeLineData = (data: Serie[], newData: Serie[]) => {
-  if (data.length === 0) {
-    return newData;
-  }
-  return data.map((item: any) => {
-    newData.forEach(async (point: any) => {
-      if (point.id === item.id) {
-        item.data.push(point.data[0]);
-      }
-      await sortByDate(item.data);
-    });
-    return item;
-  });
-};
-
 const formatPointLabels = (obj: any) => {
   return obj.point.data.yFormatted;
-};
-
-const isDataAlreadyIncluded = (graphData: any, newData: any) => {
-  const x = graphData[0]?.data.find(
-    (element: any) => element.x === newData[0].data[0].x
-  );
-  return x && x.y === newData[0].data[0].y;
 };
 
 interface WtLineGraphProps {
@@ -224,12 +131,6 @@ interface WtLineGraphProps {
    * https://onpremises.webtrends.help/docs/get-report-definition
    */
   reportDefinition: ReportDefinitionProps;
-  /**
-   * Aggregate data for the report period (i.e. what's displayed in the table).
-   * JSON output from the WT Analytics OP DX API v2.
-   * https://onpremises.webtrends.help/docs/about-the-data-extraction-api
-   */
-  reportData: ReportProps;
   /**
    * Array of dimensions
    */
@@ -249,7 +150,7 @@ interface WtLineGraphProps {
   requestControllersCallback?: (cancelAllRequests: any) => void;
 }
 
-interface selectedCellProps {
+export interface selectedCellProps {
   primaryColumn: string;
   selectedColumn: string;
   primaryDimension: string;
