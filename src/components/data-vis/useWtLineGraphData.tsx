@@ -20,7 +20,9 @@ export const useWtLineGraphData = (
       setSearchString(getSearchString(primaryDimension));
     }
     if (!isEmpty(selectedCell)) {
-      setSearchString(selectedCell.selectedDimension);
+      setSearchString(
+        getSearchString([{ key: selectedCell.selectedDimension, rowIndex: 0 }])
+      );
     }
   }, [dimensions, selectedCell]);
 
@@ -28,12 +30,12 @@ export const useWtLineGraphData = (
   const clearExistingGraphData = React.useCallback(() => {
     if (!isEmpty(selectedCell)) {
       lineGraphData.forEach((element) => {
-        if (element.id !== selectedCell.selectedDimension) {
+        if (element.id !== searchString) {
           setLineGraphData([]);
         }
       });
     }
-  }, [lineGraphData, selectedCell]);
+  }, [lineGraphData, searchString, selectedCell]);
 
   // Generate graph as data becomes available
   React.useEffect(() => {

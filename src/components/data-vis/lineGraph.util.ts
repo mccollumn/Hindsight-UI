@@ -26,7 +26,12 @@ export const getSearchString = (dimensions: GridDimensionProps[]) => {
   return dimensions
     .reduce((result: string[], dimension) => {
       if (dimension.rowIndex <= 5) {
-        result.push(dimension.key);
+        const url = dimension.key.match(/(http.+)/gi)?.pop();
+        if (url) {
+          result.push(url);
+        } else {
+          result.push(dimension.key);
+        }
       }
       return result;
     }, [])
