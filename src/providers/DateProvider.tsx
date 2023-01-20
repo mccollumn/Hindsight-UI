@@ -5,6 +5,8 @@ import {
   getDate,
   startOfMonth,
   endOfMonth,
+  differenceInDays,
+  differenceInMonths,
 } from "date-fns/fp";
 import { generateWtDate } from "../components/data-vis/lineGraph.util";
 
@@ -28,6 +30,7 @@ const defaultContext = {
   setEndDate: () => {},
   wtStartDate: wtDefaultStartDate,
   wtEndDate: wtDefaultEndDate,
+  trendInterval: null,
 };
 
 export const DateContext =
@@ -48,6 +51,8 @@ export const DateProvider = ({ children }: any) => {
     getDate(endDate)
   );
 
+  const trendInterval = getInterval(startDate, endDate);
+
   return (
     <DateContext.Provider
       value={{
@@ -57,11 +62,37 @@ export const DateProvider = ({ children }: any) => {
         setEndDate,
         wtStartDate,
         wtEndDate,
+        trendInterval,
       }}
     >
       {children}
     </DateContext.Provider>
   );
+};
+
+const getInterval = (startDate: Date, endPeriod: Date) => {
+  if (!startDate || !endPeriod) return null;
+
+  const differenceDays = differenceInDays(startDate, endPeriod);
+  const differenceMonths = differenceInMonths(startDate, endPeriod);
+
+  // Monthly: period > 6 months
+  if (differenceMonths >= 6) {
+    return "monthly";
+  }
+  // Weekly: period <= 6 months
+  if (differenceMonths < 6 && differenceMonths > 0) {
+    return "weekly";
+  }
+  // Daily: period <= 1 month
+  if (differenceMonths === 0 && differenceDays > 0) {
+    return "daily";
+  }
+  // Hourly: period <= 1 day
+  if (differenceDays === 0) {
+    return "hourly";
+  }
+  return null;
 };
 
 interface DateProviderProps {
@@ -71,4 +102,5 @@ interface DateProviderProps {
   setEndDate: React.Dispatch<React.SetStateAction<Date>>;
   wtStartDate: string;
   wtEndDate: string;
+  trendInterval: string | null;
 }

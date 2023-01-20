@@ -18,6 +18,7 @@ import {
   GridDimensionProps,
   ReportDateRangeProps,
   ReportDefinitionProps,
+  ReportSubRowProps,
 } from "../../interfaces/interfaces";
 
 export const getSearchString = (dimensions: GridDimensionProps[]) => {
@@ -25,7 +26,12 @@ export const getSearchString = (dimensions: GridDimensionProps[]) => {
   return dimensions
     .reduce((result: string[], dimension) => {
       if (dimension.rowIndex <= 5) {
-        result.push(dimension.key);
+        const url = dimension.key.match(/(http.+)/gi)?.pop();
+        if (url) {
+          result.push(url);
+        } else {
+          result.push(dimension.key);
+        }
       }
       return result;
     }, [])
@@ -101,25 +107,49 @@ const shorten = (str: string, len = 20) => {
   return str;
 };
 
-export const getLineGraphData = (reportData: ReportProps) => {
-  if (reportData.data === undefined || reportData.definition === undefined)
+const filterDimensions = (
+  dimensions: ReportSubRowProps,
+  searchString: string
+) => {
+  const resultKey =
+    Object.keys(dimensions).find((element) => element === searchString) ||
+    searchString;
+  return { [resultKey]: dimensions[resultKey] };
+};
+
+export const getLineGraphData = (
+  reportData: ReportProps,
+  searchString: string,
+  measure: string
+) => {
+  if (
+    reportData.data === undefined ||
+    reportData.definition === undefined ||
+    !searchString
+  )
     return [];
   const dateRange = getDateRange(reportData);
   if (dateRange === null) return [];
   const period = getPeriodStr(dateRange.startperiod);
-  const measureName = getPrimaryMeasure(reportData).name;
+  const measureName = measure ? measure : getPrimaryMeasure(reportData).name;
   const dimensions = getDimensions(reportData) || {};
+  const filteredDimensions = filterDimensions(dimensions, searchString);
   let lineGraphData: Serie[] = [];
 
-  Object.entries(dimensions).forEach(([key, value]) => {
+  Object.entries(/*dimensions*/ filteredDimensions).forEach(([key, value]) => {
     lineGraphData.push({
-      id: shorten(key),
-      data: [{ x: period, y: Number(value.measures[measureName]) }],
+      // Not shortening the values anymore since only one value will be displayed in the graph.
+      // If needed in the future, addTrendData() in useWtLineGraphData will have to be updated.
+      // id: shorten(key),
+      id: key,
+      data: [{ x: period, y: Number(value?.measures[measureName]) || 0 }],
     });
   });
   return lineGraphData;
 };
 
+// Possible TODO: Clamp start / end dates
+// https://date-fns.org/v2.29.3/docs/clamp
 const getMonthlyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
   const months = eachMonthOfInterval(interval);
@@ -218,6 +248,9 @@ export const getTrendPeriods = ({
     start: new Date(startPeriod),
     end: new Date(endPeriod),
   };
+
+  // TODO: May be able to simplify
+  // https://date-fns.org/v2.29.3/docs/intervalToDuration
   const differenceDays = differenceInDays(interval.start, interval.end);
   const differenceMonths = differenceInMonths(interval.start, interval.end);
 

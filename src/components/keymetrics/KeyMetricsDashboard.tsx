@@ -6,7 +6,7 @@ import { ResponsiveLine } from "@nivo/line";
 import { formatISO } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import Title from "../Title";
-import useGetData from "../../hooks/getData";
+import useGetData from "../../hooks/useGetData";
 import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
 

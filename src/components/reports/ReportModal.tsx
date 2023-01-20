@@ -12,7 +12,7 @@ import {
   DialogActions,
   Skeleton,
 } from "@mui/material";
-import { GridOptions, RowNode } from "ag-grid-community";
+import { CellClickedEvent, GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
@@ -25,7 +25,7 @@ import {
   ProfileReportsProps,
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
-import useGetData from "../../hooks/getData";
+import useGetData from "../../hooks/useGetData";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -74,17 +74,19 @@ const ReportModal = ({
   const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
+  const [selectedCell, setSelectedCell] = React.useState({});
 
-  const { getReportDefinitionQuery, getDataQuery: getReport } = useGetData();
-  const {
-    isLoading: loadingDefinition,
-    isError: reportDefinitionisError,
-    data: reportDefinition,
-    error: reportDefinitionError,
-  } = useQuery(
-    ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
-    getReportDefinitionQuery
-  );
+  const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
+    useGetData();
+  // const {
+  //   isLoading: loadingDefinition,
+  //   isError: reportDefinitionisError,
+  //   data: reportDefinition,
+  //   error: reportDefinitionError,
+  // } = useQuery(
+  //   ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
+  //   getReportDefinitionQuery
+  // );
 
   const {
     isLoading: loading,
@@ -105,7 +107,7 @@ const ReportModal = ({
   );
 
   console.log("Report:", report);
-  console.log("Report info:", reportDefinition);
+  // console.log("Report info:", reportDefinition);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
@@ -115,6 +117,20 @@ const ReportModal = ({
     );
   }, []);
 
+  const handleSelectionChange = (event: CellClickedEvent) => {
+    const primaryColumn =
+      event.columnApi.getColumns()![0].getColDef().field || "";
+    const selectedColumn = event.column.getColDef().field || primaryColumn;
+    const selectedDimension = event.node.key;
+    const primaryDimension = event.data.Dimensions[0];
+    setSelectedCell({
+      primaryColumn: primaryColumn,
+      selectedColumn: selectedColumn,
+      primaryDimension: primaryDimension,
+      selectedDimension: selectedDimension,
+    });
+  };
+
   const handleClose = () => {
     onClose();
   };
@@ -122,6 +138,7 @@ const ReportModal = ({
   const gridCallback = React.useCallback(
     (ref: React.RefObject<AgGridReact<any>>) => {
       setGridRef(ref);
+      console.log("Grid ref:", ref);
     },
     []
   );
@@ -151,25 +168,28 @@ const ReportModal = ({
         <Grid container spacing={3}>
           {/* Graph */}
           <Grid item xs={12} md={12} lg={12}>
-            {loadingDefinition ? (
-              <Skeleton height={GRAPH_HEIGHT} />
-            ) : (
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: GRAPH_HEIGHT,
-                }}
-              >
-                <WtLineGraph
-                  reportDefinition={reportDefinition}
-                  dimensions={gridDimensions}
-                  config={graphConfig}
-                  requestControllersCallback={requestControllersCallback}
-                />
-              </Paper>
-            )}
+            {
+              /*loadingDefinition*/ loading ? (
+                <Skeleton height={GRAPH_HEIGHT} />
+              ) : (
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: GRAPH_HEIGHT,
+                  }}
+                >
+                  <WtLineGraph
+                    reportDefinition={data.definition}
+                    dimensions={gridDimensions}
+                    selectedCell={selectedCell}
+                    config={graphConfig}
+                    requestControllersCallback={requestControllersCallback}
+                  />
+                </Paper>
+              )
+            }
           </Grid>
           {/* Table */}
           <Grid item xs={12} md={12} lg={12}>
@@ -188,6 +208,7 @@ const ReportModal = ({
                   config={tableConfig}
                   renderedNodesCallback={getGridDimensions}
                   gridRefCallback={gridCallback}
+                  cellClickedCallback={handleSelectionChange}
                 />
               </Paper>
             )}

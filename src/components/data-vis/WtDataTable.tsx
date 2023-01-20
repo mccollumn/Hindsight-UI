@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from "react";
 import DataTable from "./DataTable";
 import { AgGridReact } from "ag-grid-react";
 import {
+  CellClickedEvent,
   FilterChangedEvent,
   GridOptions,
   ModelUpdatedEvent,
@@ -21,6 +22,7 @@ const WtDataTable = ({
   config = {},
   renderedNodesCallback = () => {},
   gridRefCallback,
+  cellClickedCallback,
   ...props
 }: WTDataTableProps) => {
   const [dimHeader, setDimHeader] = useState(getDimColumnHeader(data));
@@ -43,8 +45,10 @@ const WtDataTable = ({
     }
   }, []);
 
-  const cellClickedListener = useCallback((event: any) => {
-    console.log("cellClicked", event);
+  const cellClickedListener = useCallback((event: CellClickedEvent) => {
+    if (typeof cellClickedCallback === "function") {
+      cellClickedCallback(event);
+    }
   }, []);
 
   const onBtnExport = useCallback(() => {
@@ -158,6 +162,7 @@ interface WTDataTableProps extends GridOptions {
    */
   renderedNodesCallback?: (nodes: RowNode<any>[]) => void;
   gridRefCallback?: (ref: React.RefObject<AgGridReact<any>>) => void;
+  cellClickedCallback?: (event: CellClickedEvent) => void;
 }
 
 export default WtDataTable;
