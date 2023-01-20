@@ -17,6 +17,7 @@ import { AgGridReact } from "ag-grid-react";
 import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
+import DateRange from "../DateRange";
 import { GRAPH_HEIGHT } from "../../constants/lineGraph";
 import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
 import {
@@ -162,6 +163,11 @@ const ReportModal = ({
           <Skeleton height={32} width="30%" />
         ) : (
           data?.definition?.name || ""
+        )}
+        {loading ? (
+          <Skeleton height={20} width="20%" />
+        ) : (
+          <DateRange profile={profile} />
         )}
       </BootstrapDialogTitle>
       <DialogContent dividers>

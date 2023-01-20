@@ -105,6 +105,13 @@ const useGetData = () => {
     return keyMetrics;
   };
 
+  const getReportPeriodsQuery = async (parameters: Params) => {
+    const [_key, { profileID = "", params = {} }] = parameters.queryKey;
+    const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/periods/`;
+    const res = await getAxios(url, params);
+    return res;
+  };
+
   const cancelAllRequests = React.useCallback(() => {
     controllers?.forEach((controller) => {
       controller.abort();
@@ -124,6 +131,7 @@ const useGetData = () => {
     getDataQuery,
     getReportDefinitionQuery,
     getKeyMetricsQuery,
+    getReportPeriodsQuery,
     cancelAllRequests,
   };
 };
