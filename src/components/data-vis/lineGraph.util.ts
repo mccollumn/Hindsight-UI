@@ -139,7 +139,7 @@ export const getLineGraphData = (
   Object.entries(/*dimensions*/ filteredDimensions).forEach(([key, value]) => {
     lineGraphData.push({
       // Not shortening the values anymore since only one value will be displayed in the graph.
-      // If needed in the future, addTrendData() in WtLineGraph will have to be updated.
+      // If needed in the future, addTrendData() in useWtLineGraphData will have to be updated.
       // id: shorten(key),
       id: key,
       data: [{ x: period, y: Number(value?.measures[measureName]) || 0 }],
@@ -148,6 +148,8 @@ export const getLineGraphData = (
   return lineGraphData;
 };
 
+// Possible TODO: Clamp start / end dates
+// https://date-fns.org/v2.29.3/docs/clamp
 const getMonthlyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
   const months = eachMonthOfInterval(interval);
@@ -246,6 +248,9 @@ export const getTrendPeriods = ({
     start: new Date(startPeriod),
     end: new Date(endPeriod),
   };
+
+  // TODO: May be able to simplify
+  // https://date-fns.org/v2.29.3/docs/intervalToDuration
   const differenceDays = differenceInDays(interval.start, interval.end);
   const differenceMonths = differenceInMonths(interval.start, interval.end);
 

@@ -8,6 +8,7 @@ import {
   WtLineProps,
 } from "../../interfaces/interfaces";
 import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
+import { DateContext } from "../../providers/DateProvider";
 
 const WtLineGraph = ({
   reportDefinition,
@@ -17,6 +18,7 @@ const WtLineGraph = ({
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
+  const { interval } = React.useContext(DateContext);
   const defaultGraphOptions = useMemo(() => {
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
@@ -43,12 +45,12 @@ const WtLineGraph = ({
         legend:
           selectedCell.selectedColumn ||
           getPrimaryMeasureFromReportDef(reportDefinition).name,
-        legendOffset: -40,
+        legendOffset: -45,
         legendPosition: "middle",
       },
       axisBottom: {
-        format: "%b %d",
-        tickValues: "every 2 days",
+        format: formatTimeAxis(interval),
+        tickValues: formatTickValues(interval),
         orient: "bottom",
         tickSize: 5,
         tickPadding: 5,
@@ -70,7 +72,7 @@ const WtLineGraph = ({
           direction: "row",
           justify: false,
           translateX: 0,
-          translateY: 70,
+          translateY: 75,
           itemsSpacing: 5,
           itemDirection: "left-to-right",
           itemWidth: 150,
@@ -91,7 +93,7 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [reportDefinition, selectedCell.selectedColumn]);
+  }, [interval, reportDefinition, selectedCell.selectedColumn]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
@@ -123,6 +125,32 @@ const WtLineGraph = ({
 
 const formatPointLabels = (obj: any) => {
   return obj.point.data.yFormatted;
+};
+
+const formatTimeAxis = (interval: string | null) => {
+  const formats: any = {
+    monthly: "%b %Y",
+    weekly: "%b %d",
+    daily: "%a %d",
+    hourly: "%I %p",
+  };
+  if (interval === null) {
+    return formats.daily;
+  }
+  return formats[interval];
+};
+
+const formatTickValues = (interval: string | null) => {
+  const formats: any = {
+    monthly: "every month",
+    weekly: "every week",
+    daily: "every 2 days",
+    hourly: "every hour",
+  };
+  if (interval === null) {
+    return formats.daily;
+  }
+  return formats[interval];
 };
 
 interface WtLineGraphProps {
