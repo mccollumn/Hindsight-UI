@@ -30,7 +30,7 @@ const defaultContext = {
   setEndDate: () => {},
   wtStartDate: wtDefaultStartDate,
   wtEndDate: wtDefaultEndDate,
-  interval: null,
+  trendInterval: null,
 };
 
 export const DateContext =
@@ -51,7 +51,7 @@ export const DateProvider = ({ children }: any) => {
     getDate(endDate)
   );
 
-  const interval = getInterval(startDate, endDate);
+  const trendInterval = getInterval(startDate, endDate);
 
   return (
     <DateContext.Provider
@@ -62,7 +62,7 @@ export const DateProvider = ({ children }: any) => {
         setEndDate,
         wtStartDate,
         wtEndDate,
-        interval,
+        trendInterval,
       }}
     >
       {children}
@@ -102,5 +102,5 @@ interface DateProviderProps {
   setEndDate: React.Dispatch<React.SetStateAction<Date>>;
   wtStartDate: string;
   wtEndDate: string;
-  interval: string | null;
+  trendInterval: string | null;
 }

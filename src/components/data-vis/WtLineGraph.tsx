@@ -18,7 +18,7 @@ const WtLineGraph = ({
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
-  const { interval } = React.useContext(DateContext);
+  const { trendInterval } = React.useContext(DateContext);
   const defaultGraphOptions = useMemo(() => {
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
@@ -49,8 +49,8 @@ const WtLineGraph = ({
         legendPosition: "middle",
       },
       axisBottom: {
-        format: formatTimeAxis(interval),
-        tickValues: formatTickValues(interval),
+        format: formatTimeAxis(trendInterval),
+        tickValues: formatTickValues(trendInterval),
         orient: "bottom",
         tickSize: 5,
         tickPadding: 5,
@@ -93,7 +93,7 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [interval, reportDefinition, selectedCell.selectedColumn]);
+  }, [trendInterval, reportDefinition, selectedCell.selectedColumn]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
