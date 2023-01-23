@@ -21,11 +21,14 @@ export default function DateRange({ profile }: DateRangeProps) {
     ],
     getReportPeriodsQuery,
     {
-      staleTime: 30 * 60 * 1000,
+      staleTime: 0,
       onSuccess: (data) => {
         const dateArray = createDateArray(data.Report);
+        const lastData = max(dateArray);
         setStartDateActual(max([min(dateArray), startDate]));
-        setEndDateActual(min([max(dateArray), endDate]));
+        setEndDateActual(
+          lastData < endDate && lastData > startDate ? lastData : endDate
+        );
       },
     }
   );
