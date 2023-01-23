@@ -139,6 +139,7 @@ const mergeLineData = (graphData: Serie[], newData: Serie[]) => {
  * @returns True if the new report period and its value match existing graph data, otherwise false
  */
 const isDataCurrent = (graphData: any, newData: any) => {
+  if (newData.length === 0) return true;
   const x = graphData[0]?.data.find(
     (element: any) => element.x === newData[0].data[0].x
   );
