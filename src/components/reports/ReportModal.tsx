@@ -1,6 +1,8 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Grid,
   Paper,
@@ -76,6 +78,7 @@ const ReportModal = ({
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
   const [selectedCell, setSelectedCell] = React.useState({});
+  const [graphVisible, setGraphVisible] = React.useState(true);
 
   const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
     useGetData();
@@ -164,11 +167,13 @@ const ReportModal = ({
         ) : (
           data?.definition?.name || ""
         )}
-        {loading ? (
-          <Skeleton height={20} width="20%" />
-        ) : (
+        {loading && <Skeleton height={20} width="20%" />}
+        <div
+          className="date-range"
+          style={{ display: loading ? "none" : "block" }}
+        >
           <DateRange profile={profile} />
-        )}
+        </div>
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>

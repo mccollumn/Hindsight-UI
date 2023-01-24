@@ -6,7 +6,7 @@ import { intlFormat, isValid, max, min } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { ProfileProps } from "../interfaces/interfaces";
 
-export default function DateRange({ profile }: DateRangeProps) {
+export default function DateRange({ profile, ...props }: DateRangeProps) {
   const { startDate, endDate } = React.useContext(DateContext);
   const { getReportPeriodsQuery } = useGetData();
   const [startDateActual, setStartDateActual] = React.useState(startDate);
