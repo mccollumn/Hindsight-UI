@@ -20,7 +20,7 @@ import {
   getTotals,
   generateColumnDefs,
 } from "./dataTable.util";
-import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
+import { DEFAULT_TABLE_HEIGHT } from "../../constants/constants";
 import { ReportProps } from "../../interfaces/interfaces";
 
 const WtDataTable = ({
@@ -63,8 +63,6 @@ const WtDataTable = ({
   }, [gridRef]);
 
   const onPageSizeChanged = useCallback(() => {
-    // const value = (document.getElementById("page-size") as HTMLInputElement)
-    //   .value;
     const value = pageSize.current!.value;
     gridRef?.current!.api.paginationSetPageSize(Number(value));
   }, [gridRef]);
