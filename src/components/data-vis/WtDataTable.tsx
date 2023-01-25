@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import DataTable from "./DataTable";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -14,7 +20,7 @@ import {
   getTotals,
   generateColumnDefs,
 } from "./dataTable.util";
-import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
+import { DEFAULT_TABLE_HEIGHT } from "../../constants/constants";
 import { ReportProps } from "../../interfaces/interfaces";
 
 const WtDataTable = ({
@@ -30,6 +36,7 @@ const WtDataTable = ({
   const [rowData, setRowData] = useState(getTableData(data));
   const [totals, setTotals] = useState(getTotals(data));
   const [gridRef, setGridRef] = useState<React.RefObject<AgGridReact<any>>>();
+  const pageSize = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     setDimHeader(getDimColumnHeader(data));
@@ -53,6 +60,11 @@ const WtDataTable = ({
 
   const onBtnExport = useCallback(() => {
     gridRef?.current?.api.exportDataAsCsv();
+  }, [gridRef]);
+
+  const onPageSizeChanged = useCallback(() => {
+    const value = pageSize.current!.value;
+    gridRef?.current!.api.paginationSetPageSize(Number(value));
   }, [gridRef]);
 
   const updateTotals = useCallback(
@@ -84,7 +96,8 @@ const WtDataTable = ({
         cellStyle: { whiteSpace: "pre" },
       },
       pagination: true,
-      paginationAutoPageSize: true,
+      paginationAutoPageSize: false,
+      paginationPageSize: 10,
       enableCellTextSelection: true,
       ensureDomOrder: true,
       enableRangeSelection: true,
@@ -132,6 +145,22 @@ const WtDataTable = ({
   return (
     <React.Fragment>
       <div className="ag-theme-alpine" style={{ height: DEFAULT_TABLE_HEIGHT }}>
+        <div className="rows-per-page-dropdown">
+          Show:
+          <select
+            onChange={onPageSizeChanged}
+            id="page-size"
+            ref={pageSize}
+            style={{ marginLeft: ".25em", marginBottom: ".5em" }}
+          >
+            <option value="10" selected={true}>
+              10
+            </option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
         {gridOptions.autoGroupColumnDef?.headerName && (
           <DataTable
             data={rowData}

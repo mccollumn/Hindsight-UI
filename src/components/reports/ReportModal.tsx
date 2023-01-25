@@ -1,6 +1,7 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Grid,
   Paper,
@@ -11,6 +12,8 @@ import {
   DialogContent,
   DialogActions,
   Skeleton,
+  IconButtonProps,
+  Collapse,
 } from "@mui/material";
 import { CellClickedEvent, GridOptions, RowNode } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -18,8 +21,14 @@ import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
 import DateRange from "../DateRange";
-import { GRAPH_HEIGHT } from "../../constants/lineGraph";
-import { DEFAULT_TABLE_HEIGHT } from "../../constants/dataTable";
+import {
+  DEFAULT_TABLE_HEIGHT,
+  TABLE_CONTAINER_HEIGHT,
+  GRAPH_HEIGHT,
+  FOOTER_HEIGHT,
+  REPORT_TITLE_HEIGHT,
+  DATE_RANGE_HEIGHT,
+} from "../../constants/constants";
 import {
   WtLineProps,
   ProfileProps,
@@ -27,6 +36,17 @@ import {
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
 import useGetData from "../../hooks/useGetData";
+
+const ExpandGraph = styled((props: ExpandGraphProps) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -76,6 +96,7 @@ const ReportModal = ({
   const [gridRef, setGridRef] =
     React.useState<React.RefObject<AgGridReact<any>>>();
   const [selectedCell, setSelectedCell] = React.useState({});
+  const [graphExpanded, setGraphExpanded] = React.useState(true);
 
   const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
     useGetData();
@@ -89,12 +110,7 @@ const ReportModal = ({
   //   getReportDefinitionQuery
   // );
 
-  const {
-    isLoading: loading,
-    isError,
-    data,
-    error,
-  } = useQuery(
+  const { isLoading: loadingReportData, data } = useQuery(
     [
       "report",
       {
@@ -106,9 +122,6 @@ const ReportModal = ({
     getReport,
     { staleTime: 30 * 60 * 1000 }
   );
-
-  console.log("Report:", report);
-  // console.log("Report info:", reportDefinition);
 
   const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
     setGridDimensions(
@@ -149,6 +162,10 @@ const ReportModal = ({
     gridRef?.current?.api.exportDataAsCsv({ fileName: reportName });
   };
 
+  const handleExpandGraph = () => {
+    setGraphExpanded(!graphExpanded);
+  };
+
   return (
     <BootstrapDialog
       onClose={handleClose}
@@ -159,47 +176,63 @@ const ReportModal = ({
       {...props}
     >
       <BootstrapDialogTitle id="report-title" onClose={handleClose}>
-        {loading ? (
-          <Skeleton height={32} width="30%" />
+        {loadingReportData ? (
+          <Skeleton height={REPORT_TITLE_HEIGHT} width="30%" />
         ) : (
           data?.definition?.name || ""
         )}
-        {loading ? (
-          <Skeleton height={20} width="20%" />
-        ) : (
-          <DateRange profile={profile} />
+        {loadingReportData && (
+          <Skeleton height={DATE_RANGE_HEIGHT} width="20%" />
         )}
+        <div
+          className="date-range"
+          style={{ display: loadingReportData ? "none" : "block" }}
+        >
+          <DateRange profile={profile} />
+        </div>
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>
           {/* Graph */}
           <Grid item xs={12} md={12} lg={12}>
             {
-              /*loadingDefinition*/ loading ? (
+              /*loadingDefinition*/ loadingReportData ? (
                 <Skeleton height={GRAPH_HEIGHT} />
               ) : (
+                // <Collapse in={graphExpanded} timeout="auto" collapsedSize="25">
                 <Paper
                   sx={{
                     p: 2,
                     display: "flex",
                     flexDirection: "column",
-                    height: GRAPH_HEIGHT,
+                    height: graphExpanded ? GRAPH_HEIGHT : "25px",
                   }}
                 >
-                  <WtLineGraph
-                    reportDefinition={data.definition}
-                    dimensions={gridDimensions}
-                    selectedCell={selectedCell}
-                    config={graphConfig}
-                    requestControllersCallback={requestControllersCallback}
-                  />
+                  <ExpandGraph
+                    expand={graphExpanded}
+                    onClick={handleExpandGraph}
+                    aria-expanded={graphExpanded}
+                    aria-label="Show or hide graph"
+                  >
+                    <ExpandMoreIcon fontSize="small" />
+                  </ExpandGraph>
+                  <Collapse in={graphExpanded} timeout="auto">
+                    <WtLineGraph
+                      reportDefinition={data.definition}
+                      dimensions={gridDimensions}
+                      selectedCell={selectedCell}
+                      config={graphConfig}
+                      requestControllersCallback={requestControllersCallback}
+                    />
+                  </Collapse>
                 </Paper>
+                // </Collapse>
               )
             }
           </Grid>
           {/* Table */}
           <Grid item xs={12} md={12} lg={12}>
-            {loading ? (
+            {loadingReportData ? (
               <Skeleton height={DEFAULT_TABLE_HEIGHT} />
             ) : (
               <Paper
@@ -207,6 +240,7 @@ const ReportModal = ({
                   p: 2,
                   display: "flex",
                   flexDirection: "column",
+                  height: TABLE_CONTAINER_HEIGHT,
                 }}
               >
                 <WtDataTable
@@ -222,8 +256,8 @@ const ReportModal = ({
         </Grid>
       </DialogContent>
       <DialogActions>
-        {loading ? (
-          <Skeleton height={36} width="10%" />
+        {loadingReportData ? (
+          <Skeleton height={FOOTER_HEIGHT} width="10%" />
         ) : (
           <Button onClick={exportCSV}>Export</Button>
         )}
@@ -266,6 +300,10 @@ interface ReportModalProps {
    * cancelAllRequests function from useGetData
    */
   cancelRequestsCallback?: (cancelAllRequests: any) => void;
+}
+
+interface ExpandGraphProps extends IconButtonProps {
+  expand: boolean;
 }
 
 export default ReportModal;

@@ -1,4 +1,4 @@
-import { GRAPH_HEIGHT } from "../../constants/lineGraph";
+import { GRAPH_HEIGHT } from "../../constants/constants";
 import { ResponsiveLine, Serie } from "@nivo/line";
 
 // make sure parent container have a defined height when using
