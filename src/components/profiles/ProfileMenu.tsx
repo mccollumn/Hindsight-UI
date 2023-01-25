@@ -23,16 +23,21 @@ const ProfileMenu = ({
       options={profiles}
       sx={{
         width: 300,
-        "& .MuiInputBase-root": { backgroundColor: "white" },
-        //TODO: Decide how this should be styled
-        "& .MuiFormLabel-root.Mui-focused": {
-          color: "black",
-          backgroundColor: "white",
-        },
+        // TODO: Decide how this should be styled
+        // "& .MuiInputBase-root": { backgroundColor: "white" },
+        // "& .MuiFormLabel-root.Mui-focused": {
+        //   color: "black",
+        //   backgroundColor: "white",
+        // },
       }}
       getOptionLabel={(option) => option?.name || ""}
       renderInput={(params) => (
-        <TextField {...params} label="Select a Profile" />
+        <TextField
+          {...params}
+          label="Select a Profile"
+          variant="filled"
+          sx={{ backgroundColor: "white" }}
+        />
       )}
       loading={profiles.length === 0}
       onChange={handleChange}

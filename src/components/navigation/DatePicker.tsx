@@ -50,9 +50,17 @@ const DatePicker = ({
         // defaultCalendarMonth={now}
         renderInput={(startProps, endProps) => (
           <React.Fragment>
-            <TextField {...startProps} />
-            <Box sx={{ mx: 2 }}> to </Box>
-            <TextField {...endProps} />
+            <TextField
+              {...startProps}
+              variant="filled"
+              sx={{ backgroundColor: "white", maxWidth: "150px" }}
+            />
+            <Box sx={{ mx: 2, alignSelf: "center" }}> to </Box>
+            <TextField
+              {...endProps}
+              variant="filled"
+              sx={{ backgroundColor: "white", maxWidth: "150px" }}
+            />
           </React.Fragment>
         )}
         {...props}
