@@ -1,20 +1,17 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import {
-  ButtonRB,
-  ButtonRBProps
-} from './ButtonRB';
+import { ButtonStyled } from "./ButtonStyled";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: "Navigation/Button",
-  component: ButtonRB,
+  component: ButtonStyled,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
-  argTypes: {
+  argTypes: {},
+} as ComponentMeta<typeof ButtonStyled>;
 
-  },
-} as ComponentMeta<typeof ButtonRB>;
-
-const Template: ComponentStory<typeof ButtonRB> = (args) => <ButtonRB {...args} />;
+const Template: ComponentStory<typeof ButtonStyled> = (args) => (
+  <ButtonStyled {...args} />
+);
 
 export const Default = Template.bind({});

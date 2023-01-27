@@ -11,6 +11,7 @@ import { ProfileProps } from "./interfaces/interfaces";
 import useGetData from "./hooks/useGetData";
 import { useQuery } from "@tanstack/react-query";
 import { lastDayOfMonth } from "date-fns/fp";
+import Login from "./pages/Login";
 
 function App() {
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
@@ -38,6 +39,11 @@ function App() {
     console.log("Selected profile:", value);
     setSelectedProfile(value);
     navigate("/profile");
+  };
+
+  const onSuccessfulLogin = (value: any) => {
+    console.log("Logged in:", value);
+    navigate("/");
   };
 
   return (
@@ -92,6 +98,10 @@ function App() {
         <Route
           path="/profiles"
           element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+        />
+        <Route
+          path="/login"
+          element={<Login onLoginSubmit={onSuccessfulLogin} />}
         />
         <Route path="/reports" element={<Reports />} />
         <Route path="/notifications" element={<Notifications />} />
