@@ -12,6 +12,7 @@ import {
   differenceInMonths,
   differenceInDays,
 } from "date-fns/fp";
+import { addWeeks, addMonths } from "date-fns";
 import { Serie } from "@nivo/line";
 import {
   ReportProps,
@@ -152,6 +153,10 @@ export const getLineGraphData = (
 // https://date-fns.org/v2.29.3/docs/clamp
 const getMonthlyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
+  // Add an extra month to extend the graph past the endDate marker
+  if (getDate(interval.end) !== getDate(endOfMonth(interval.end))) {
+    interval.end = addMonths(interval.end, 1);
+  }
   const months = eachMonthOfInterval(interval);
   months.forEach((month) => {
     periods.push({
@@ -172,6 +177,10 @@ const getMonthlyPeriods = (interval: Interval) => {
 
 const getWeeklyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
+  // Add an extra week to extend the graph past the endDate marker
+  if (getDate(interval.end) !== getDate(endOfWeek(interval.end))) {
+    interval.end = addWeeks(interval.end, 1);
+  }
   const weeks = eachWeekOfInterval(interval);
   weeks.forEach((week) => {
     periods.push({

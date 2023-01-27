@@ -1,4 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
+import {
+  getDate,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 import { useWtLineGraphQueries } from "./useWtLineGraphQueries";
 import { useWtLineGraphData } from "./useWtLineGraphData";
 import LineGraph from "./LineGraph";
@@ -9,6 +16,7 @@ import {
 } from "../../interfaces/interfaces";
 import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
 import { DateContext } from "../../providers/DateProvider";
+import { CartesianMarkerProps } from "@nivo/core";
 
 const WtLineGraph = ({
   reportDefinition,
@@ -18,7 +26,7 @@ const WtLineGraph = ({
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
-  const { trendInterval } = React.useContext(DateContext);
+  const { trendInterval, startDate, endDate } = React.useContext(DateContext);
   const defaultGraphOptions = useMemo(() => {
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
@@ -56,6 +64,7 @@ const WtLineGraph = ({
         tickPadding: 5,
         tickRotation: 90,
       },
+      enableArea: false,
       enablePointLabel: false,
       pointSize: 10,
       pointBorderWidth: 1,
@@ -93,7 +102,7 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [trendInterval, reportDefinition, selectedCell.selectedColumn]);
+  }, [selectedCell.selectedColumn, reportDefinition, trendInterval]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
@@ -107,14 +116,16 @@ const WtLineGraph = ({
   const [graphOptions, setGraphOptions] = useState({
     ...defaultGraphOptions,
     ...config,
+    ...addDateRangeMarkers(startDate, endDate, trendInterval),
   });
 
   useEffect(() => {
     setGraphOptions({
       ...defaultGraphOptions,
       ...config,
+      ...addDateRangeMarkers(startDate, endDate, trendInterval),
     });
-  }, [config, defaultGraphOptions]);
+  }, [config, defaultGraphOptions, endDate, startDate, trendInterval]);
 
   return (
     <React.Fragment>
@@ -153,6 +164,68 @@ const formatTickValues = (interval: string | null) => {
   return formats[interval];
 };
 
+const addWeeklyMarkers = (
+  startDate: Date,
+  endDate: Date,
+  markersObj: any,
+  startMarker: CartesianMarkerProps,
+  endMarker: CartesianMarkerProps
+) => {
+  if (getDate(startDate) !== getDate(startOfWeek(startDate))) {
+    markersObj.markers.push(startMarker);
+  }
+  if (getDate(endDate) !== getDate(endOfWeek(endDate))) {
+    markersObj.markers.push(endMarker);
+  }
+};
+
+const addMonthlyMarkers = (
+  startDate: Date,
+  endDate: Date,
+  markersObj: any,
+  startMarker: CartesianMarkerProps,
+  endMarker: CartesianMarkerProps
+) => {
+  if (getDate(startDate) !== getDate(startOfMonth(startDate))) {
+    markersObj.markers.push(startMarker);
+  }
+  if (getDate(endDate) !== getDate(endOfMonth(endDate))) {
+    markersObj.markers.push(endMarker);
+  }
+};
+
+const addDateRangeMarkers = (
+  startDate: Date,
+  endDate: Date,
+  interval: string | null
+) => {
+  if (interval === "daily" || interval === "hourly") return;
+  const markersObj: markersObjProps = { markers: [] };
+  const markerCommon: Omit<CartesianMarkerProps, "value"> = {
+    axis: "x",
+    legendPosition: "top",
+    lineStyle: { stroke: "gray", strokeWidth: 2 },
+    textStyle: { fill: "gray", fontSize: "10" },
+  };
+  const startMarker: CartesianMarkerProps = {
+    value: startDate,
+    legend: startDate.toLocaleDateString(),
+    ...markerCommon,
+  };
+  const endMarker: CartesianMarkerProps = {
+    value: endDate,
+    legend: endDate.toLocaleDateString(),
+    ...markerCommon,
+  };
+  if (interval === "weekly") {
+    addWeeklyMarkers(startDate, endDate, markersObj, startMarker, endMarker);
+  }
+  if (interval === "monthly") {
+    addMonthlyMarkers(startDate, endDate, markersObj, startMarker, endMarker);
+  }
+  return markersObj;
+};
+
 interface WtLineGraphProps {
   /**
    * Report definition JSON from the WT Analytics OP Dx API v2
@@ -176,6 +249,10 @@ interface WtLineGraphProps {
    * cancelAllRequests function from useGetData
    */
   requestControllersCallback?: (cancelAllRequests: any) => void;
+}
+
+interface markersObjProps {
+  markers: CartesianMarkerProps[];
 }
 
 export interface selectedCellProps {
