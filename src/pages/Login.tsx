@@ -1,8 +1,18 @@
 import * as React from "react";
 import { LoginForm } from "../components/form/LoginForm";
 import { AuthContext } from "../providers/AuthProvider";
+import LoginError from "../components/form/LoginError";
 import { styled } from "@mui/material/styles";
 import { Dialog, DialogContent } from "@mui/material";
+
+const DX_USERNAME =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_DX_USERNAME
+    : "";
+const DX_PASSWORD =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_DX_PASSWORD
+    : "";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -19,8 +29,12 @@ export default function Login({ onLoginSubmit }: LoginProps) {
     <div>
       <BootstrapDialog aria-label="login" open={true}>
         <DialogContent dividers>
-          <LoginForm onLoginSubmit={handleLogin} />
-          {errorMessage}
+          <LoginForm
+            onLoginSubmit={handleLogin}
+            defaultUsername={DX_USERNAME}
+            defaultPassword={DX_PASSWORD}
+          />
+          <LoginError message={errorMessage} />
         </DialogContent>
       </BootstrapDialog>
     </div>
