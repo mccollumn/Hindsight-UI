@@ -1,5 +1,7 @@
 import React from "react";
 import "./App.css";
+import { isEmpty } from "lodash/fp";
+import { AuthContext } from "./providers/AuthProvider";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -14,6 +16,7 @@ import { lastDayOfMonth } from "date-fns/fp";
 import Login from "./pages/Login";
 
 function App() {
+  const { auth } = React.useContext(AuthContext);
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
     {}
   );
@@ -21,10 +24,12 @@ function App() {
   const { getDataQuery } = useGetData();
   const {
     isLoading,
+    isSuccess,
     isError,
     data: profiles,
-    error,
-  } = useQuery(["profiles", {}], getDataQuery);
+  } = useQuery(["profiles", {}], getDataQuery, {
+    enabled: !isEmpty(auth),
+  });
 
   console.log("Profiles:", profiles);
 
@@ -39,11 +44,6 @@ function App() {
     console.log("Selected profile:", value);
     setSelectedProfile(value);
     navigate("/profile");
-  };
-
-  const onSuccessfulLogin = (value: any) => {
-    console.log("Logged in:", value);
-    navigate("/");
   };
 
   return (
@@ -99,10 +99,7 @@ function App() {
           path="/profiles"
           element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
         />
-        <Route
-          path="/login"
-          element={<Login onLoginSubmit={onSuccessfulLogin} />}
-        />
+        <Route path="/login" element={<Login />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />

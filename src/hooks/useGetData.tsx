@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { AuthContext } from "../providers/AuthProvider";
 
 // Test data
 import { keyMetrics } from "../mocks/data/keyMetrics";
@@ -10,6 +11,7 @@ const WT_DX_USERNAME = process.env.REACT_APP_DX_USERNAME;
 const WT_DX_PASSWORD = process.env.REACT_APP_DX_PASSWORD;
 
 const useGetData = () => {
+  const { auth } = React.useContext(AuthContext);
   const [response, setResponse] = React.useState<any>();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -26,8 +28,10 @@ const useGetData = () => {
       const res = await axios.get(url, {
         params: urlParams,
         auth: {
-          username: WT_DX_USERNAME || "",
-          password: WT_DX_PASSWORD || "",
+          // username: WT_DX_USERNAME || "",
+          // password: WT_DX_PASSWORD || "",
+          username: auth.username,
+          password: auth.password,
         },
         signal: axiosController.signal,
       });
