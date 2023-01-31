@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import { AuthContext } from "./providers/AuthProvider";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -11,8 +12,11 @@ import { ProfileProps } from "./interfaces/interfaces";
 import useGetData from "./hooks/useGetData";
 import { useQuery } from "@tanstack/react-query";
 import { lastDayOfMonth } from "date-fns/fp";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/navigation/ProtectedRoute";
 
 function App() {
+  const { auth } = React.useContext(AuthContext);
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
     {}
   );
@@ -20,10 +24,12 @@ function App() {
   const { getDataQuery } = useGetData();
   const {
     isLoading,
+    isSuccess,
     isError,
     data: profiles,
-    error,
-  } = useQuery(["profiles", {}], getDataQuery);
+  } = useQuery(["profiles", {}], getDataQuery, {
+    enabled: auth !== null,
+  });
 
   console.log("Profiles:", profiles);
 
@@ -83,7 +89,11 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+          element={
+            <ProtectedRoute>
+              <Profiles profiles={profiles} onClick={onProfileSelect} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/profile"
@@ -91,12 +101,21 @@ function App() {
         />
         <Route
           path="/profiles"
-          element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+          element={
+            <ProtectedRoute>
+              <Profiles profiles={profiles} onClick={onProfileSelect} />
+            </ProtectedRoute>
+          }
         />
+        <Route path="/login" element={<Login />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/user" element={<User />} />
+        <Route
+          path="*"
+          element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
+        />
       </Routes>
     </Layout>
   );

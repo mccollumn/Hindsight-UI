@@ -1,3 +1,6 @@
+// DX API Server (protocol + hostname + port)
+export const DX_SERVER = "http://usw2op19s08w:8080";
+
 // Report Modal
 export const FOOTER_HEIGHT = 36;
 export const REPORT_TITLE_HEIGHT = 32;

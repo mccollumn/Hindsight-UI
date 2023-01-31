@@ -1,69 +1,49 @@
-import {
-  TextFieldElement,
-  PasswordElement,
-} from 'react-hook-form-mui'
-import {
-  FormWrapper, FormWrapperProps
-} from '../components/form/FormWrapper'
+import * as React from "react";
+import { LoginForm } from "../components/form/LoginForm";
+import { AuthContext } from "../providers/AuthProvider";
+import LoginError from "../components/form/LoginError";
+import { styled } from "@mui/material/styles";
+import { Dialog, DialogContent } from "@mui/material";
 
-export const Login = ({
-  onLoginSubmit,
-  title = 'Member Login',
-  description,
-  submitButtonText = 'Login',
-  defaultUsername,
-  defaultPassword,
-}: LoginProps) => {
-  const defaultValues = {
-    username: defaultUsername,
-    password: defaultPassword,
-  };
+const DX_USERNAME =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_DX_USERNAME
+    : "";
+const DX_PASSWORD =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_DX_PASSWORD
+    : "";
 
-  const onSuccess = (values: any) => {
-    onLoginSubmit(values);
-  }
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+}));
 
+export default function Login({ onLoginSubmit }: LoginProps) {
+  const { handleLogin, errorMessage } = React.useContext(AuthContext);
   return (
-    <FormWrapper
-      onSuccess={onSuccess}
-      defaultValues={defaultValues}
-      title={title}
-      description={description}
-      submitButtonText={submitButtonText}
-    >
-
-      <TextFieldElement
-        label='Username/Email'
-        name='username'
-        validation={{
-          required: 'Username is required'
-        }}
-      />
-
-      <PasswordElement
-        label='Password'
-        name='password'
-        type={'password'}
-        validation={{
-          required: 'Password is required'
-        }}
-      />
-
-    </FormWrapper>
-  )
+    <div>
+      <BootstrapDialog aria-label="login" open={true}>
+        <DialogContent dividers>
+          <LoginForm
+            onLoginSubmit={handleLogin}
+            defaultUsername={DX_USERNAME}
+            defaultPassword={DX_PASSWORD}
+          />
+          <LoginError message={errorMessage} />
+        </DialogContent>
+      </BootstrapDialog>
+    </div>
+  );
 }
 
-interface LoginProps extends FormWrapperProps {
+interface LoginProps {
   /**
-   * Handler for when then Login form is submitted
+   * Handler when Login form is submitted
    */
-  onLoginSubmit: (formValues: any) => void;
-  /**
-   * Populate default username field
-   */
-  defaultUsername?: string;
-  /**
-   * Populate default password field
-   */
-  defaultPassword?: string;
+  onLoginSubmit?: (formValues: any) => void;
 }

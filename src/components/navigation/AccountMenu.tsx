@@ -11,9 +11,11 @@ import Logout from "@mui/icons-material/Logout";
 import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import HomeIcon from "@mui/icons-material/Home";
+import { AuthContext } from "../../providers/AuthProvider";
 
 const AccountMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { handleLogout } = React.useContext(AuthContext);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -93,7 +95,7 @@ const AccountMenu = () => {
           Help
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

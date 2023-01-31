@@ -1,91 +1,69 @@
-import {
-  Box,
-  BoxProps,
-  Button
-} from '@mui/material';
-import { styled } from '@mui/system';
-import {
-  ButtonRB,
-  ButtonRBProps
-} from '../button/ButtonRB';
+import { Box } from "@mui/material";
+import { styled } from "@mui/system";
+import { ButtonStyled } from "../button/ButtonStyled";
 
 export const FormButtonRow = ({
-  submitButtonText = 'Submit',
-  resetButtonText = 'Cancel',
-}: FormButtonRow) => {
+  submitButtonText = "Submit",
+  resetButtonText,
+  onCancel,
+}: FormButtonRowProps) => {
+  const isShowButtons = [submitButtonText, resetButtonText].some(
+    (b: any) => !!b
+  );
 
-  const isShowButtons = [
-    submitButtonText,
-    resetButtonText,
-  ].some((b: any) => !!b)
-
-  if(!isShowButtons) {
+  if (!isShowButtons) {
     return null;
   }
 
   return (
     <ButtonRowStyled className="rb-form-button-row">
+      <ResetButton resetButtonText={resetButtonText} onCancel={onCancel} />
 
-      <ResetButton
-        resetButtonText={resetButtonText}
-      />
-
-      <SubmitButton
-        submitButtonText={submitButtonText}
-      />
+      <SubmitButton submitButtonText={submitButtonText} />
     </ButtonRowStyled>
   );
-}
+};
 
-const SubmitButton = ({
-  submitButtonText
-}: any) => {
+const SubmitButton = ({ submitButtonText }: any) => {
+  if (!submitButtonText) {
+    return null;
+  }
 
-  if(!submitButtonText) {
+  return <ButtonStyled type="submit">{submitButtonText}</ButtonStyled>;
+};
+
+const ResetButton = ({ resetButtonText, onCancel }: any) => {
+  if (!resetButtonText) {
     return null;
   }
 
   return (
-    <ButtonRB type="submit">
-      {submitButtonText}
-    </ButtonRB>
-  );
-}
-
-const ResetButton = ({
-  resetButtonText
-}: any) => {
-
-  if(!resetButtonText) {
-    return null;
-  }
-
-  return (
-    <ButtonRB
-      color={'inherit'}>
+    <ButtonStyled onClick={onCancel} color={"inherit"}>
       {resetButtonText}
-    </ButtonRB>
+    </ButtonStyled>
   );
-}
+};
 
-const ButtonRowStyled = styled(Box)(({
-
-}) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-  gap: '24px'
+const ButtonRowStyled = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  gap: "24px",
 }));
 
-export interface FormButtonRow {
+export interface FormButtonRowProps {
   /**
    * Displays submit button with given text
    * Submits form on click
    */
-  submitButtonText?: string
+  submitButtonText?: string;
   /**
    * Displays reset button with given text
    * Resets form with default values on click
    */
-  resetButtonText?: string
+  resetButtonText?: string;
+  /**
+   * Cancel button click override
+   */
+  onCancel?: Function;
 }
