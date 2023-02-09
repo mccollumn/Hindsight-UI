@@ -43,7 +43,7 @@ function App() {
   ) => {
     console.log("Selected profile:", value);
     setSelectedProfile(value);
-    navigate("/profile");
+    navigate("/metrics");
   };
 
   return (
@@ -96,8 +96,12 @@ function App() {
           }
         />
         <Route
-          path="/profile"
-          element={<KeyMetrics profile={selectedProfile} />}
+          path="/metrics"
+          element={
+            <ProtectedRoute>
+              <KeyMetrics profile={selectedProfile} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/profiles"
@@ -108,10 +112,6 @@ function App() {
           }
         />
         <Route path="/login" element={<Login />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/user" element={<User />} />
         <Route
           path="*"
           element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
@@ -120,10 +120,5 @@ function App() {
     </Layout>
   );
 }
-
-const Reports = () => <div>Reports</div>;
-const Notifications = () => <div>Notifications</div>;
-const Settings = () => <div>Settings</div>;
-const User = () => <div>User</div>;
 
 export default App;
