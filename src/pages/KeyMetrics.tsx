@@ -6,11 +6,12 @@ import ReportModal from "../components/reports/ReportModal";
 import Title from "../components/Title";
 import { ProfileProps, ProfileReportsProps } from "../interfaces/interfaces";
 import { useProfiles } from "../hooks/useProfiles";
+import { useReports } from "../hooks/useReports";
 
 const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
   const { profileID, selectedProfile, setProfile } = useProfiles();
   setProfile(profile.ID ? profile.ID : profileID);
-
+  const { reports, reportID, setReport } = useReports();
   const [isReportModalOpen, setIsReportModalOpen] = React.useState(false);
   const [selectedReport, setSelectedReport] =
     React.useState<ProfileReportsProps | null>(null);
@@ -20,22 +21,32 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
     cancelApiRequests.current = cancelAllRequests;
   };
 
-  const handleReportModalOpen = () => {
-    setIsReportModalOpen(true);
-  };
+  React.useMemo(() => {
+    if (reportID && reports.length > 0) {
+      setSelectedReport(
+        reports.find((r: ProfileReportsProps) => r.ID === reportID)
+      );
+      setReport(reportID);
+    }
+  }, [reportID, reports, setReport]);
 
   const handleReportModalClose = () => {
     cancelApiRequests.current();
     setSelectedReport(null);
+    setReport(null);
     setIsReportModalOpen(false);
   };
 
-  const onReportSelect = React.useCallback((report: ProfileReportsProps) => {
-    setSelectedReport(report);
-    setIsReportModalOpen(true);
-  }, []);
+  const onReportSelect = React.useCallback(
+    (report: ProfileReportsProps) => {
+      setSelectedReport(report);
+      setReport(report.ID);
+      setIsReportModalOpen(true);
+    },
+    [setReport]
+  );
 
-  if (!selectedProfile) {
+  if (!selectedProfile || !reports) {
     return null;
   }
   return (
