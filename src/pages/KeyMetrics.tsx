@@ -5,8 +5,12 @@ import ReportSelectionPanel from "../components/reports/ReportSelectionPanel";
 import ReportModal from "../components/reports/ReportModal";
 import Title from "../components/Title";
 import { ProfileProps, ProfileReportsProps } from "../interfaces/interfaces";
+import { useProfiles } from "../hooks/useProfiles";
 
 const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
+  const { profileID, selectedProfile, setProfile } = useProfiles();
+  setProfile(profile.ID ? profile.ID : profileID);
+
   const [isReportModalOpen, setIsReportModalOpen] = React.useState(false);
   const [selectedReport, setSelectedReport] =
     React.useState<ProfileReportsProps | null>(null);
@@ -31,13 +35,16 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
     setIsReportModalOpen(true);
   }, []);
 
+  if (!selectedProfile) {
+    return null;
+  }
   return (
     <Box>
-      <Title>{getProfileName(profile)}</Title>
-      <KeyMetricsDashboard profile={profile} />
-      {Object.keys(profile).length !== 0 && (
+      <Title>{getProfileName(selectedProfile)}</Title>
+      <KeyMetricsDashboard profile={selectedProfile} />
+      {Object.keys(selectedProfile).length !== 0 && (
         <ReportSelectionPanel
-          profile={profile}
+          profile={selectedProfile}
           selectedReport={selectedReport}
           setSelectedReport={setSelectedReport}
           handleSelection={onReportSelect}
@@ -47,7 +54,7 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
         <ReportModal
           isOpen={isReportModalOpen}
           onClose={handleReportModalClose}
-          profile={profile}
+          profile={selectedProfile}
           report={selectedReport}
           cancelRequestsCallback={getCancelRequests}
         />

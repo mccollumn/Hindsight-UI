@@ -29,8 +29,4 @@ const Template: ComponentStory<typeof KeyMetrics> = (args) => (
 export const KeyMetricsPage = Template.bind({});
 KeyMetricsPage.args = {
   profile: profile,
-  // keyMetricsData: keyMetrics,
-  // profileName: "My Profile",
-  // reports: reports,
-  // handleSelection: handleSelection,
 };

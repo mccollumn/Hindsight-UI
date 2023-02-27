@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { AuthContext } from "./providers/AuthProvider";
+// import { AuthContext } from "./providers/AuthProvider";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -9,27 +9,17 @@ import Profiles from "./pages/Profiles";
 import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
-import useGetData from "./hooks/useGetData";
-import { useQuery } from "@tanstack/react-query";
+import { useProfiles } from "./hooks/useProfiles";
 import { lastDayOfMonth } from "date-fns/fp";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 
 function App() {
-  const { auth } = React.useContext(AuthContext);
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
     {}
   );
+  const { profiles } = useProfiles();
   const navigate = useNavigate();
-  const { getDataQuery } = useGetData();
-  const {
-    isLoading,
-    isSuccess,
-    isError,
-    data: profiles,
-  } = useQuery(["profiles", {}], getDataQuery, {
-    enabled: auth !== null,
-  });
 
   console.log("Profiles:", profiles);
 
