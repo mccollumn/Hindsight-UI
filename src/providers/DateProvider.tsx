@@ -8,6 +8,12 @@ import {
   differenceInDays,
   differenceInMonths,
 } from "date-fns/fp";
+import {
+  useQueryParam,
+  DateParam,
+  withDefault,
+  UrlUpdateType,
+} from "use-query-params";
 import { generateWtDate } from "../components/data-vis/lineGraph.util";
 
 const now = Date.now();
@@ -37,8 +43,19 @@ export const DateContext =
   React.createContext<DateProviderProps>(defaultContext);
 
 export const DateProvider = ({ children }: any) => {
-  const [startDate, setStartDate] = React.useState(startOfCurrentMonth);
-  const [endDate, setEndDate] = React.useState(endOfCurrentMonth);
+  const [startDate, setStartDate] = useQueryParam(
+    "startDate",
+    withDefault(DateParam, startOfCurrentMonth)
+  );
+  const [endDate, setEndDate] = useQueryParam(
+    "endDate",
+    withDefault(DateParam, endOfCurrentMonth)
+  );
+
+  React.useEffect(() => {
+    setStartDate(startDate || startOfCurrentMonth);
+    setEndDate(endDate || endOfCurrentMonth);
+  }, [endDate, setEndDate, setStartDate, startDate]);
 
   const wtStartDate = generateWtDate(
     getYear(startDate),
@@ -97,9 +114,12 @@ const getInterval = (startDate: Date, endPeriod: Date) => {
 
 interface DateProviderProps {
   startDate: Date;
-  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
+  setStartDate: (
+    newValue: Date,
+    updateType?: UrlUpdateType | undefined
+  ) => void;
   endDate: Date;
-  setEndDate: React.Dispatch<React.SetStateAction<Date>>;
+  setEndDate: (newValue: Date, updateType?: UrlUpdateType | undefined) => void;
   wtStartDate: string;
   wtEndDate: string;
   trendInterval: string | null;

@@ -5,6 +5,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./theme";
+import { QueryParamProvider } from "use-query-params";
+import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { BrowserRouter } from "react-router-dom";
 import { DateProvider } from "./providers/DateProvider";
 import { AuthProvider } from "./providers/AuthProvider";
@@ -27,14 +29,16 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <DateProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <App />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </AuthProvider>
-          </QueryClientProvider>
-        </DateProvider>
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <DateProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <App />
+                <ReactQueryDevtools initialIsOpen={false} />
+              </AuthProvider>
+            </QueryClientProvider>
+          </DateProvider>
+        </QueryParamProvider>
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>

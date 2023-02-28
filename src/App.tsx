@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { AuthContext } from "./providers/AuthProvider";
+// import { AuthContext } from "./providers/AuthProvider";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
 import { Routes, Route, useNavigate } from "react-router-dom";
@@ -9,27 +9,17 @@ import Profiles from "./pages/Profiles";
 import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
-import useGetData from "./hooks/useGetData";
-import { useQuery } from "@tanstack/react-query";
+import { useProfiles } from "./hooks/useProfiles";
 import { lastDayOfMonth } from "date-fns/fp";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
 
 function App() {
-  const { auth } = React.useContext(AuthContext);
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
     {}
   );
+  const { profiles } = useProfiles();
   const navigate = useNavigate();
-  const { getDataQuery } = useGetData();
-  const {
-    isLoading,
-    isSuccess,
-    isError,
-    data: profiles,
-  } = useQuery(["profiles", {}], getDataQuery, {
-    enabled: auth !== null,
-  });
 
   console.log("Profiles:", profiles);
 
@@ -43,7 +33,7 @@ function App() {
   ) => {
     console.log("Selected profile:", value);
     setSelectedProfile(value);
-    navigate("/profile");
+    navigate("/metrics");
   };
 
   return (
@@ -96,8 +86,12 @@ function App() {
           }
         />
         <Route
-          path="/profile"
-          element={<KeyMetrics profile={selectedProfile} />}
+          path="/metrics"
+          element={
+            <ProtectedRoute>
+              <KeyMetrics profile={selectedProfile} />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/profiles"
@@ -108,10 +102,6 @@ function App() {
           }
         />
         <Route path="/login" element={<Login />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/user" element={<User />} />
         <Route
           path="*"
           element={<Profiles profiles={profiles} onClick={onProfileSelect} />}
@@ -120,10 +110,5 @@ function App() {
     </Layout>
   );
 }
-
-const Reports = () => <div>Reports</div>;
-const Notifications = () => <div>Notifications</div>;
-const Settings = () => <div>Settings</div>;
-const User = () => <div>User</div>;
 
 export default App;
