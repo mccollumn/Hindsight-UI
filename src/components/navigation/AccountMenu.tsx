@@ -78,7 +78,7 @@ const AccountMenu = () => {
           </ListItemIcon>
           Home
         </MenuItem>
-        <MenuItem>
+        <MenuItem component={Link} href={window.config.A9_URL} target="_blank">
           <ListItemIcon>
             <AnalyticsIcon fontSize="small" />
           </ListItemIcon>

@@ -1,11 +1,11 @@
 import React from "react";
 import axios from "axios";
 import { AuthContext } from "../providers/AuthProvider";
-import { DX_SERVER } from "../constants/constants";
 
 // Test data
 import { keyMetrics } from "../mocks/data/keyMetrics";
 
+const DX_SERVER = window.config.DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
 
 const useGetData = () => {
