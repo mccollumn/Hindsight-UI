@@ -36,7 +36,7 @@ export const useWtLineGraphQueries = (
           "report",
           { profileID: profileID, reportID: reportID, params: params },
         ],
-        queryFn: () =>
+        queryFn: ({ signal }: any) =>
           getWtData({
             profileID: profileID,
             reportID: reportID,

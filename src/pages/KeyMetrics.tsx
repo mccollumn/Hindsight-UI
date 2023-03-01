@@ -31,7 +31,9 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
   }, [reportID, reports, setReport]);
 
   const handleReportModalClose = () => {
-    cancelApiRequests.current();
+    if (typeof cancelApiRequests.current === "function") {
+      cancelApiRequests.current();
+    }
     setSelectedReport(null);
     setReport(null);
     setIsReportModalOpen(false);
