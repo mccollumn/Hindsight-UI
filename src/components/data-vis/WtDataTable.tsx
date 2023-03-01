@@ -152,10 +152,9 @@ const WtDataTable = ({
             id="page-size"
             ref={pageSize}
             style={{ marginLeft: ".25em", marginBottom: ".5em" }}
+            defaultValue="10"
           >
-            <option value="10" selected={true}>
-              10
-            </option>
+            <option value="10">10</option>
             <option value="25">25</option>
             <option value="50">50</option>
             <option value="100">100</option>
