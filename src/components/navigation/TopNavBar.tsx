@@ -10,6 +10,7 @@ import {
 import { Menu } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { NavigationAction } from "./Layout";
+import webtrendsLogo from "../../images/webtrends_logo_white_small.png";
 
 export const TopNavBar = ({
   topNavActions,
@@ -57,7 +58,7 @@ export const TopNavBar = ({
               flexGrow: 1,
             }}
           >
-            {label}
+            <img src={webtrendsLogo} alt="Webtrends Logo" />
           </Typography>
           {left}
         </Box>
