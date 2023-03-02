@@ -1,9 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { AuthContext } from "../providers/AuthProvider";
-
-// Test data
-import { keyMetricsActual } from "../mocks/data/keyMetrics";
+import { KeyMetricsProps } from "../interfaces/interfaces";
 
 const DX_SERVER = window.config.DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
@@ -67,12 +65,8 @@ const useGetData = () => {
   const getKeyMetrics = React.useCallback(
     async ({ params = {}, profileID = "" }: getWtDataProps) => {
       const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
-      // const res = await getAxios(url, params);
-      // return res.data;
-
-      // Sending mock data until API is fixed
-      setResponse(keyMetricsActual);
-      return keyMetricsActual;
+      const res = await getAxios(url, params);
+      return res.data as KeyMetricsProps;
     },
     []
   );
@@ -98,11 +92,8 @@ const useGetData = () => {
   const getKeyMetricsQuery = async (parameters: Params) => {
     const [_key, { params = {}, profileID = "" }] = parameters.queryKey;
     const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
-    // const res = await getAxios(url, params);
-    // return res;
-
-    // Sending mock data until API is fixed
-    return keyMetricsActual;
+    const res = await getAxios(url, params);
+    return res as KeyMetricsProps;
   };
 
   const getReportPeriodsQuery = async (parameters: Params) => {
