@@ -16,6 +16,7 @@ const Profiles = ({ profiles = [], onClick }: ProfilesProps) => {
     >
       {[...profiles].map((profile) => (
         <ProfileItem
+          profile={profile}
           clickHandler={() => profileClick(profile)}
           key={profile.name}
         >

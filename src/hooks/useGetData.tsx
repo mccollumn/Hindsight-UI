@@ -3,7 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../providers/AuthProvider";
 
 // Test data
-import { keyMetrics } from "../mocks/data/keyMetrics";
+import { keyMetricsActual } from "../mocks/data/keyMetrics";
 
 const DX_SERVER = window.config.DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
@@ -71,8 +71,8 @@ const useGetData = () => {
       // return res.data;
 
       // Sending mock data until API is fixed
-      setResponse(keyMetrics);
-      return keyMetrics;
+      setResponse(keyMetricsActual);
+      return keyMetricsActual;
     },
     []
   );
@@ -102,7 +102,7 @@ const useGetData = () => {
     // return res;
 
     // Sending mock data until API is fixed
-    return keyMetrics;
+    return keyMetricsActual;
   };
 
   const getReportPeriodsQuery = async (parameters: Params) => {

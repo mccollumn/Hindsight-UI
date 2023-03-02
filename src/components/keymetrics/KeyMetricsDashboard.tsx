@@ -4,11 +4,9 @@ import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ResponsiveLine } from "@nivo/line";
 import { formatISO } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
 import Title from "../Title";
-import useGetData from "../../hooks/useGetData";
 import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
-import { DateContext } from "../../providers/DateProvider";
+import { useKeyMetrics } from "../../hooks/useKeyMetrics";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -61,34 +59,12 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 };
 
 const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
-  const { getKeyMetricsQuery } = useGetData();
-  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
-
-  const {
-    isLoading,
-    isError,
-    data: response,
-    error,
-  } = useQuery(
-    [
-      "keyMetrics",
-      {
-        profileID: profile?.ID,
-        params: { start_period: wtStartDate, end_period: wtEndDate },
-      },
-    ],
-    getKeyMetricsQuery
-  );
-
-  console.log("Key metrics:", response);
-  console.log("WT start date:", wtStartDate);
-  console.log("WT end date:", wtEndDate);
-
+  const { keyMetrics } = useKeyMetrics(profile);
   const [measureNames, setMeasureNames] = React.useState<string[]>([]);
   React.useEffect(() => {
-    if (!response) return;
-    setMeasureNames(getMeasures(response));
-  }, [response]);
+    if (!keyMetrics) return;
+    setMeasureNames(getMeasures(keyMetrics));
+  }, [keyMetrics]);
 
   return (
     <Box sx={{ flexGrow: 1, marginBottom: "2rem" }}>
@@ -101,8 +77,8 @@ const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
         {measureNames.map((name, index) => (
           <Grid xs={12} sm={6} md={4} xl={3} key={index}>
             <Item>
-              {response && (
-                <KeyMetricTile metricName={name} keyMetricsData={response} />
+              {keyMetrics && (
+                <KeyMetricTile metricName={name} keyMetricsData={keyMetrics} />
               )}
             </Item>
           </Grid>
