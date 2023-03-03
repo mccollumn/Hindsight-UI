@@ -35,23 +35,11 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
           xFormat={"time:%Y-%m-%d"}
           enableGridX={false}
           yScale={{ type: "linear", min: "auto", max: "auto" }}
-          axisBottom={{
-            format: "%b %d",
-            tickValues: "every 2 days",
-          }}
-          axisLeft={
-            {
-              // format: ">-.2~f",
-            }
-          }
-          pointSize={10}
-          pointBorderWidth={1}
-          pointBorderColor={{
-            from: "color",
-            modifiers: [["darker", 0.3]],
-          }}
+          axisBottom={null}
+          enablePoints={false}
           data={getGraphData({ metricName, keyMetricsData })}
           margin={{ top: 25, right: 40, bottom: 25, left: 50 }}
+          tooltip={formatPointLabels}
         />
       </div>
     </Box>
@@ -98,15 +86,14 @@ const getGraphData = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
   if (dailyMetrics === null) return [];
 
   let trendData: Array<any> = [];
-  for (const key of Object.keys(dailyMetrics)) {
-    const value = dailyMetrics[key];
-    if (value) {
-      trendData.push({
-        x: convertDateString(key),
-        y: value.measures[metricName],
-      });
-    }
-  }
+  Object.keys(dailyMetrics).forEach((day) => {
+    const dayMetrics = dailyMetrics[day];
+    const value = dayMetrics?.measures[metricName] || 0;
+    trendData.push({
+      x: convertDateString(day),
+      y: value,
+    });
+  });
   return [{ id: "trend", data: trendData }];
 };
 
@@ -118,6 +105,10 @@ const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
   if (keyMetricsData === null || keyMetricsData === undefined) return [];
   return Object.keys(Object.values(keyMetricsData.data)[0].measures);
+};
+
+const formatPointLabels = (obj: any) => {
+  return obj.point.data.yFormatted;
 };
 
 interface KeyMetricTileProps {

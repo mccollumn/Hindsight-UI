@@ -47,15 +47,16 @@ const KeyMetricsLabels = ({ profile }: KeyMetricsLabelsProps) => {
       <Grid container item spacing={2}>
         {metricsToDisplay.map((metric) => {
           if (!metric.enabled) return null;
-          const value = metric.symbol
-            ? `${metrics[metric.name]}${metric.symbol}`
-            : `${metrics[metric.name]}`;
+          const value = metrics[metric.name] || "0";
+          const formattedValue = metric.symbol
+            ? `${value}${metric.symbol}`
+            : `${value}`;
           const icon = metric.icon ? metric.icon : undefined;
           return (
             <Grid item key={metric.name}>
               <KeyMetricsLabel
                 label={metric.name}
-                metric={value}
+                metric={formattedValue}
                 icon={icon}
                 key={metric.name}
               />
