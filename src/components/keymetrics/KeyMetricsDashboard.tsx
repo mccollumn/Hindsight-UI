@@ -17,6 +17,11 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
+  const [localData, setLocalData] = React.useState(keyMetricsData);
+  React.useEffect(() => {
+    setLocalData(keyMetricsData);
+  }, [keyMetricsData]);
+
   return (
     <Box>
       <Title>{getTotal({ metricName, keyMetricsData })}</Title>
@@ -37,7 +42,7 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
           yScale={{ type: "linear", min: "auto", max: "auto" }}
           axisBottom={null}
           enablePoints={false}
-          data={getGraphData({ metricName, keyMetricsData })}
+          data={getGraphData({ metricName, localData })}
           margin={{ top: 25, right: 40, bottom: 25, left: 50 }}
           tooltip={formatPointLabels}
         />
@@ -81,8 +86,8 @@ const convertDateString = (dateStr: string) => {
   return formatISO(date, { representation: "date" });
 };
 
-const getGraphData = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
-  const dailyMetrics: any = Object.values(keyMetricsData.data)[0].SubRows;
+const getGraphData = ({ metricName, localData }: GetGraphDataProps) => {
+  const dailyMetrics: any = Object.values(localData.data)[0].SubRows;
   if (dailyMetrics === null) return [];
 
   let trendData: Array<any> = [];
@@ -129,6 +134,11 @@ interface Measures {
   "Avg. Visitors per Day": number;
   "Page Views per Visit": number;
   "New Visitors": number;
+}
+
+interface GetGraphDataProps {
+  metricName: string;
+  localData: KeyMetricsProps;
 }
 
 export default KeyMetricsDashboard;
