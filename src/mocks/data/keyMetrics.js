@@ -46,7 +46,7 @@ export const keyMetrics = {
   },
 };
 
-const keyMetricsActual = {
+export const keyMetricsActual = {
   definition: {
     accountID: 1,
     profileID: "QM3oqOS1Ak8",

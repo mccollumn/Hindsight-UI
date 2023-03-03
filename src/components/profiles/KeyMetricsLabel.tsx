@@ -1,20 +1,21 @@
-import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 
-const KeyMetricsLabel = () => {
+const KeyMetricsLabel = ({
+  metric,
+  label,
+  icon,
+  ...props
+}: KeyMetricsLabelProps) => {
+  const textContent = `${label}: ${metric}`;
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        right: "10%",
-        top: "50%",
-        transform: "translateY(-50%)",
-      }}
-    >
-      Views: 10
-      <br></br>
-      Visits: 1
-    </Box>
+    <Chip label={textContent} color="primary" variant="outlined" icon={icon} />
   );
 };
 
 export default KeyMetricsLabel;
+
+interface KeyMetricsLabelProps {
+  metric: number | string;
+  label: string;
+  icon?: React.ReactElement;
+}

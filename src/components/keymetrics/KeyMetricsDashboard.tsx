@@ -4,11 +4,9 @@ import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ResponsiveLine } from "@nivo/line";
 import { formatISO } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
 import Title from "../Title";
-import useGetData from "../../hooks/useGetData";
 import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
-import { DateContext } from "../../providers/DateProvider";
+import { useKeyMetrics } from "../../hooks/useKeyMetrics";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -19,6 +17,11 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
+  const [localData, setLocalData] = React.useState(keyMetricsData);
+  React.useEffect(() => {
+    setLocalData(keyMetricsData);
+  }, [keyMetricsData]);
+
   return (
     <Box>
       <Title>{getTotal({ metricName, keyMetricsData })}</Title>
@@ -37,23 +40,11 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
           xFormat={"time:%Y-%m-%d"}
           enableGridX={false}
           yScale={{ type: "linear", min: "auto", max: "auto" }}
-          axisBottom={{
-            format: "%b %d",
-            tickValues: "every 2 days",
-          }}
-          axisLeft={
-            {
-              // format: ">-.2~f",
-            }
-          }
-          pointSize={10}
-          pointBorderWidth={1}
-          pointBorderColor={{
-            from: "color",
-            modifiers: [["darker", 0.3]],
-          }}
-          data={getGraphData({ metricName, keyMetricsData })}
+          axisBottom={null}
+          enablePoints={false}
+          data={getGraphData({ metricName, localData })}
           margin={{ top: 25, right: 40, bottom: 25, left: 50 }}
+          tooltip={formatPointLabels}
         />
       </div>
     </Box>
@@ -61,34 +52,12 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 };
 
 const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
-  const { getKeyMetricsQuery } = useGetData();
-  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
-
-  const {
-    isLoading,
-    isError,
-    data: response,
-    error,
-  } = useQuery(
-    [
-      "keyMetrics",
-      {
-        profileID: profile?.ID,
-        params: { start_period: wtStartDate, end_period: wtEndDate },
-      },
-    ],
-    getKeyMetricsQuery
-  );
-
-  console.log("Key metrics:", response);
-  console.log("WT start date:", wtStartDate);
-  console.log("WT end date:", wtEndDate);
-
+  const { keyMetrics } = useKeyMetrics(profile);
   const [measureNames, setMeasureNames] = React.useState<string[]>([]);
   React.useEffect(() => {
-    if (!response) return;
-    setMeasureNames(getMeasures(response));
-  }, [response]);
+    if (!keyMetrics) return;
+    setMeasureNames(getMeasures(keyMetrics));
+  }, [keyMetrics]);
 
   return (
     <Box sx={{ flexGrow: 1, marginBottom: "2rem" }}>
@@ -101,8 +70,8 @@ const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
         {measureNames.map((name, index) => (
           <Grid xs={12} sm={6} md={4} xl={3} key={index}>
             <Item>
-              {response && (
-                <KeyMetricTile metricName={name} keyMetricsData={response} />
+              {keyMetrics && (
+                <KeyMetricTile metricName={name} keyMetricsData={keyMetrics} />
               )}
             </Item>
           </Grid>
@@ -117,20 +86,19 @@ const convertDateString = (dateStr: string) => {
   return formatISO(date, { representation: "date" });
 };
 
-const getGraphData = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
-  const dailyMetrics: any = Object.values(keyMetricsData.data)[0].SubRows;
+const getGraphData = ({ metricName, localData }: GetGraphDataProps) => {
+  const dailyMetrics: any = Object.values(localData.data)[0].SubRows;
   if (dailyMetrics === null) return [];
 
   let trendData: Array<any> = [];
-  for (const key of Object.keys(dailyMetrics)) {
-    const value = dailyMetrics[key];
-    if (value) {
-      trendData.push({
-        x: convertDateString(key),
-        y: value.measures[metricName],
-      });
-    }
-  }
+  Object.keys(dailyMetrics).forEach((day) => {
+    const dayMetrics = dailyMetrics[day];
+    const value = dayMetrics?.measures[metricName] || 0;
+    trendData.push({
+      x: convertDateString(day),
+      y: value,
+    });
+  });
   return [{ id: "trend", data: trendData }];
 };
 
@@ -142,6 +110,10 @@ const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
   if (keyMetricsData === null || keyMetricsData === undefined) return [];
   return Object.keys(Object.values(keyMetricsData.data)[0].measures);
+};
+
+const formatPointLabels = (obj: any) => {
+  return obj.point.data.yFormatted;
 };
 
 interface KeyMetricTileProps {
@@ -162,6 +134,11 @@ interface Measures {
   "Avg. Visitors per Day": number;
   "Page Views per Visit": number;
   "New Visitors": number;
+}
+
+interface GetGraphDataProps {
+  metricName: string;
+  localData: KeyMetricsProps;
 }
 
 export default KeyMetricsDashboard;
