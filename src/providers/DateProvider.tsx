@@ -52,11 +52,6 @@ export const DateProvider = ({ children }: any) => {
     withDefault(DateParam, endOfCurrentMonth)
   );
 
-  React.useEffect(() => {
-    setStartDate(startDate || startOfCurrentMonth);
-    setEndDate(endDate || endOfCurrentMonth);
-  }, [endDate, setEndDate, setStartDate, startDate]);
-
   const wtStartDate = generateWtDate(
     getYear(startDate),
     getMonth(startDate) + 1,

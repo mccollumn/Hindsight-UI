@@ -23,6 +23,9 @@ const DatePicker = ({
     endDate,
   ]);
 
+  setStartDate(value[0]);
+  setEndDate(value[1]);
+
   const handleAccept = (newDateRange: DateRange<any>) => {
     setValue(newDateRange);
     setStartDate(newDateRange[0]);
