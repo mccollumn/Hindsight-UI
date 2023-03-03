@@ -10,7 +10,6 @@ import { useReports } from "../hooks/useReports";
 
 const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
   const { profileID, selectedProfile, setProfile } = useProfiles();
-  setProfile(profile.ID ? profile.ID : profileID);
   const { reports, reportID, setReport } = useReports();
   const [isReportModalOpen, setIsReportModalOpen] = React.useState(false);
   const [selectedReport, setSelectedReport] =
@@ -20,6 +19,10 @@ const KeyMetrics = ({ profile }: KeyMetricsPageProps) => {
   const getCancelRequests = (cancelAllRequests: any) => {
     cancelApiRequests.current = cancelAllRequests;
   };
+
+  React.useEffect(() => {
+    setProfile(profile.ID ? profile.ID : profileID);
+  }, []);
 
   React.useMemo(() => {
     if (reportID && reports.length > 0) {

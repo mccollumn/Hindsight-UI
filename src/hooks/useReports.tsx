@@ -28,9 +28,5 @@ export const useReports = () => {
     });
   }, [report, reports]);
 
-  console.log("useReports reports:", reports);
-  console.log("useReports selected report:", selectedReport);
-  console.log("useReports report id:", report);
-
   return { reports, reportID: report, selectedReport, setReport };
 };

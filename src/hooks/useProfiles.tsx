@@ -27,9 +27,5 @@ export const useProfiles = () => {
     });
   }, [profile, profiles]);
 
-  console.log("useProfiles profiles:", profiles);
-  console.log("useProfiles selected profile:", selectedProfile);
-  console.log("useProfiles profile id:", profile);
-
   return { profiles, profileID: profile, selectedProfile, setProfile };
 };
