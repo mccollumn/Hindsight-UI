@@ -11,6 +11,7 @@ import Logout from "@mui/icons-material/Logout";
 import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import HomeIcon from "@mui/icons-material/Home";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
 
 const AccountMenu = () => {
@@ -23,6 +24,10 @@ const AccountMenu = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -72,7 +77,16 @@ const AccountMenu = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem component={Link} href="/">
+        <MenuItem
+          onClick={() =>
+            navigate({
+              pathname: "/",
+              search: `?startDate=${
+                searchParams.get("startDate") || ""
+              }&endDate=${searchParams.get("endDate") || ""}`,
+            })
+          }
+        >
           <ListItemIcon>
             <HomeIcon fontSize="small" />
           </ListItemIcon>
