@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ResponsiveLine } from "@nivo/line";
-import { formatISO } from "date-fns";
+import { formatISO, addSeconds, format } from "date-fns";
 import Title from "../Title";
 import { KeyMetricsProps, ProfileProps } from "../../interfaces/interfaces";
 import { useKeyMetrics } from "../../hooks/useKeyMetrics";
@@ -104,7 +104,15 @@ const getGraphData = ({ metricName, localData }: GetGraphDataProps) => {
 
 const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
   const measures = Object.values(keyMetricsData.data)[0].measures;
-  return measures[metricName as keyof Measures];
+  const measureValue = measures[metricName as keyof Measures];
+  if (metricName.toLowerCase().includes("bounce")) {
+    return `${measureValue}%`;
+  }
+  if (metricName.toLowerCase().includes("time on site")) {
+    const duration = addSeconds(new Date(0), measureValue);
+    return format(duration, "m'm 'ss's'");
+  }
+  return measureValue;
 };
 
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
