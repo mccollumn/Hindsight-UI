@@ -105,14 +105,17 @@ const getGraphData = ({ metricName, localData }: GetGraphDataProps) => {
 const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
   const measures = Object.values(keyMetricsData.data)[0].measures;
   const measureValue = measures[metricName as keyof Measures];
-  if (metricName.toLowerCase().includes("bounce")) {
+  if (metricName.toLowerCase().includes("bounce") && measureValue !== null) {
     return `${measureValue}%`;
   }
-  if (metricName.toLowerCase().includes("time on site")) {
+  if (
+    metricName.toLowerCase().includes("time on site") &&
+    measureValue !== null
+  ) {
     const duration = addSeconds(new Date(0), measureValue);
     return format(duration, "m'm 'ss's'");
   }
-  return measureValue;
+  return measureValue || 0;
 };
 
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
