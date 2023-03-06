@@ -26,7 +26,7 @@ const DatePicker = ({
   React.useEffect(() => {
     setStartDate(value[0]);
     setEndDate(value[1]);
-  }, []);
+  }, [setEndDate, setStartDate, value]);
 
   const handleAccept = (newDateRange: DateRange<any>) => {
     setValue(newDateRange);

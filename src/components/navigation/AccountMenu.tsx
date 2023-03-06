@@ -18,11 +18,28 @@ const AccountMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { handleLogout } = React.useContext(AuthContext);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleHomeClick = () => {
+    let params = "";
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    if (startDate && endDate) {
+      params = `?startDate=${searchParams.get("startDate") || ""}&endDate=${
+        searchParams.get("endDate") || ""
+      }`;
+    }
+
+    navigate({
+      pathname: "/",
+      search: params,
+    });
   };
 
   const navigate = useNavigate();
@@ -77,16 +94,7 @@ const AccountMenu = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem
-          onClick={() =>
-            navigate({
-              pathname: "/",
-              search: `?startDate=${
-                searchParams.get("startDate") || ""
-              }&endDate=${searchParams.get("endDate") || ""}`,
-            })
-          }
-        >
+        <MenuItem onClick={handleHomeClick}>
           <ListItemIcon>
             <HomeIcon fontSize="small" />
           </ListItemIcon>

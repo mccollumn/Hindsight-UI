@@ -38,7 +38,7 @@ const useGetData = () => {
       setError(error);
       setStatus(499);
       setLoading(false);
-      console.log("Error Retrieving Data:", error);
+      console.error("Error Retrieving Data:", error);
     }
   };
 

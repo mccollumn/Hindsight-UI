@@ -1,15 +1,15 @@
 import React from "react";
 import "./App.css";
-// import { AuthContext } from "./providers/AuthProvider";
 import { Layout } from "./components/navigation/Layout";
 import ProfileMenu from "./components/profiles/ProfileMenu";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useSearchParams } from "react-router-dom";
 import KeyMetrics from "./pages/KeyMetrics";
 import Profiles from "./pages/Profiles";
 import AccountMenu from "./components/navigation/AccountMenu";
 import DatePicker from "./components/navigation/DatePicker";
 import { ProfileProps } from "./interfaces/interfaces";
 import { useProfiles } from "./hooks/useProfiles";
+import { DateContext } from "./providers/DateProvider";
 import { lastDayOfMonth } from "date-fns/fp";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/navigation/ProtectedRoute";
@@ -18,8 +18,16 @@ function App() {
   const [selectedProfile, setSelectedProfile] = React.useState<ProfileProps>(
     {}
   );
-  const { profiles } = useProfiles();
+  const { profiles, setProfile } = useProfiles();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const { startDate, setStartDate, endDate, setEndDate } =
+    React.useContext(DateContext);
+  React.useEffect(() => {
+    setStartDate(startDate);
+    setEndDate(endDate);
+  }, [endDate, setEndDate, setStartDate, startDate]);
 
   console.log("Profiles:", profiles);
 
@@ -32,8 +40,20 @@ function App() {
     event?: React.SyntheticEvent<Element, Event>
   ) => {
     console.log("Selected profile:", value);
+    setProfile(value.ID);
     setSelectedProfile(value);
-    navigate("/metrics");
+    let params = `?profile=${value.ID}`;
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+    if (startDate && endDate) {
+      params = `?startDate=${searchParams.get("startDate") || ""}&endDate=${
+        searchParams.get("endDate") || ""
+      }&profile=${value.ID}`;
+    }
+    navigate({
+      pathname: "/metrics",
+      search: params,
+    });
   };
 
   return (
