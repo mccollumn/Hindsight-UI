@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Autocomplete } from "@mui/material";
-import TextField from "@mui/material/TextField";
+import { Autocomplete, TextField } from "@mui/material";
+import { useProfiles } from "../../hooks/useProfiles";
 import { ProfileProps } from "../../interfaces/interfaces";
 
 const ProfileMenu = ({
@@ -8,6 +8,8 @@ const ProfileMenu = ({
   handleSelection,
   ...props
 }: ProfileMenuProps) => {
+  const { selectedProfile } = useProfiles();
+  const [value, setValue] = React.useState(selectedProfile || {});
   const handleChange = (
     event: React.SyntheticEvent<Element, Event>,
     value: ProfileProps | null
@@ -15,6 +17,10 @@ const ProfileMenu = ({
     if (value === null) return;
     handleSelection(value, event);
   };
+
+  React.useEffect(() => {
+    setValue(selectedProfile || {});
+  }, [selectedProfile]);
 
   return (
     <Autocomplete
@@ -41,6 +47,9 @@ const ProfileMenu = ({
       )}
       loading={profiles.length === 0}
       onChange={handleChange}
+      value={value}
+      freeSolo
+      forcePopupIcon
       {...props}
     />
   );
