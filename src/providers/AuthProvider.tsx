@@ -13,6 +13,7 @@ export const AuthContext = React.createContext<AuthProviderProps>(undefined!);
 export const AuthProvider = ({ children }: any) => {
   const [auth, setAuth] = React.useState<credentialProps | null>(null);
   const [errorMessage, setErrorMessage] = React.useState("");
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
   const [encryptedAuth, setEncryptedAuth, { removeItem, isPersistent }] =
     useSessionStorageState("wt:auth");
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const handleLogin = async (creds: any) => {
     try {
+      setIsLoggingIn(true);
       const res = await axios.get(`${WT_DX_2_0_ENDPOINT}/profiles`, {
         auth: {
           username: creds.username,
@@ -29,14 +31,18 @@ export const AuthProvider = ({ children }: any) => {
       if (res.status === 200) {
         setAuth(creds);
         setEncryptedAuth(encryptObject(creds, SECRET));
+        setIsLoggingIn(false);
         if (location.pathname === "/login") {
-          const origin = location.state?.from?.pathname || "/";
+          const origin =
+            `${location.state?.from?.pathname}${location.state?.from?.search}` ||
+            "/";
           navigate(origin);
         }
       }
     } catch (error: any) {
-      const errorText = error.request.statusText;
+      const errorText = error.message;
       setErrorMessage(`Please verify the username and password`);
+      setIsLoggingIn(false);
     }
   };
 
@@ -61,6 +67,7 @@ export const AuthProvider = ({ children }: any) => {
         handleLogin,
         handleLogout,
         errorMessage,
+        isLoggingIn,
       }}
     >
       {children}
@@ -95,6 +102,10 @@ interface AuthProviderProps {
    * Message to display on unsuccessful login attempt
    */
   errorMessage: string;
+  /**
+   * Login status
+   */
+  isLoggingIn: boolean;
 }
 
 interface credentialProps {

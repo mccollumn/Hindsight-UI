@@ -27,7 +27,7 @@ function App() {
   React.useEffect(() => {
     setStartDate(startDate);
     setEndDate(endDate);
-  }, [endDate, setEndDate, setStartDate, startDate]);
+  }, []);
 
   console.log("Profiles:", profiles);
 

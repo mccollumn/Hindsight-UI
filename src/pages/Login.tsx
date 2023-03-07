@@ -3,7 +3,12 @@ import { LoginForm } from "../components/form/LoginForm";
 import { AuthContext } from "../providers/AuthProvider";
 import LoginError from "../components/form/LoginError";
 import { styled } from "@mui/material/styles";
-import { Dialog, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 
 const DX_USERNAME =
   process.env.NODE_ENV === "development"
@@ -24,11 +29,15 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function Login({ onLoginSubmit }: LoginProps) {
-  const { handleLogin, errorMessage } = React.useContext(AuthContext);
+  const { handleLogin, errorMessage, isLoggingIn } =
+    React.useContext(AuthContext);
   return (
     <div>
       <BootstrapDialog aria-label="login" open={true}>
         <DialogContent dividers>
+          <Backdrop open={isLoggingIn}>
+            <CircularProgress />
+          </Backdrop>
           <LoginForm
             onLoginSubmit={handleLogin}
             defaultUsername={DX_USERNAME}
