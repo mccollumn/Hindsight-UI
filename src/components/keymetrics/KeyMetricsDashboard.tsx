@@ -41,10 +41,13 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
           enableGridX={false}
           yScale={{ type: "linear", min: "auto", max: "auto" }}
           axisBottom={null}
+          axisLeft={{
+            format: (value) => formatAxisLabels(value, metricName),
+          }}
           enablePoints={false}
           data={getGraphData({ metricName, localData })}
           margin={{ top: 25, right: 40, bottom: 25, left: 50 }}
-          tooltip={formatPointLabels}
+          tooltip={(obj) => formatPointLabels(obj, metricName)}
         />
       </div>
     </Box>
@@ -86,6 +89,11 @@ const convertDateString = (dateStr: string) => {
   return formatISO(date, { representation: "date" });
 };
 
+const convertSecondsToMinutes = (value: number) => {
+  const duration = addSeconds(new Date(0), value);
+  return format(duration, "m'm 'ss's'");
+};
+
 const getGraphData = ({ metricName, localData }: GetGraphDataProps) => {
   const dailyMetrics: any = Object.values(localData.data)[0].SubRows;
   if (dailyMetrics === null) return [];
@@ -112,8 +120,7 @@ const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
     metricName.toLowerCase().includes("time on site") &&
     measureValue !== null
   ) {
-    const duration = addSeconds(new Date(0), measureValue);
-    return format(duration, "m'm 'ss's'");
+    return convertSecondsToMinutes(measureValue);
   }
   return measureValue || 0;
 };
@@ -123,8 +130,23 @@ const getMeasures = (keyMetricsData: KeyMetricsProps) => {
   return Object.keys(Object.values(keyMetricsData.data)[0].measures);
 };
 
-const formatPointLabels = (obj: any) => {
+const formatPointLabels = (obj: any, metricName: string) => {
+  if (metricName.toLowerCase().includes("bounce")) {
+    return `${obj.point.data.yFormatted}%`;
+  }
+  if (metricName.toLowerCase().includes("time on site")) {
+    return convertSecondsToMinutes(obj.point.data.yFormatted);
+  }
   return obj.point.data.yFormatted;
+};
+
+const formatAxisLabels = (value: any, metricName: string) => {
+  if (metricName.toLowerCase().includes("bounce")) {
+    return `${value}%`;
+  }
+  if (metricName.toLowerCase().includes("time on site")) {
+    return convertSecondsToMinutes(value);
+  }
 };
 
 interface KeyMetricTileProps {
