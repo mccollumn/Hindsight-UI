@@ -149,7 +149,10 @@ const ReportModal = ({
   ) => {
     const primaryColumn =
       getPrimaryColumn(gridRef?.getAllColumns()).field || "";
-    const selectedColumn = params.field || primaryColumn;
+    const selectedColumn =
+      params.colDef.type === "treeDataGroup"
+        ? primaryColumn
+        : params.field || primaryColumn;
     const dimensions = params.row.Dimensions;
     const selectedDimension = dimensions[dimensions.length - 1];
     const primaryDimension = dimensions[0];
