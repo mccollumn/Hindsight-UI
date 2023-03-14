@@ -50,6 +50,7 @@ export const generateColumnDefs = (reportData: ReportProps) => {
         valueFormatter: getValueFormatter(columns),
         type: "number",
         aggregable: !!totals[colName],
+        flex: 1,
       },
     ];
   }, []);

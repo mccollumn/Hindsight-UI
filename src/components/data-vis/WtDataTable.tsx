@@ -148,6 +148,7 @@ const WtDataTable = ({
       filterable: true,
       sortable: true,
       disableColumnMenu: false,
+      flex: 2,
     };
   }, [dimHeader]);
 

@@ -103,7 +103,12 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [selectedCell.selectedColumn, reportDefinition, trendInterval]);
+  }, [
+    dimensions,
+    selectedCell.selectedColumn,
+    reportDefinition,
+    trendInterval,
+  ]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
