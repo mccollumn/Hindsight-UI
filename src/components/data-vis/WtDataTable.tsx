@@ -14,6 +14,7 @@ import {
   GridFilterModel,
   GridPinnedRowsProp,
   GridRowOrderChangeParams,
+  GridSortItem,
   GridToolbar,
   GridValidRowModel,
   GRID_TREE_DATA_GROUPING_FIELD,
@@ -42,6 +43,9 @@ const WtDataTable = ({
 }: WTDataTableProps) => {
   const [dimHeader, setDimHeader] = useState(getDimColumnHeader(data));
   const [columnDefs, setColumnDefs] = useState(generateColumnDefs(data));
+  const [sortModel, setSortModel] = useState<GridSortItem[]>([
+    { field: columnDefs[0].field, sort: "desc" },
+  ]);
   const [rowData, setRowData] = useState(getTableData(data));
   const [totals, setTotals] = useState(getTotals(data));
   const [gridRef, setGridRef] = useState<GridApiPremium>();
@@ -49,10 +53,9 @@ const WtDataTable = ({
   useEffect(() => {
     setDimHeader(getDimColumnHeader(data));
     setColumnDefs(generateColumnDefs(data));
+    setSortModel([{ field: columnDefs[0].field, sort: "desc" }]);
     setRowData(getTableData(data));
     setTotals(getTotals(data));
-    console.log("Root dimension:", gridRef?.getRootDimensions());
-    console.log("Row models:", gridRef?.getRowModels());
   }, [data]);
 
   const gridCallback = useCallback((ref: GridApiPremium) => {
@@ -163,6 +166,7 @@ const WtDataTable = ({
       initialState: initialState,
       pagination: true,
       pageSizeOptions: [10, 25, 50, 100],
+      sortModel: sortModel,
       pinnedRows: pinnedRows,
       //   rowSelection: false,
       unstable_cellSelection: true,
@@ -184,6 +188,7 @@ const WtDataTable = ({
       initialState,
       pinnedRows,
       rowData,
+      sortModel,
       updateTotals,
     ]
   );
