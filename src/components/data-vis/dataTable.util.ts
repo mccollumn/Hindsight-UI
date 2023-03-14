@@ -96,7 +96,7 @@ export const getTableData = (reportData: ReportProps) => {
 
       const row: any = {
         Dimensions: newColValues.slice(),
-        id: encodeURIComponent(entry),
+        id: encodeURIComponent(newColValues.join()),
       };
 
       for (const [measure, measureValue] of Object.entries(
