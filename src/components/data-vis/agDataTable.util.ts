@@ -1,4 +1,3 @@
-import { GridColDef, GridValueFormatterParams } from "@mui/x-data-grid-premium";
 import { ValueFormatterParams } from "ag-grid-community";
 import {
   DimensionProps,
@@ -39,25 +38,23 @@ export const generateColumnDefs = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return [];
   const columnNames = [...getMeasureNames(reportData)];
   const columns = [...getMeasures(reportData)];
-  const totals = getTotals(reportData);
-  // TODO: Specify colDefs type
-  return columnNames.reduce((colDefs: any, colName, index) => {
+  return columnNames.reduce((colDefs: ColumnDefProps[], colName, index) => {
     return [
       ...colDefs,
       {
         field: colName,
-        sortingOrder: index === 0 ? ["desc"] : [],
+        sort: index === 0 ? "desc" : "",
+        filter: "agNumberColumnFilter",
+        filterParams: { valueFormatter: getValueFormatter(columns) },
         valueFormatter: getValueFormatter(columns),
-        type: "number",
-        aggregable: !!totals[colName],
       },
     ];
   }, []);
 };
 
 export const getTotals = (reportData: ReportProps) => {
-  if (reportData?.definition === undefined) return {};
-  return Object.values(reportData.data)[0].measures;
+  if (reportData?.definition === undefined) return [];
+  return [Object.values(reportData.data)[0].measures];
 };
 
 export const getDimensionAttributes = (row: ReportSubRowProps) => {
@@ -94,10 +91,7 @@ export const getTableData = (reportData: ReportProps) => {
       newColValues[level] = attributeStr ? `${attributeStr}\n${entry}` : entry;
       newColValues.length = level + 1;
 
-      const row: any = {
-        Dimensions: newColValues.slice(),
-        id: encodeURIComponent(entry),
-      };
+      const row: any = { Dimensions: newColValues.slice() };
 
       for (const [measure, measureValue] of Object.entries(
         allRows[entry].measures
@@ -127,11 +121,11 @@ export const getTableData = (reportData: ReportProps) => {
 };
 
 const getValueFormatter = (measures: Array<any>) => {
-  return (params: GridValueFormatterParams) => {
+  return (params: ValueFormatterParams) => {
     const measureValue = params.value;
     if (measureValue === null) return;
 
-    const measureName = params.field;
+    const measureName = params.colDef.field;
     const measureConfig = measures.find(
       (measure) => measure.name === measureName
     );

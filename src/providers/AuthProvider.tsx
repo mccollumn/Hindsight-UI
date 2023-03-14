@@ -4,7 +4,7 @@ import CryptoJS from "crypto-js";
 import useSessionStorageState from "use-session-storage-state";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const DX_SERVER = window.config.DX_SERVER;
+const DX_SERVER = window?.config?.DX_SERVER || process.env.REACT_APP_DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
 const SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "webtrends";
 

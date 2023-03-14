@@ -28,6 +28,7 @@ const WtLineGraph = ({
 }: WtLineGraphProps) => {
   const { trendInterval, startDate, endDate } = React.useContext(DateContext);
   const defaultGraphOptions = useMemo(() => {
+    console.log("WtLineGraph dimensions:", dimensions);
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
       xScale: {

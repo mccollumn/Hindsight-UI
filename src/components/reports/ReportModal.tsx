@@ -15,8 +15,8 @@ import {
   IconButtonProps,
   Collapse,
 } from "@mui/material";
-import { CellClickedEvent, GridOptions, RowNode } from "ag-grid-community";
-import { AgGridReact } from "ag-grid-react";
+// import { CellClickedEvent, GridOptions, RowNode } from "ag-grid-community";
+// import { AgGridReact } from "ag-grid-react";
 import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
@@ -36,6 +36,13 @@ import {
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
 import useGetData from "../../hooks/useGetData";
+import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
+import {
+  DataGridPremiumProps,
+  GridCallbackDetails,
+  GridCellParams,
+  MuiEvent,
+} from "@mui/x-data-grid-premium";
 
 const ExpandGraph = styled((props: ExpandGraphProps) => {
   const { expand, ...other } = props;
@@ -86,15 +93,17 @@ const ReportModal = ({
   onClose,
   profile,
   report,
-  tableConfig = {},
+  tableConfig = {
+    rows: [],
+    columns: [],
+  },
   graphConfig = {},
   cancelRequestsCallback: requestControllersCallback,
   ...props
 }: ReportModalProps) => {
   const { wtStartDate, wtEndDate } = React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
-  const [gridRef, setGridRef] =
-    React.useState<React.RefObject<AgGridReact<any>>>();
+  const [gridRef, setGridRef] = React.useState<GridApiPremium>();
   const [selectedCell, setSelectedCell] = React.useState({});
   const [graphExpanded, setGraphExpanded] = React.useState(true);
 
@@ -123,20 +132,27 @@ const ReportModal = ({
     { staleTime: 30 * 60 * 1000 }
   );
 
-  const getGridDimensions = React.useCallback((nodes: RowNode<any>[]) => {
+  const getGridDimensions = React.useCallback((nodes: any[]) => {
+    console.log("ReportModal grid dimensions:", nodes);
+    if (!nodes[0]) return;
     setGridDimensions(
-      nodes.map(({ rowIndex, key }) => {
-        return { rowIndex, key };
+      nodes.map(({ Dimensions }, index) => {
+        return { rowIndex: index, key: Dimensions[0] };
       })
     );
   }, []);
 
-  const handleSelectionChange = (event: CellClickedEvent) => {
+  const handleSelectionChange = (
+    params: GridCellParams<any>,
+    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+    details: GridCallbackDetails
+  ) => {
     const primaryColumn =
-      event.columnApi.getColumns()![0].getColDef().field || "";
-    const selectedColumn = event.column.getColDef().field || primaryColumn;
-    const selectedDimension = event.node.key;
-    const primaryDimension = event.data.Dimensions[0];
+      getPrimaryColumn(gridRef?.getAllColumns()).field || "";
+    const selectedColumn = params.field || primaryColumn;
+    const dimensions = params.row.Dimensions;
+    const selectedDimension = dimensions[dimensions.length - 1];
+    const primaryDimension = dimensions[0];
     setSelectedCell({
       primaryColumn: primaryColumn,
       selectedColumn: selectedColumn,
@@ -149,17 +165,14 @@ const ReportModal = ({
     onClose();
   };
 
-  const gridCallback = React.useCallback(
-    (ref: React.RefObject<AgGridReact<any>>) => {
-      setGridRef(ref);
-      console.log("Grid ref:", ref);
-    },
-    []
-  );
+  const gridCallback = React.useCallback((ref: GridApiPremium) => {
+    setGridRef(ref);
+    console.log("Grid ref:", ref);
+  }, []);
 
   const exportCSV = () => {
-    const reportName = data.definition.name || "export";
-    gridRef?.current?.api.exportDataAsCsv({ fileName: reportName });
+    //   const reportName = data.definition.name || "export";
+    //   gridRef?.current?.api.exportDataAsCsv({ fileName: reportName });
   };
 
   const handleExpandGraph = () => {
@@ -266,6 +279,10 @@ const ReportModal = ({
   );
 };
 
+const getPrimaryColumn = (columns: any) => {
+  return columns.find((column: any) => column.field !== "__tree_data_group__");
+};
+
 interface DialogTitleProps {
   id: string;
   children?: React.ReactNode;
@@ -290,7 +307,7 @@ interface ReportModalProps {
    * AG Grid options.
    * https://www.ag-grid.com/react-data-grid/grid-options/
    */
-  tableConfig?: GridOptions;
+  tableConfig?: DataGridPremiumProps;
   /**
    * Nivo line graph options.
    * https://nivo.rocks/line/
