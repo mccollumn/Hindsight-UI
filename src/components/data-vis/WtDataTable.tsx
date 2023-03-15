@@ -43,9 +43,7 @@ const WtDataTable = ({
 }: WTDataTableProps) => {
   const [dimHeader, setDimHeader] = useState(getDimColumnHeader(data));
   const [columnDefs, setColumnDefs] = useState(generateColumnDefs(data));
-  const [sortModel, setSortModel] = useState<GridSortItem[]>([
-    { field: columnDefs[0].field, sort: "desc" },
-  ]);
+  const [sortModel, setSortModel] = useState<GridSortItem[]>();
   const [rowData, setRowData] = useState(getTableData(data));
   const [totals, setTotals] = useState(getTotals(data));
   const [gridRef, setGridRef] = useState<GridApiPremium>();
@@ -161,6 +159,11 @@ const WtDataTable = ({
       rows: rowData,
       columns: columnDefs,
       slots: { toolbar: GridToolbar },
+      slotProps: {
+        toolbar: {
+          showQuickFilter: true,
+        },
+      },
       treeData: true,
       groupingColDef: groupingColDef,
       initialState: initialState,
@@ -175,7 +178,7 @@ const WtDataTable = ({
         updateTotals(newFilterModel, details),
       onCellClick: cellClickedListener,
       onRowOrderChange: getRenderedNodes,
-      // onSortModelChange: getRenderedNodes,
+      onSortModelChange: (newSortModel) => setSortModel(newSortModel),
       // onStateChange: getRenderedNodes,
       // Callbacks
       getTreeDataPath: (row) => row.Dimensions,
