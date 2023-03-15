@@ -51,6 +51,7 @@ const ExpandGraph = styled((props: ExpandGraphProps) => {
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
   }),
+  top: "-20px",
 }));
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
