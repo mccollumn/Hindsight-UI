@@ -15,8 +15,6 @@ import {
   IconButtonProps,
   Collapse,
 } from "@mui/material";
-// import { CellClickedEvent, GridOptions, RowNode } from "ag-grid-community";
-// import { AgGridReact } from "ag-grid-react";
 import { useQuery } from "@tanstack/react-query";
 import WtDataTable from "../data-vis/WtDataTable";
 import WtLineGraph from "../data-vis/WtLineGraph";
@@ -173,10 +171,9 @@ const ReportModal = ({
     console.log("Grid ref:", ref);
   }, []);
 
-  const exportCSV = () => {
-    //   const reportName = data.definition.name || "export";
-    //   gridRef?.current?.api.exportDataAsCsv({ fileName: reportName });
-  };
+  const exportCSV = React.useCallback(() => {
+    gridRef?.exportDataAsCsv();
+  }, [gridRef]);
 
   const handleExpandGraph = () => {
     setGraphExpanded(!graphExpanded);
@@ -307,8 +304,8 @@ interface ReportModalProps {
    */
   report: ProfileReportsProps | null;
   /**
-   * AG Grid options.
-   * https://www.ag-grid.com/react-data-grid/grid-options/
+   * MUI Data Grid options.
+   * https://mui.com/x/api/data-grid/data-grid/
    */
   tableConfig?: DataGridPremiumProps;
   /**
