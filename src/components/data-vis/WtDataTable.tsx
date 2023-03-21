@@ -1,11 +1,4 @@
-import React, {
-  useMemo,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
-import DataTable from "./DataTable";
+import React from "react";
 import {
   DataGridPremiumProps,
   GridCallbackDetails,
@@ -13,10 +6,8 @@ import {
   GridEventListener,
   GridFilterModel,
   GridPinnedRowsProp,
-  GridRowOrderChangeParams,
   GridSortItem,
   GridToolbar,
-  GridValidRowModel,
   GRID_TREE_DATA_GROUPING_FIELD,
   MuiEvent,
 } from "@mui/x-data-grid-premium";
@@ -29,6 +20,7 @@ import {
 } from "./dataTable.util";
 import { DEFAULT_TABLE_HEIGHT } from "../../constants/constants";
 import { ReportProps } from "../../interfaces/interfaces";
+import useDataTable from "./useDataTable";
 
 const WtDataTable = ({
   data,
@@ -41,29 +33,30 @@ const WtDataTable = ({
   cellClickedCallback,
   ...props
 }: WTDataTableProps) => {
-  const [dimHeader, setDimHeader] = useState(getDimColumnHeader(data));
-  const [columnDefs, setColumnDefs] = useState(generateColumnDefs(data));
-  const [sortModel, setSortModel] = useState<GridSortItem[]>();
-  const [rowData, setRowData] = useState(getTableData(data));
-  const [totals, setTotals] = useState(getTotals(data));
-  const [gridRef, setGridRef] = useState<GridApiPremium>();
+  const [dimHeader, setDimHeader] = React.useState(getDimColumnHeader(data));
+  const [columnDefs, setColumnDefs] = React.useState(generateColumnDefs(data));
+  const [sortModel, setSortModel] = React.useState<GridSortItem[]>();
+  const [filterModel, setFilterModel] = React.useState<GridFilterModel>();
+  const [rowData, setRowData] = React.useState(getTableData(data));
+  const [totals, setTotals] = React.useState(getTotals(data));
+  const { DataTable, apiRef } = useDataTable();
 
-  useEffect(() => {
+  // Set values when report data becomes available or changes
+  React.useEffect(() => {
     setDimHeader(getDimColumnHeader(data));
     setColumnDefs(generateColumnDefs(data));
-    setSortModel([{ field: columnDefs[0].field, sort: "desc" }]);
+    // setSortModel([{ field: columnDefs[0].field, sort: "desc" }]);
     setRowData(getTableData(data));
     setTotals(getTotals(data));
   }, [data]);
 
-  const gridCallback = useCallback((ref: GridApiPremium) => {
-    setGridRef(ref);
+  React.useEffect(() => {
     if (typeof gridRefCallback === "function") {
-      gridRefCallback(ref);
+      gridRefCallback(apiRef.current);
     }
-  }, []);
+  });
 
-  const cellClickedListener: GridEventListener<"cellClick"> = useCallback(
+  const cellClickedListener: GridEventListener<"cellClick"> = React.useCallback(
     (
       params: GridCellParams<any>,
       event: MuiEvent<React.MouseEvent<HTMLElement>>,
@@ -75,18 +68,13 @@ const WtDataTable = ({
     [cellClickedCallback]
   );
 
-  // const onBtnExport = useCallback(() => {
-  //   gridRef?.current?.api.exportDataAsCsv();
-  // }, [gridRef]);
-
-  const [pinnedRows, setPinnedRows] = useState<GridPinnedRowsProp>({
+  const [pinnedRows, setPinnedRows] = React.useState<GridPinnedRowsProp>({
     bottom: [{ id: "totals", ...totals }],
   });
 
-  const updateTotals = useCallback(
+  // Pin totals row only if the data if unfiltered
+  const updateTotals = React.useCallback(
     (newFilterModel: GridFilterModel, details: GridCallbackDetails) => {
-      console.log("newFilterModel:", newFilterModel);
-      console.log("details:", details);
       if (newFilterModel.items.length) {
         setPinnedRows({});
       } else {
@@ -98,62 +86,59 @@ const WtDataTable = ({
     [totals]
   );
 
+  // Send rows up to the parent
   React.useEffect(() => {
-    const firstRowId = gridRef?.getRowIdFromRowIndex(0);
-    const firstRow = gridRef?.getRow(firstRowId || "");
-    console.log("WTDataTable rendered nodes (effect):", firstRow);
-    renderedNodesCallback([firstRow]);
-  }, [gridRef, renderedNodesCallback]);
+    if (typeof renderedNodesCallback !== "function") return;
+    renderedNodesCallback(rowData);
+  }, [apiRef, renderedNodesCallback, rowData]);
 
-  const getRenderedNodes = useCallback(
-    (
-      params: GridRowOrderChangeParams,
-      event: MuiEvent<{}>,
-      details: GridCallbackDetails
-    ) => {
-      if (typeof renderedNodesCallback !== "function") return;
-      // Only passing the first row for now
-      const firstRowId = gridRef?.getRowIdFromRowIndex(0);
-      const firstRow = gridRef?.getRow(firstRowId || "");
-      console.log("WTDataTable rendered nodes:", firstRow);
-      renderedNodesCallback([firstRow]);
-    },
-    [gridRef, renderedNodesCallback]
-  );
+  // Send the sorted rows up to the parent after a sorting change
+  React.useEffect(() => {
+    if (typeof renderedNodesCallback !== "function") return;
+    const sortedRows = apiRef.current.getSortedRows();
+    renderedNodesCallback(sortedRows);
+  }, [apiRef, renderedNodesCallback, sortModel]);
 
-  const getAggregationModel = (totals: any) => {
-    let aggregationModel: any = {};
-    Object.entries(totals).forEach(([measure, total]) => {
-      //   if (total) {
-      aggregationModel[measure] = "sum";
-      //   }
+  // Send the filtered rows up to the parent after a filter change
+  React.useEffect(() => {
+    if (typeof renderedNodesCallback !== "function") return;
+    const filteredRowsLookup = apiRef.current.state.filter.filteredRowsLookup;
+    if (!filteredRowsLookup) return;
+    const sortedRows = apiRef.current.getSortedRows();
+    const filteredRows: any[] = [];
+    sortedRows.forEach((row) => {
+      if (filteredRowsLookup[row.id]) {
+        filteredRows.push(row);
+      }
     });
-    return aggregationModel;
-  };
+    renderedNodesCallback(filteredRows);
+  }, [apiRef, filterModel, renderedNodesCallback]);
 
-  const initialState: DataGridPremiumProps["initialState"] = useMemo(() => {
-    return {
-      pinnedColumns: { left: [GRID_TREE_DATA_GROUPING_FIELD] },
-      pagination: {
-        paginationModel: { pageSize: 10 },
-      },
-      //   aggregation: {
-      //     model: getAggregationModel(totals),
-      //   },
-    };
-  }, []);
+  const initialState: DataGridPremiumProps["initialState"] =
+    React.useMemo(() => {
+      return {
+        pinnedColumns: { left: [GRID_TREE_DATA_GROUPING_FIELD] },
+        pagination: {
+          paginationModel: { pageSize: 10 },
+        },
+        // sorting: {
+        //   sortModel: [{ field: columnDefs[0].field, sort: "desc" }],
+        // },
+      };
+    }, []);
 
-  const groupingColDef: DataGridPremiumProps["groupingColDef"] = useMemo(() => {
-    return {
-      headerName: dimHeader,
-      filterable: true,
-      sortable: true,
-      disableColumnMenu: false,
-      flex: 2,
-    };
-  }, [dimHeader]);
+  const groupingColDef: DataGridPremiumProps["groupingColDef"] =
+    React.useMemo(() => {
+      return {
+        headerName: dimHeader,
+        filterable: true,
+        // sortable: true,
+        disableColumnMenu: false,
+        flex: 2,
+      };
+    }, [dimHeader]);
 
-  const defaultGridOptions: DataGridPremiumProps = useMemo(
+  const defaultGridOptions: DataGridPremiumProps = React.useMemo(
     () => ({
       // Properties
       rows: rowData,
@@ -169,39 +154,39 @@ const WtDataTable = ({
       initialState: initialState,
       pagination: true,
       pageSizeOptions: [10, 25, 50, 100],
-      sortModel: sortModel,
+      disableAggregation: true,
+      disableRowGrouping: true,
+      // sortModel: sortModel,
       pinnedRows: pinnedRows,
-      //   rowSelection: false,
+      rowSelection: false,
       unstable_cellSelection: true,
       // Events
-      onFilterModelChange: (newFilterModel, details) =>
-        updateTotals(newFilterModel, details),
+      onFilterModelChange: (newFilterModel, details) => {
+        updateTotals(newFilterModel, details);
+        setFilterModel(newFilterModel);
+      },
       onCellClick: cellClickedListener,
-      onRowOrderChange: getRenderedNodes,
       onSortModelChange: (newSortModel) => setSortModel(newSortModel),
-      // onStateChange: getRenderedNodes,
       // Callbacks
       getTreeDataPath: (row) => row.Dimensions,
     }),
     [
       cellClickedListener,
       columnDefs,
-      getRenderedNodes,
       groupingColDef,
       initialState,
       pinnedRows,
       rowData,
-      sortModel,
       updateTotals,
     ]
   );
 
-  const [gridOptions, setGridOptions] = useState({
+  const [gridOptions, setGridOptions] = React.useState({
     ...defaultGridOptions,
     ...config,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     setGridOptions((prevOptions) => ({
       ...prevOptions,
       ...defaultGridOptions,
@@ -211,13 +196,7 @@ const WtDataTable = ({
   return (
     <React.Fragment>
       <div style={{ height: DEFAULT_TABLE_HEIGHT }}>
-        {/* {gridOptions.autoGroupColumnDef?.headerName && ( */}
-        <DataTable
-          config={gridOptions}
-          gridRefCallback={gridCallback}
-          {...props}
-        />
-        {/* )} */}
+        <DataTable apiRef={apiRef} config={gridOptions} {...props} />
       </div>
     </React.Fragment>
   );
@@ -238,7 +217,13 @@ interface WTDataTableProps {
    * Callback to make grid rows available to parent.
    */
   renderedNodesCallback?: (nodes: any[]) => void;
+  /**
+   * Callback to make MUI Data Grid API available to parent.
+   */
   gridRefCallback?: (ref: GridApiPremium) => void;
+  /**
+   * Callback to make selected cell available to parent.
+   */
   cellClickedCallback?: (
     params: GridCellParams<any>,
     event: MuiEvent<React.MouseEvent<HTMLElement>>,

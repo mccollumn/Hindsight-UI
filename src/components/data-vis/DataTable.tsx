@@ -1,19 +1,10 @@
 import React from "react";
 import {
-  GridRowsProp,
-  GridColDef,
   DataGridPremium,
-  GridToolbar,
   DataGridPremiumProps,
-  GRID_TREE_DATA_GROUPING_FIELD,
   useGridApiRef,
-  MuiEvent,
-  GridCellParams,
-  GridCallbackDetails,
-  GridEventListener,
 } from "@mui/x-data-grid-premium";
 import { styled } from "@mui/material/styles";
-import { configure } from "@storybook/react";
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
 import { DEFAULT_TABLE_HEIGHT } from "../../constants/constants";
 
@@ -64,38 +55,32 @@ const StyledDataGrid = styled(DataGridPremium)(({ theme }) => ({
   //   },
 }));
 
-const DataTable = ({
-  //   rows,
-  //   columns,
-  config,
-  gridRefCallback,
-  ...props
-}: DataTableProps) => {
+const DataTable = ({ config, apiRef, ...props }: DataTableProps) => {
   const dataGridConfig: DataGridPremiumProps = {
     ...config,
   };
-  const apiRef = useGridApiRef();
-  React.useEffect(() => {
-    if (typeof gridRefCallback === "function") {
-      gridRefCallback(apiRef.current);
-    }
-  }, [apiRef, gridRefCallback]);
-
-  console.log("DataTable config:", config);
+  let apiRefInst = useGridApiRef();
+  if (apiRef) {
+    apiRefInst = apiRef;
+  }
 
   return (
     <div style={{ height: DEFAULT_TABLE_HEIGHT, width: "100%" }}>
-      <StyledDataGrid apiRef={apiRef} {...dataGridConfig} />
+      <StyledDataGrid apiRef={apiRefInst} {...dataGridConfig} />
     </div>
   );
 };
 
 interface DataTableProps {
-  //   rows: GridRowsProp;
-  //   columns: GridColDef[];
+  /**
+   * MUI Data Grid options.
+   * https://mui.com/x/api/data-grid/data-grid/
+   */
   config: DataGridPremiumProps;
-  // gridRefCallback?: (ref: React.RefObject<GridApiPremium>) => void;
-  gridRefCallback?: (ref: GridApiPremium) => void;
+  /**
+   * MUI Data Grid API
+   */
+  apiRef: React.MutableRefObject<GridApiPremium>;
 }
 
 export default DataTable;

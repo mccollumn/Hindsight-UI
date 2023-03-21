@@ -41,6 +41,7 @@ import {
   GridCellParams,
   MuiEvent,
 } from "@mui/x-data-grid-premium";
+import { format } from "date-fns/fp";
 
 const ExpandGraph = styled((props: ExpandGraphProps) => {
   const { expand, ...other } = props;
@@ -100,7 +101,8 @@ const ReportModal = ({
   cancelRequestsCallback: requestControllersCallback,
   ...props
 }: ReportModalProps) => {
-  const { wtStartDate, wtEndDate } = React.useContext(DateContext);
+  const { wtStartDate, wtEndDate, startDate, endDate } =
+    React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
   const [gridRef, setGridRef] = React.useState<GridApiPremium>();
   const [selectedCell, setSelectedCell] = React.useState({});
@@ -132,7 +134,6 @@ const ReportModal = ({
   );
 
   const getGridDimensions = React.useCallback((nodes: any[]) => {
-    console.log("ReportModal grid dimensions:", nodes);
     if (!nodes[0]) return;
     setGridDimensions(
       nodes.map(({ Dimensions }, index) => {
@@ -169,12 +170,17 @@ const ReportModal = ({
 
   const gridCallback = React.useCallback((ref: GridApiPremium) => {
     setGridRef(ref);
-    console.log("Grid ref:", ref);
   }, []);
 
   const exportCSV = React.useCallback(() => {
-    gridRef?.exportDataAsCsv();
-  }, [gridRef]);
+    const dateFormat = "yyyy-MM-dd";
+    const reportName = report?.name || "webtrends_export";
+    const dateRange = `${format(dateFormat, startDate)}_${format(
+      dateFormat,
+      endDate
+    )}`;
+    gridRef?.exportDataAsCsv({ fileName: `${reportName}_${dateRange}` });
+  }, [endDate, gridRef, report?.name, startDate]);
 
   const handleExpandGraph = () => {
     setGraphExpanded(!graphExpanded);

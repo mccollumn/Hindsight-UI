@@ -1,11 +1,10 @@
-import { GridColDef, GridValueFormatterParams } from "@mui/x-data-grid-premium";
-import { ValueFormatterParams } from "ag-grid-community";
+import { GridValueFormatterParams } from "@mui/x-data-grid-premium";
 import {
   DimensionProps,
   ReportSubRowProps,
   ReportProps,
-  ColumnDefProps,
   RowProps,
+  ColumnDefProps,
 } from "../../interfaces/interfaces";
 
 export const getDimensionNames = (reportData: ReportProps) => {
@@ -39,17 +38,13 @@ export const generateColumnDefs = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return [];
   const columnNames = [...getMeasureNames(reportData)];
   const columns = [...getMeasures(reportData)];
-  const totals = getTotals(reportData);
-  // TODO: Specify colDefs type
-  return columnNames.reduce((colDefs: any, colName, index) => {
+  return columnNames.reduce<ColumnDefProps[]>((colDefs, colName, index) => {
     return [
       ...colDefs,
       {
         field: colName,
-        sortingOrder: index === 0 ? ["desc"] : [],
         valueFormatter: getValueFormatter(columns),
         type: "number",
-        aggregable: !!totals[colName],
         flex: 1,
       },
     ];
