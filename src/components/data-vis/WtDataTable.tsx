@@ -4,12 +4,17 @@ import {
   GridCallbackDetails,
   GridCellParams,
   GridEventListener,
+  GridFilterInputMultipleValue,
+  GridFilterInputValue,
+  GridFilterItem,
   GridFilterModel,
+  GridFilterOperator,
   GridPinnedRowsProp,
   GridSortItem,
   GridToolbar,
   GRID_TREE_DATA_GROUPING_FIELD,
   MuiEvent,
+  GridTreeNode,
 } from "@mui/x-data-grid-premium";
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
 import {
@@ -134,6 +139,8 @@ const WtDataTable = ({
         filterable: true,
         // sortable: true,
         disableColumnMenu: false,
+        filterOperators: treeDataOperators,
+        getApplyQuickFilterFn: getApplyFilterFnTreeData,
         flex: 2,
       };
     }, [dimHeader]);
@@ -200,6 +207,136 @@ const WtDataTable = ({
       </div>
     </React.Fragment>
   );
+};
+
+const escapeRegExp = (value: string) => {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+const isTotalsRow = (params: GridCellParams<any, any, any, GridTreeNode>) => {
+  return params.row.id === "totals" ? true : false;
+};
+
+// Custom filter operators that work with tree data
+const treeDataOperators: GridFilterOperator[] = [
+  {
+    value: "contains",
+    getApplyFilterFn: (filterItem: GridFilterItem) => {
+      if (!filterItem.value) {
+        return null;
+      }
+      const filterItemValue = escapeRegExp(
+        filterItem.value.toLowerCase().trim()
+      );
+      return (params): boolean => {
+        if (isTotalsRow(params)) return false;
+        return params.row.Dimensions.some((element: string) =>
+          element.toLowerCase().includes(filterItemValue.toString())
+        );
+      };
+    },
+    InputComponent: GridFilterInputValue,
+  },
+  {
+    value: "equals",
+    getApplyFilterFn: (filterItem: GridFilterItem) => {
+      if (!filterItem.value) {
+        return null;
+      }
+      const filterItemValue = filterItem.value.trim();
+      const collator = new Intl.Collator(undefined, {
+        sensitivity: "base",
+        usage: "search",
+      });
+      return (params): boolean => {
+        if (isTotalsRow(params)) return false;
+        return params.row.Dimensions.some(
+          (element: string) =>
+            collator.compare(filterItemValue, element.toString()) === 0
+        );
+      };
+    },
+    InputComponent: GridFilterInputValue,
+  },
+  {
+    value: "startsWith",
+    getApplyFilterFn: (filterItem: GridFilterItem) => {
+      if (!filterItem.value) {
+        return null;
+      }
+      const filterItemValue = filterItem.value.trim();
+      const filterRegex = new RegExp(
+        `^${escapeRegExp(filterItemValue)}.*$`,
+        "i"
+      );
+      return (params): boolean => {
+        if (isTotalsRow(params)) return false;
+        return params.row.Dimensions.some((element: string) =>
+          element != null ? filterRegex.test(element.toString()) : false
+        );
+      };
+    },
+    InputComponent: GridFilterInputValue,
+  },
+  {
+    value: "endsWith",
+    getApplyFilterFn: (filterItem: GridFilterItem) => {
+      if (!filterItem.value) {
+        return null;
+      }
+      const filterItemValue = filterItem.value.trim();
+      const filterRegex = new RegExp(
+        `.*${escapeRegExp(filterItemValue)}$`,
+        "i"
+      );
+      return (params): boolean => {
+        if (isTotalsRow(params)) return false;
+        return params.row.Dimensions.some((element: string) =>
+          element != null ? filterRegex.test(element.toString()) : false
+        );
+      };
+    },
+    InputComponent: GridFilterInputValue,
+  },
+  {
+    value: "isAnyOf",
+    getApplyFilterFn: (filterItem: GridFilterItem) => {
+      if (!Array.isArray(filterItem.value) || filterItem.value.length === 0) {
+        return null;
+      }
+      const filterItemValue = filterItem.value.map((val) => val.trim());
+      const collator = new Intl.Collator(undefined, {
+        sensitivity: "base",
+        usage: "search",
+      });
+      return (params): boolean => {
+        if (isTotalsRow(params)) return false;
+        return params.row.Dimensions != null
+          ? filterItemValue.some((filterValue) => {
+              return params.row.Dimensions.some(
+                (element: string) =>
+                  collator.compare(filterValue, element.toString()) === 0
+              );
+            })
+          : false;
+      };
+    },
+    InputComponent: GridFilterInputMultipleValue,
+  },
+];
+
+// Custom quick filter logic that works with tree data
+const getApplyFilterFnTreeData = (value: string) => {
+  if (!value) {
+    return null;
+  }
+  const filterRegex = new RegExp(escapeRegExp(value), "i");
+  return (params: GridCellParams): boolean => {
+    if (isTotalsRow(params)) return false;
+    return params.row.Dimensions.some((element: string) =>
+      element != null ? filterRegex.test(element.toString()) : false
+    );
+  };
 };
 
 interface WTDataTableProps {
