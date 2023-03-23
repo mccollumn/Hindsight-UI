@@ -124,7 +124,7 @@ const WtDataTable = ({
     [totals]
   );
 
-  const getCSVExportOptions = React.useCallback(() => {
+  const getExportFileName = React.useCallback(() => {
     const dateFormat = "yyyy-MM-dd";
     const reportName =
       data.definition.name.replaceAll(" ", "_") || "webtrends_export";
@@ -132,8 +132,24 @@ const WtDataTable = ({
       dateFormat,
       endDate
     )}`;
-    return { allColumns: true, fileName: `${reportName}_${dateRange}` };
+    return `${reportName}_${dateRange}`;
   }, [data.definition.name, endDate, startDate]);
+
+  const getCSVExportOptions = React.useCallback(() => {
+    const fileName = getExportFileName();
+    return { allColumns: true, fileName: fileName };
+  }, [getExportFileName]);
+
+  const getPrintOptions = React.useCallback(() => {
+    const fileName = getExportFileName();
+    return {
+      pageStyle:
+        ".MuiDataGrid-root .MuiDataGrid-main { color: rgba(0, 0, 0, 0.87); }",
+      hideToolbar: true,
+      hideFooter: true,
+      fileName: fileName,
+    };
+  }, [getExportFileName]);
 
   const initialState: DataGridPremiumProps["initialState"] =
     React.useMemo(() => {
@@ -175,6 +191,7 @@ const WtDataTable = ({
         toolbar: {
           showQuickFilter: true,
           csvOptions: getCSVExportOptions(),
+          printOptions: getPrintOptions(),
         },
         columnsPanel: {
           disableHideAllButton: true,
@@ -207,6 +224,7 @@ const WtDataTable = ({
       cellClickedListener,
       columnDefs,
       getCSVExportOptions,
+      getPrintOptions,
       groupingColDef,
       initialState,
       pinnedRows,
