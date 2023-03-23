@@ -72,6 +72,7 @@ export interface ReportProps {
 }
 
 export interface ColumnDefProps {
+  type?: string;
   field: string;
 }
 

@@ -179,7 +179,10 @@ const ReportModal = ({
       dateFormat,
       endDate
     )}`;
-    gridRef?.exportDataAsCsv({ fileName: `${reportName}_${dateRange}` });
+    gridRef?.exportDataAsCsv({
+      allColumns: true,
+      fileName: `${reportName}_${dateRange}`,
+    });
   }, [endDate, gridRef, report?.name, startDate]);
 
   const handleExpandGraph = () => {

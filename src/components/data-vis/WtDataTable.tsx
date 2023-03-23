@@ -17,6 +17,8 @@ import {
   GridTreeNode,
 } from "@mui/x-data-grid-premium";
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
+import { format } from "date-fns/fp";
+import { DateContext } from "../../providers/DateProvider";
 import {
   getDimColumnHeader,
   getTableData,
@@ -46,6 +48,8 @@ const WtDataTable = ({
   const [totals, setTotals] = React.useState(getTotals(data));
   const { DataTable, apiRef } = useDataTable();
 
+  const { startDate, endDate } = React.useContext(DateContext);
+
   // Set values when report data becomes available or changes
   React.useEffect(() => {
     setDimHeader(getDimColumnHeader(data));
@@ -55,11 +59,40 @@ const WtDataTable = ({
     setTotals(getTotals(data));
   }, [data]);
 
+  // Send grid API ref up to the parent
   React.useEffect(() => {
     if (typeof gridRefCallback === "function") {
       gridRefCallback(apiRef.current);
     }
   });
+
+  // Send rows up to the parent
+  React.useEffect(() => {
+    if (typeof renderedNodesCallback !== "function") return;
+    renderedNodesCallback(rowData);
+  }, [apiRef, renderedNodesCallback, rowData]);
+
+  // Send the sorted rows up to the parent after a sorting change
+  React.useEffect(() => {
+    if (typeof renderedNodesCallback !== "function") return;
+    const sortedRows = apiRef.current.getSortedRows();
+    renderedNodesCallback(sortedRows);
+  }, [apiRef, renderedNodesCallback, sortModel]);
+
+  // Send the filtered rows up to the parent after a filter change
+  React.useEffect(() => {
+    if (typeof renderedNodesCallback !== "function") return;
+    const filteredRowsLookup = apiRef.current.state.filter.filteredRowsLookup;
+    if (!filteredRowsLookup) return;
+    const sortedRows = apiRef.current.getSortedRows();
+    const filteredRows: any[] = [];
+    sortedRows.forEach((row) => {
+      if (filteredRowsLookup[row.id]) {
+        filteredRows.push(row);
+      }
+    });
+    renderedNodesCallback(filteredRows);
+  }, [apiRef, filterModel, renderedNodesCallback]);
 
   const cellClickedListener: GridEventListener<"cellClick"> = React.useCallback(
     (
@@ -91,33 +124,16 @@ const WtDataTable = ({
     [totals]
   );
 
-  // Send rows up to the parent
-  React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
-    renderedNodesCallback(rowData);
-  }, [apiRef, renderedNodesCallback, rowData]);
-
-  // Send the sorted rows up to the parent after a sorting change
-  React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
-    const sortedRows = apiRef.current.getSortedRows();
-    renderedNodesCallback(sortedRows);
-  }, [apiRef, renderedNodesCallback, sortModel]);
-
-  // Send the filtered rows up to the parent after a filter change
-  React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
-    const filteredRowsLookup = apiRef.current.state.filter.filteredRowsLookup;
-    if (!filteredRowsLookup) return;
-    const sortedRows = apiRef.current.getSortedRows();
-    const filteredRows: any[] = [];
-    sortedRows.forEach((row) => {
-      if (filteredRowsLookup[row.id]) {
-        filteredRows.push(row);
-      }
-    });
-    renderedNodesCallback(filteredRows);
-  }, [apiRef, filterModel, renderedNodesCallback]);
+  const getCSVExportOptions = React.useCallback(() => {
+    const dateFormat = "yyyy-MM-dd";
+    const reportName =
+      data.definition.name.replaceAll(" ", "_") || "webtrends_export";
+    const dateRange = `${format(dateFormat, startDate)}_${format(
+      dateFormat,
+      endDate
+    )}`;
+    return { allColumns: true, fileName: `${reportName}_${dateRange}` };
+  }, [data.definition.name, endDate, startDate]);
 
   const initialState: DataGridPremiumProps["initialState"] =
     React.useMemo(() => {
@@ -126,21 +142,25 @@ const WtDataTable = ({
         pagination: {
           paginationModel: { pageSize: 10 },
         },
+        columns: {
+          columnVisibilityModel: getColumnVisibilityModel(columnDefs),
+        },
         // sorting: {
         //   sortModel: [{ field: columnDefs[0].field, sort: "desc" }],
         // },
       };
-    }, []);
+    }, [columnDefs]);
 
   const groupingColDef: DataGridPremiumProps["groupingColDef"] =
     React.useMemo(() => {
       return {
         headerName: dimHeader,
         filterable: true,
-        // sortable: true,
+        sortable: true,
         disableColumnMenu: false,
         filterOperators: treeDataOperators,
         getApplyQuickFilterFn: getApplyFilterFnTreeData,
+        disableExport: true,
         flex: 2,
       };
     }, [dimHeader]);
@@ -154,6 +174,12 @@ const WtDataTable = ({
       slotProps: {
         toolbar: {
           showQuickFilter: true,
+          csvOptions: getCSVExportOptions(),
+        },
+        columnsPanel: {
+          disableHideAllButton: true,
+          disableShowAllButton: true,
+          sx: getHiddenToolbarColumnButtons(columnDefs),
         },
       },
       treeData: true,
@@ -180,6 +206,7 @@ const WtDataTable = ({
     [
       cellClickedListener,
       columnDefs,
+      getCSVExportOptions,
       groupingColDef,
       initialState,
       pinnedRows,
@@ -337,6 +364,29 @@ const getApplyFilterFnTreeData = (value: string) => {
       element != null ? filterRegex.test(element.toString()) : false
     );
   };
+};
+
+const getColumnVisibilityModel = (columnDefs: any[]) => {
+  let columnVisibilityModel = {};
+  columnDefs.forEach((columnDef) => {
+    if (columnDef.type === "string") {
+      columnVisibilityModel = {
+        ...columnVisibilityModel,
+        [columnDef.field]: false,
+      };
+    }
+  });
+  return columnVisibilityModel;
+};
+
+const getHiddenToolbarColumnButtons = (columnDefs: any[]) => {
+  const HIDDEN_BUTTON_START_POSITION = 2;
+  const dimensionDefs = columnDefs.filter((def) => def.type === "string");
+  const range = dimensionDefs.length - 1;
+  const selector = `& .MuiDataGrid-columnsPanelRow:nth-of-type(n+${HIDDEN_BUTTON_START_POSITION}):nth-of-type(-n+${
+    HIDDEN_BUTTON_START_POSITION + range
+  })`;
+  return { [selector]: { display: "none" } };
 };
 
 interface WTDataTableProps {

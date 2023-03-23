@@ -38,17 +38,36 @@ export const generateColumnDefs = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return [];
   const columnNames = [...getMeasureNames(reportData)];
   const columns = [...getMeasures(reportData)];
-  return columnNames.reduce<ColumnDefProps[]>((colDefs, colName, index) => {
-    return [
-      ...colDefs,
-      {
-        field: colName,
-        valueFormatter: getValueFormatter(columns),
-        type: "number",
-        flex: 1,
-      },
-    ];
-  }, []);
+  const columnDefs = columnNames.reduce<ColumnDefProps[]>(
+    (colDefs, colName, index) => {
+      return [
+        ...colDefs,
+        {
+          field: colName,
+          valueFormatter: getValueFormatter(columns),
+          type: "number",
+          flex: 1,
+        },
+      ];
+    },
+    []
+  );
+  const dimensionNames = getDimensionNames(reportData);
+  const dimensionDefs = dimensionNames.reduce<ColumnDefProps[]>(
+    (colDefs, dimName, index) => {
+      return [
+        ...colDefs,
+        {
+          field: dimName.replaceAll(" ", "_"),
+          headerName: dimName,
+          type: "string",
+          flex: 1,
+        },
+      ];
+    },
+    []
+  );
+  return [...dimensionDefs, ...columnDefs];
 };
 
 export const getTotals = (reportData: ReportProps) => {
@@ -76,6 +95,7 @@ export const getDimColumnHeader = (reportData: ReportProps) => {
 export const getTableData = (reportData: ReportProps) => {
   if (!reportData || reportData?.definition === undefined) return [];
   let tableData: Array<RowProps> = [];
+  const dimensionNames = getDimensionNames(reportData);
 
   const getRow = (
     allRows: ReportSubRowProps,
@@ -90,8 +110,17 @@ export const getTableData = (reportData: ReportProps) => {
       newColValues[level] = attributeStr ? `${attributeStr}\n${entry}` : entry;
       newColValues.length = level + 1;
 
+      let dimensions = {};
+      for (let x = 0; x <= level; x++) {
+        dimensions = {
+          ...dimensions,
+          [dimensionNames[x].replaceAll(" ", "_")]: newColValues[x],
+        };
+      }
+
       const row: any = {
         Dimensions: newColValues.slice(),
+        ...dimensions,
         id: encodeURIComponent(newColValues.join()),
       };
 
