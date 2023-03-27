@@ -105,10 +105,13 @@ export const getTableData = (reportData: ReportProps) => {
     if (allRows === null) return;
     Object.keys(allRows).forEach((entry) => {
       const attributeStr = getDimensionAttributes(allRows[entry] as any);
+      let attribs = [];
 
       let newColValues: Array<string> = prevColValues;
-      newColValues[level] = attributeStr ? `${attributeStr}\n${entry}` : entry;
+      // newColValues[level] = attributeStr ? `${attributeStr}\n${entry}` : entry;
+      newColValues[level] = entry;
       newColValues.length = level + 1;
+      attribs[level] = attributeStr || null;
 
       let dimensions = {};
       for (let x = 0; x <= level; x++) {
@@ -122,6 +125,7 @@ export const getTableData = (reportData: ReportProps) => {
         Dimensions: newColValues.slice(),
         ...dimensions,
         id: encodeURIComponent(newColValues.join()),
+        dimAttributes: attribs,
       };
 
       for (const [measure, measureValue] of Object.entries(
