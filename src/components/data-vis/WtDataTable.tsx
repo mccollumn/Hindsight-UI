@@ -192,6 +192,9 @@ const WtDataTable = ({
           showQuickFilter: true,
           csvOptions: getCSVExportOptions(),
           printOptions: getPrintOptions(),
+          excelOptions: {
+            disableToolbarButton: true,
+          },
         },
         columnsPanel: {
           disableHideAllButton: true,

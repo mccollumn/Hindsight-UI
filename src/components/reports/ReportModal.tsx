@@ -62,6 +62,13 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
   },
+  "& .MuiDialogTitle-root": {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.grey[50],
+  },
+  "& .MuiDialogTitle-root p": {
+    color: theme.palette.grey[50],
+  },
 }));
 
 const BootstrapDialogTitle = (props: DialogTitleProps) => {
@@ -278,13 +285,14 @@ const ReportModal = ({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
+      {/* Hiding the actions bar for now. */}
+      {/* <DialogActions>
         {loadingReportData ? (
           <Skeleton height={FOOTER_HEIGHT} width="10%" />
         ) : (
           <Button onClick={exportCSV}>Export</Button>
         )}
-      </DialogActions>
+      </DialogActions> */}
     </BootstrapDialog>
   );
 };
