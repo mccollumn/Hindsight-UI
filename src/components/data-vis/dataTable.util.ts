@@ -79,7 +79,7 @@ export const getDimensionAttributes = (row: ReportSubRowProps) => {
   if (row.Attributes === null) return null;
   let attributes: Array<string> = [];
   Object.entries(row.Attributes).forEach(([attributeName, attributeValue]) => {
-    if (attributeName !== "UrlLink") {
+    if (attributeName !== "UrlLink" && attributeName !== "Url") {
       attributes.push(attributeValue);
     }
   });

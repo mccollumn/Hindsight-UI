@@ -15,6 +15,7 @@ import {
   GRID_TREE_DATA_GROUPING_FIELD,
   MuiEvent,
   GridTreeNode,
+  GridRenderCellParams,
 } from "@mui/x-data-grid-premium";
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
 import { format } from "date-fns/fp";
@@ -28,6 +29,30 @@ import {
 import { DEFAULT_TABLE_HEIGHT } from "../../constants/constants";
 import { ReportProps } from "../../interfaces/interfaces";
 import useDataTable from "./useDataTable";
+
+const CellRender = ({ row, rowNode }: GridRenderCellParams) => {
+  let cellValue = "";
+  let cellAttribute;
+
+  if (rowNode.type !== "pinnedRow") {
+    cellValue = row.Dimensions[rowNode.depth];
+    cellAttribute = row.dimAttributes[rowNode.depth];
+  }
+
+  if (!cellAttribute) {
+    return <div>{cellValue}</div>;
+  }
+
+  return (
+    <div>
+      {cellAttribute}
+      <br />
+      <a href={cellValue} target="_blank" rel="noreferrer">
+        {cellValue}
+      </a>
+    </div>
+  );
+};
 
 const WtDataTable = ({
   data,
@@ -178,6 +203,14 @@ const WtDataTable = ({
         getApplyQuickFilterFn: getApplyFilterFnTreeData,
         disableExport: true,
         flex: 2,
+        valueGetter: (params) => {
+          if (
+            params.row.dimAttributes &&
+            params.row.dimAttributes[params.rowNode.depth]
+          ) {
+            return <CellRender {...params} />;
+          }
+        },
       };
     }, [dimHeader]);
 
