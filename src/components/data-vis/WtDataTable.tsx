@@ -168,10 +168,12 @@ const WtDataTable = ({
   const getPrintOptions = React.useCallback(() => {
     const fileName = getExportFileName();
     return {
-      pageStyle:
-        ".MuiDataGrid-root .MuiDataGrid-main { color: rgba(0, 0, 0, 0.87); }",
       hideToolbar: true,
       hideFooter: true,
+      /**
+       * fileName option does not currently work for print.
+       * https://github.com/mui/mui-x/issues/8039
+       */
       fileName: fileName,
     };
   }, [getExportFileName]);

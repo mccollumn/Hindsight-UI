@@ -31,9 +31,6 @@ const StyledDataGrid = styled(DataGridPremium)(({ theme }) => ({
   "& .MuiDataGrid-columnsContainer": {
     backgroundColor: theme.palette.mode === "light" ? "#fafafa" : "#1d1d1d",
   },
-  "& .MuiDataGrid-iconSeparator": {
-    display: "none",
-  },
   "& .MuiDataGrid-columnHeader, .MuiDataGrid-cell": {
     borderRight: `1px solid ${
       theme.palette.mode === "light" ? "#f0f0f0" : "#303030"
@@ -53,6 +50,16 @@ const StyledDataGrid = styled(DataGridPremium)(({ theme }) => ({
   "& .MuiPaginationItem-root": {
     borderRadius: 0,
   },
+  "@media print": {
+    ".MuiDataGrid-main": {
+      color: "rgba(0, 0, 0, 0.87)",
+      background: "none",
+      height: "100%",
+      width: "100%",
+      margin: "0",
+      padding: "0",
+    },
+  },
 }));
 
 const DataTable = ({ config, apiRef, ...props }: DataTableProps) => {
@@ -65,7 +72,10 @@ const DataTable = ({ config, apiRef, ...props }: DataTableProps) => {
   }
 
   return (
-    <div style={{ height: DEFAULT_TABLE_HEIGHT, width: "100%" }}>
+    <div
+      className="data-grid-wrapper"
+      style={{ height: DEFAULT_TABLE_HEIGHT, width: "100%" }}
+    >
       <StyledDataGrid apiRef={apiRefInst} {...dataGridConfig} />
     </div>
   );
