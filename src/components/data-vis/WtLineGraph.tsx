@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React from "react";
 import {
   getDate,
   startOfWeek,
@@ -17,6 +17,7 @@ import {
 import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
 import { DateContext } from "../../providers/DateProvider";
 import { CartesianMarkerProps } from "@nivo/core";
+import { CircularProgress } from "@mui/material";
 
 const WtLineGraph = ({
   reportDefinition,
@@ -27,8 +28,8 @@ const WtLineGraph = ({
   ...props
 }: WtLineGraphProps) => {
   const { trendInterval, startDate, endDate } = React.useContext(DateContext);
-  const defaultGraphOptions = useMemo(() => {
-    console.log("WtLineGraph dimensions:", dimensions);
+  const [loadingGraph, setLoadingGraph] = React.useState(true);
+  const defaultGraphOptions = React.useMemo(() => {
     return {
       margin: { top: 20, right: 50, bottom: 100, left: 50 },
       xScale: {
@@ -119,13 +120,13 @@ const WtLineGraph = ({
     selectedCell,
     trendDataQueries
   );
-  const [graphOptions, setGraphOptions] = useState({
+  const [graphOptions, setGraphOptions] = React.useState({
     ...defaultGraphOptions,
     ...config,
     ...addDateRangeMarkers(startDate, endDate, trendInterval),
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     setGraphOptions({
       ...defaultGraphOptions,
       ...config,
@@ -133,10 +134,21 @@ const WtLineGraph = ({
     });
   }, [config, defaultGraphOptions, endDate, startDate, trendInterval]);
 
+  React.useEffect(() => {
+    setLoadingGraph(
+      trendDataQueries.some((element) => element.isLoading === true)
+    );
+  }, [trendDataQueries]);
+
   return (
-    <React.Fragment>
+    <div className="line-graph" style={{ position: "relative" }}>
+      {loadingGraph && (
+        <CircularProgress
+          sx={{ position: "absolute", top: "33%", left: "50%", zIndex: "1" }}
+        />
+      )}
       <LineGraph data={lineGraphData} config={graphOptions} {...props} />
-    </React.Fragment>
+    </div>
   );
 };
 
