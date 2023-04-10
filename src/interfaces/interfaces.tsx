@@ -132,4 +132,12 @@ export interface KeyMetricsProps {
   };
 }
 
+export interface SelectedCellProps {
+  primaryColumn?: string;
+  selectedColumn?: string;
+  primaryDimension?: string;
+  selectedDimension?: string;
+  dimensionHierarchy?: [string];
+}
+
 export type WtLineProps = Omit<LineSvgProps, "data">;

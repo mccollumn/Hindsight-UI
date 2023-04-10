@@ -31,6 +31,7 @@ import {
   WtLineProps,
   ProfileProps,
   ProfileReportsProps,
+  SelectedCellProps,
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
 import useGetData from "../../hooks/useGetData";
@@ -112,7 +113,7 @@ const ReportModal = ({
     React.useContext(DateContext);
   const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
   const [gridRef, setGridRef] = React.useState<GridApiPremium>();
-  const [selectedCell, setSelectedCell] = React.useState({});
+  const [selectedCell, setSelectedCell] = React.useState<SelectedCellProps>();
   const [graphExpanded, setGraphExpanded] = React.useState(true);
 
   const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
@@ -168,6 +169,7 @@ const ReportModal = ({
       selectedColumn: selectedColumn,
       primaryDimension: primaryDimension,
       selectedDimension: selectedDimension,
+      dimensionHierarchy: dimensions,
     });
   };
 

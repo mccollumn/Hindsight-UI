@@ -13,6 +13,7 @@ import {
   ReportDefinitionProps,
   GridDimensionProps,
   WtLineProps,
+  SelectedCellProps,
 } from "../../interfaces/interfaces";
 import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
 import { DateContext } from "../../providers/DateProvider";
@@ -104,12 +105,7 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [
-    dimensions,
-    selectedCell.selectedColumn,
-    reportDefinition,
-    trendInterval,
-  ]);
+  }, [selectedCell.selectedColumn, reportDefinition, trendInterval]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
@@ -257,7 +253,7 @@ interface WtLineGraphProps {
   /**
    * Cell currently selected in the data table
    */
-  selectedCell?: selectedCellProps | Record<string, never>;
+  selectedCell?: SelectedCellProps;
   /**
    * Nivo line graph options
    * https://nivo.rocks/line/
@@ -271,13 +267,6 @@ interface WtLineGraphProps {
 
 interface markersObjProps {
   markers: CartesianMarkerProps[];
-}
-
-export interface selectedCellProps {
-  primaryColumn: string;
-  selectedColumn: string;
-  primaryDimension: string;
-  selectedDimension: string;
 }
 
 export default WtLineGraph;

@@ -3,11 +3,11 @@ import { isEmpty } from "lodash/fp";
 import React from "react";
 import { GridDimensionProps } from "../../interfaces/interfaces";
 import { getLineGraphData, getSearchString } from "./lineGraph.util";
-import { selectedCellProps } from "./WtLineGraph";
+import { SelectedCellProps } from "../../interfaces/interfaces";
 
 export const useWtLineGraphData = (
   dimensions: GridDimensionProps[],
-  selectedCell: selectedCellProps | Record<string, never>,
+  selectedCell: SelectedCellProps,
   trendDataQueries: any
 ) => {
   const [searchString, setSearchString] = React.useState("");
@@ -21,7 +21,9 @@ export const useWtLineGraphData = (
     }
     if (!isEmpty(selectedCell)) {
       setSearchString(
-        getSearchString([{ key: selectedCell.selectedDimension, rowIndex: 0 }])
+        getSearchString([
+          { key: selectedCell.selectedDimension || "", rowIndex: 0 },
+        ])
       );
     }
   }, [dimensions, selectedCell]);
@@ -42,11 +44,7 @@ export const useWtLineGraphData = (
     const addTrendData = (data: any) => {
       if (!data) return;
 
-      const newData = getLineGraphData(
-        data,
-        searchString,
-        selectedCell.selectedColumn
-      );
+      const newData = getLineGraphData(data, searchString, selectedCell);
 
       clearExistingGraphData();
 
