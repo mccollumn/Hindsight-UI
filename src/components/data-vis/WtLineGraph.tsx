@@ -8,12 +8,11 @@ import {
 } from "date-fns";
 import { useWtLineGraphQueries } from "./useWtLineGraphQueries";
 import { useWtLineGraphData } from "./useWtLineGraphData";
+import { GridStateContext } from "../../providers/GridStateProvider";
 import LineGraph from "./LineGraph";
 import {
   ReportDefinitionProps,
-  GridDimensionProps,
   WtLineProps,
-  SelectedCellProps,
 } from "../../interfaces/interfaces";
 import { getPrimaryMeasureFromReportDef } from "./lineGraph.util";
 import { DateContext } from "../../providers/DateProvider";
@@ -22,12 +21,12 @@ import { CircularProgress } from "@mui/material";
 
 const WtLineGraph = ({
   reportDefinition,
-  dimensions = [],
-  selectedCell = {},
   config = {},
   requestControllersCallback,
   ...props
 }: WtLineGraphProps) => {
+  const { selectedCell, getGridDimensions } =
+    React.useContext(GridStateContext);
   const { trendInterval, startDate, endDate } = React.useContext(DateContext);
   const [loadingGraph, setLoadingGraph] = React.useState(true);
   const defaultGraphOptions = React.useMemo(() => {
@@ -112,7 +111,7 @@ const WtLineGraph = ({
     requestControllersCallback
   );
   const { lineGraphData } = useWtLineGraphData(
-    dimensions,
+    getGridDimensions(),
     selectedCell,
     trendDataQueries
   );
@@ -246,14 +245,6 @@ interface WtLineGraphProps {
    * https://onpremises.webtrends.help/docs/get-report-definition
    */
   reportDefinition: ReportDefinitionProps;
-  /**
-   * Array of dimensions
-   */
-  dimensions?: GridDimensionProps[];
-  /**
-   * Cell currently selected in the data table
-   */
-  selectedCell?: SelectedCellProps;
   /**
    * Nivo line graph options
    * https://nivo.rocks/line/

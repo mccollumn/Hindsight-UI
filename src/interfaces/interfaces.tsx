@@ -137,7 +137,7 @@ export interface SelectedCellProps {
   selectedColumn?: string;
   primaryDimension?: string;
   selectedDimension?: string;
-  dimensionHierarchy?: [string];
+  dimensionHierarchy?: string[];
 }
 
 export type WtLineProps = Omit<LineSvgProps, "data">;

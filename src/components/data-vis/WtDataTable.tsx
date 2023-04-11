@@ -20,6 +20,7 @@ import {
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
 import { format } from "date-fns/fp";
 import { DateContext } from "../../providers/DateProvider";
+import { GridStateContext } from "../../providers/GridStateProvider";
 import {
   getDimColumnHeader,
   getTableData,
@@ -60,9 +61,7 @@ const WtDataTable = ({
     columns: [],
     rows: [],
   },
-  renderedNodesCallback = () => {},
   gridRefCallback,
-  cellClickedCallback,
   ...props
 }: WTDataTableProps) => {
   const [dimHeader, setDimHeader] = React.useState(getDimColumnHeader(data));
@@ -74,6 +73,12 @@ const WtDataTable = ({
   const { DataTable, apiRef } = useDataTable();
 
   const { startDate, endDate } = React.useContext(DateContext);
+  const {
+    handleSelectionChange,
+    setGridDimensions,
+    groupExpansionLookup,
+    isGroupExpandedByDefault,
+  } = React.useContext(GridStateContext);
 
   // Set values when report data becomes available or changes
   React.useEffect(() => {
@@ -91,22 +96,22 @@ const WtDataTable = ({
     }
   });
 
-  // Send rows up to the parent
+  // Store the current rows
   React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
-    renderedNodesCallback(rowData);
-  }, [apiRef, renderedNodesCallback, rowData]);
+    if (typeof setGridDimensions !== "function") return;
+    setGridDimensions(rowData);
+  }, [apiRef, setGridDimensions, rowData]);
 
-  // Send the sorted rows up to the parent after a sorting change
+  // Store the sorted rows after a sorting change
   React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
+    if (typeof setGridDimensions !== "function") return;
     const sortedRows = apiRef.current.getSortedRows();
-    renderedNodesCallback(sortedRows);
-  }, [apiRef, renderedNodesCallback, sortModel]);
+    setGridDimensions(sortedRows);
+  }, [apiRef, setGridDimensions, sortModel]);
 
-  // Send the filtered rows up to the parent after a filter change
+  // Store the filtered rows after a filter change
   React.useEffect(() => {
-    if (typeof renderedNodesCallback !== "function") return;
+    if (typeof setGridDimensions !== "function") return;
     const filteredRowsLookup = apiRef.current.state.filter.filteredRowsLookup;
     if (!filteredRowsLookup) return;
     const sortedRows = apiRef.current.getSortedRows();
@@ -116,8 +121,15 @@ const WtDataTable = ({
         filteredRows.push(row);
       }
     });
-    renderedNodesCallback(filteredRows);
-  }, [apiRef, filterModel, renderedNodesCallback]);
+    setGridDimensions(filteredRows);
+  }, [apiRef, filterModel, setGridDimensions]);
+
+  // Store the currently expanded rows after an expansion change
+  React.useEffect(() => {
+    apiRef.current.subscribeEvent("rowExpansionChange", (node) => {
+      groupExpansionLookup.current[node.id] = node.childrenExpanded || false;
+    });
+  }, [apiRef, groupExpansionLookup]);
 
   const cellClickedListener: GridEventListener<"cellClick"> = React.useCallback(
     (
@@ -125,10 +137,10 @@ const WtDataTable = ({
       event: MuiEvent<React.MouseEvent<HTMLElement>>,
       details: GridCallbackDetails
     ) => {
-      if (typeof cellClickedCallback !== "function") return;
-      cellClickedCallback(params, event, details);
+      if (typeof handleSelectionChange !== "function") return;
+      handleSelectionChange(params, event, details);
     },
-    [cellClickedCallback]
+    [handleSelectionChange]
   );
 
   const [pinnedRows, setPinnedRows] = React.useState<GridPinnedRowsProp>({
@@ -239,6 +251,7 @@ const WtDataTable = ({
       },
       treeData: true,
       groupingColDef: groupingColDef,
+      isGroupExpandedByDefault: isGroupExpandedByDefault,
       initialState: initialState,
       pagination: true,
       pageSizeOptions: [10, 25, 50, 100],
@@ -265,6 +278,7 @@ const WtDataTable = ({
       getPrintOptions,
       groupingColDef,
       initialState,
+      isGroupExpandedByDefault,
       pinnedRows,
       rowData,
       updateTotals,
@@ -457,21 +471,9 @@ interface WTDataTableProps {
    */
   config?: DataGridPremiumProps;
   /**
-   * Callback to make grid rows available to parent.
-   */
-  renderedNodesCallback?: (nodes: any[]) => void;
-  /**
    * Callback to make MUI Data Grid API available to parent.
    */
   gridRefCallback?: (ref: GridApiPremium) => void;
-  /**
-   * Callback to make selected cell available to parent.
-   */
-  cellClickedCallback?: (
-    params: GridCellParams<any>,
-    event: MuiEvent<React.MouseEvent<HTMLElement>>,
-    details: GridCallbackDetails
-  ) => void;
 }
 
 export default WtDataTable;

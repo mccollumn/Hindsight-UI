@@ -5,12 +5,12 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Grid,
   Paper,
-  Button,
+  // Button,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
+  // DialogActions,
   Skeleton,
   IconButtonProps,
   Collapse,
@@ -23,7 +23,7 @@ import {
   DEFAULT_TABLE_HEIGHT,
   TABLE_CONTAINER_HEIGHT,
   GRAPH_HEIGHT,
-  FOOTER_HEIGHT,
+  // FOOTER_HEIGHT,
   REPORT_TITLE_HEIGHT,
   DATE_RANGE_HEIGHT,
 } from "../../constants/constants";
@@ -31,17 +31,12 @@ import {
   WtLineProps,
   ProfileProps,
   ProfileReportsProps,
-  SelectedCellProps,
 } from "../../interfaces/interfaces";
 import { DateContext } from "../../providers/DateProvider";
+import { GridStateProvider } from "../../providers/GridStateProvider";
 import useGetData from "../../hooks/useGetData";
 import { GridApiPremium } from "@mui/x-data-grid-premium/models/gridApiPremium";
-import {
-  DataGridPremiumProps,
-  GridCallbackDetails,
-  GridCellParams,
-  MuiEvent,
-} from "@mui/x-data-grid-premium";
+import { DataGridPremiumProps } from "@mui/x-data-grid-premium";
 import { format } from "date-fns/fp";
 
 const ExpandGraph = styled((props: ExpandGraphProps) => {
@@ -111,9 +106,7 @@ const ReportModal = ({
 }: ReportModalProps) => {
   const { wtStartDate, wtEndDate, startDate, endDate } =
     React.useContext(DateContext);
-  const [gridDimensions, setGridDimensions] = React.useState<any[]>([]);
-  const [gridRef, setGridRef] = React.useState<GridApiPremium>();
-  const [selectedCell, setSelectedCell] = React.useState<SelectedCellProps>();
+  const [gridRef, setGridRef] = React.useState<GridApiPremium | null>(null);
   const [graphExpanded, setGraphExpanded] = React.useState(true);
 
   const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
@@ -140,38 +133,6 @@ const ReportModal = ({
     getReport,
     { staleTime: 30 * 60 * 1000 }
   );
-
-  const getGridDimensions = React.useCallback((nodes: any[]) => {
-    if (!nodes[0]) return;
-    setGridDimensions(
-      nodes.map(({ Dimensions }, index) => {
-        return { rowIndex: index, key: Dimensions[0] };
-      })
-    );
-  }, []);
-
-  const handleSelectionChange = (
-    params: GridCellParams<any>,
-    event: MuiEvent<React.MouseEvent<HTMLElement>>,
-    details: GridCallbackDetails
-  ) => {
-    const primaryColumn =
-      getPrimaryColumn(gridRef?.getAllColumns()).field || "";
-    const selectedColumn =
-      params.colDef.type === "treeDataGroup"
-        ? primaryColumn
-        : params.field || primaryColumn;
-    const dimensions = params.row.Dimensions;
-    const selectedDimension = dimensions[dimensions.length - 1];
-    const primaryDimension = dimensions[0];
-    setSelectedCell({
-      primaryColumn: primaryColumn,
-      selectedColumn: selectedColumn,
-      primaryDimension: primaryDimension,
-      selectedDimension: selectedDimension,
-      dimensionHierarchy: dimensions,
-    });
-  };
 
   const handleClose = () => {
     onClose();
@@ -225,66 +186,64 @@ const ReportModal = ({
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Grid container spacing={3}>
-          {/* Graph */}
-          <Grid item xs={12} md={12} lg={12}>
-            {
-              /*loadingDefinition*/ loadingReportData ? (
-                <Skeleton height={GRAPH_HEIGHT} />
+          <GridStateProvider dataGridRef={gridRef}>
+            {/* Graph */}
+            <Grid item xs={12} md={12} lg={12}>
+              {
+                /*loadingDefinition*/ loadingReportData ? (
+                  <Skeleton height={GRAPH_HEIGHT} />
+                ) : (
+                  // <Collapse in={graphExpanded} timeout="auto" collapsedSize="25">
+                  <Paper
+                    sx={{
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      height: graphExpanded ? GRAPH_HEIGHT : "25px",
+                    }}
+                  >
+                    <ExpandGraph
+                      expand={graphExpanded}
+                      onClick={handleExpandGraph}
+                      aria-expanded={graphExpanded}
+                      aria-label="Show or hide graph"
+                    >
+                      <ExpandMoreIcon fontSize="small" />
+                    </ExpandGraph>
+                    <Collapse in={graphExpanded} timeout="auto">
+                      <WtLineGraph
+                        reportDefinition={data.definition}
+                        config={graphConfig}
+                        requestControllersCallback={requestControllersCallback}
+                      />
+                    </Collapse>
+                  </Paper>
+                  // </Collapse>
+                )
+              }
+            </Grid>
+            {/* Table */}
+            <Grid item xs={12} md={12} lg={12}>
+              {loadingReportData ? (
+                <Skeleton height={DEFAULT_TABLE_HEIGHT} />
               ) : (
-                // <Collapse in={graphExpanded} timeout="auto" collapsedSize="25">
                 <Paper
                   sx={{
                     p: 2,
                     display: "flex",
                     flexDirection: "column",
-                    height: graphExpanded ? GRAPH_HEIGHT : "25px",
+                    height: TABLE_CONTAINER_HEIGHT,
                   }}
                 >
-                  <ExpandGraph
-                    expand={graphExpanded}
-                    onClick={handleExpandGraph}
-                    aria-expanded={graphExpanded}
-                    aria-label="Show or hide graph"
-                  >
-                    <ExpandMoreIcon fontSize="small" />
-                  </ExpandGraph>
-                  <Collapse in={graphExpanded} timeout="auto">
-                    <WtLineGraph
-                      reportDefinition={data.definition}
-                      dimensions={gridDimensions}
-                      selectedCell={selectedCell}
-                      config={graphConfig}
-                      requestControllersCallback={requestControllersCallback}
-                    />
-                  </Collapse>
+                  <WtDataTable
+                    data={data}
+                    config={tableConfig}
+                    gridRefCallback={gridCallback}
+                  />
                 </Paper>
-                // </Collapse>
-              )
-            }
-          </Grid>
-          {/* Table */}
-          <Grid item xs={12} md={12} lg={12}>
-            {loadingReportData ? (
-              <Skeleton height={DEFAULT_TABLE_HEIGHT} />
-            ) : (
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  height: TABLE_CONTAINER_HEIGHT,
-                }}
-              >
-                <WtDataTable
-                  data={data}
-                  config={tableConfig}
-                  renderedNodesCallback={getGridDimensions}
-                  gridRefCallback={gridCallback}
-                  cellClickedCallback={handleSelectionChange}
-                />
-              </Paper>
-            )}
-          </Grid>
+              )}
+            </Grid>
+          </GridStateProvider>
         </Grid>
       </DialogContent>
       {/* Hiding the actions bar for now. */}
@@ -297,10 +256,6 @@ const ReportModal = ({
       </DialogActions> */}
     </BootstrapDialog>
   );
-};
-
-const getPrimaryColumn = (columns: any) => {
-  return columns.find((column: any) => column.field !== "__tree_data_group__");
 };
 
 interface DialogTitleProps {
