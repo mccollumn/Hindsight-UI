@@ -72,6 +72,7 @@ export interface ReportProps {
 }
 
 export interface ColumnDefProps {
+  type?: string;
   field: string;
 }
 
@@ -129,6 +130,14 @@ export interface KeyMetricsProps {
       SubRows: Omit<KeyMetricsProps, "data"> | null;
     };
   };
+}
+
+export interface SelectedCellProps {
+  primaryColumn?: string;
+  selectedColumn?: string;
+  primaryDimension?: string;
+  selectedDimension?: string;
+  dimensionHierarchy?: string[];
 }
 
 export type WtLineProps = Omit<LineSvgProps, "data">;

@@ -3,7 +3,7 @@ import axios from "axios";
 import { AuthContext } from "../providers/AuthProvider";
 import { KeyMetricsProps } from "../interfaces/interfaces";
 
-const DX_SERVER = window.config.DX_SERVER;
+const DX_SERVER = window?.config?.DX_SERVER || process.env.REACT_APP_DX_SERVER;
 const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
 
 const useGetData = () => {

@@ -12,6 +12,7 @@ import { DateProvider } from "./providers/DateProvider";
 import { AuthProvider } from "./providers/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { CssBaseline } from "@mui/material";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <BrowserRouter>
         <QueryParamProvider adapter={ReactRouter6Adapter}>
           <DateProvider>

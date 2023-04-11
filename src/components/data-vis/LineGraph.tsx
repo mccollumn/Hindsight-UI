@@ -7,7 +7,7 @@ import { ResponsiveLine, Serie } from "@nivo/line";
 const LineGraph = ({ data = [], config = {}, ...props }: LineGraphProps) => {
   console.log("LineGraph data:", data);
   return (
-    <div style={{ height: GRAPH_HEIGHT }}>
+    <div style={{ height: GRAPH_HEIGHT, position: "relative", top: "-30px" }}>
       <ResponsiveLine {...config} data={data} {...props} />
     </div>
   );

@@ -13,6 +13,7 @@ import {
   differenceInDays,
 } from "date-fns/fp";
 import { addWeeks, addMonths } from "date-fns";
+import { get } from "lodash/fp";
 import { Serie } from "@nivo/line";
 import {
   ReportProps,
@@ -20,13 +21,15 @@ import {
   ReportDateRangeProps,
   ReportDefinitionProps,
   ReportSubRowProps,
+  SelectedCellProps,
 } from "../../interfaces/interfaces";
 
 export const getSearchString = (dimensions: GridDimensionProps[]) => {
   if (dimensions.length === 0) return "";
+  const MAX_NUM_DIMENSIONS = 5;
   return dimensions
     .reduce((result: string[], dimension) => {
-      if (dimension.rowIndex <= 5) {
+      if (dimension.rowIndex <= MAX_NUM_DIMENSIONS) {
         const url = dimension.key.match(/(http.+)/gi)?.pop();
         if (url) {
           result.push(url);
@@ -110,18 +113,48 @@ const shorten = (str: string, len = 20) => {
 
 const filterDimensions = (
   dimensions: ReportSubRowProps,
-  searchString: string
+  searchString: string,
+  selectedCell?: any
 ) => {
+  const primarySelectedDimension = selectedCell?.primaryDimension;
   const resultKey =
-    Object.keys(dimensions).find((element) => element === searchString) ||
-    searchString;
+    Object.keys(dimensions).find(
+      (element) => element === primarySelectedDimension
+    ) || searchString;
   return { [resultKey]: dimensions[resultKey] };
+};
+
+const getYValue = (
+  key: string,
+  value: any,
+  measureName: string,
+  selectedCell: SelectedCellProps
+) => {
+  if (
+    !selectedCell?.selectedDimension ||
+    key === selectedCell?.selectedDimension
+  ) {
+    return Number(value?.measures[measureName]);
+  }
+
+  // Build path to the correct dimension value
+  let path = "";
+  if (selectedCell.dimensionHierarchy) {
+    for (let x = 1; x < selectedCell.dimensionHierarchy.length; x++) {
+      path += `${path.length === 0 ? "" : "."}SubRows['${
+        selectedCell.dimensionHierarchy[x]
+      }']`;
+    }
+  }
+
+  const dimension = get(path, value);
+  return Number(dimension?.measures[measureName]) || 0;
 };
 
 export const getLineGraphData = (
   reportData: ReportProps,
   searchString: string,
-  measure: string
+  selectedCell: SelectedCellProps
 ) => {
   if (
     reportData.data === undefined ||
@@ -132,18 +165,24 @@ export const getLineGraphData = (
   const dateRange = getDateRange(reportData);
   if (dateRange === null) return [];
   const period = getPeriodStr(dateRange.startperiod);
+  const measure = selectedCell?.selectedColumn;
   const measureName = measure ? measure : getPrimaryMeasure(reportData).name;
   const dimensions = getDimensions(reportData) || {};
-  const filteredDimensions = filterDimensions(dimensions, searchString);
+  const filteredDimensions = filterDimensions(
+    dimensions,
+    searchString,
+    selectedCell
+  );
   let lineGraphData: Serie[] = [];
 
   Object.entries(/*dimensions*/ filteredDimensions).forEach(([key, value]) => {
+    const yValue = getYValue(key, value, measureName, selectedCell);
     lineGraphData.push({
       // Not shortening the values anymore since only one value will be displayed in the graph.
       // If needed in the future, addTrendData() in useWtLineGraphData will have to be updated.
       // id: shorten(key),
-      id: key,
-      data: [{ x: period, y: Number(value?.measures[measureName]) || 0 }],
+      id: selectedCell.selectedDimension || key,
+      data: [{ x: period, y: yValue || 0 }],
     });
   });
   return lineGraphData;

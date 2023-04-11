@@ -92,8 +92,16 @@ const ReportSelectionPanel = ({
         width: "100%",
         marginTop: "1rem",
       }}
+      className="report-selection-panel"
     >
-      <Box sx={{ display: "flex" }}>
+      <Box
+        sx={{
+          display: "flex",
+          bgcolor: "primary.main",
+          borderRadius: "4px",
+        }}
+        className="report-categories"
+      >
         <ReportCategoryTabs
           categories={categories}
           clickHandler={handleTabChange}
@@ -104,15 +112,15 @@ const ReportSelectionPanel = ({
             flex: 1,
             justifyContent: "end",
             minWidth: 100,
-            bgcolor: "background.paper",
+            // bgcolor: "background.paper",
             borderBottom: 1,
             borderColor: "divider",
-            padding: "0 1em .5em",
+            paddingRight: "1em",
           }}
           className={"search"}
         >
           <SearchInput
-            label="Find a Report"
+            placeholder="Find a Report..."
             variant="standard"
             searchHandler={handleSearch}
           />
