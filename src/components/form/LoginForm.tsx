@@ -3,7 +3,7 @@ import { FormWrapper, FormWrapperProps } from "../form/FormWrapper";
 
 export const LoginForm = ({
   onLoginSubmit = () => {},
-  title = "Webtrends Analytics",
+  title = "Webtrends",
   description = <DefaultDescription />,
   submitButtonText = "Login",
   defaultUsername,

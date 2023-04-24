@@ -2,6 +2,7 @@ import * as React from "react";
 import { LoginForm } from "../components/form/LoginForm";
 import { AuthContext } from "../providers/AuthProvider";
 import LoginError from "../components/form/LoginError";
+import pkg from "../../package.json";
 import { styled } from "@mui/material/styles";
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
   Backdrop,
   CircularProgress,
 } from "@mui/material";
+import { startCase } from "lodash/fp";
 
 const DX_USERNAME =
   process.env.NODE_ENV === "development"
@@ -39,6 +41,7 @@ export default function Login({ onLoginSubmit }: LoginProps) {
             <CircularProgress />
           </Backdrop>
           <LoginForm
+            title={startCase(pkg.name)}
             onLoginSubmit={handleLogin}
             defaultUsername={DX_USERNAME}
             defaultPassword={DX_PASSWORD}
