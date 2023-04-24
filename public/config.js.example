@@ -1,0 +1,6 @@
+window["config"] = {
+  // DX API Endpoint
+  DX_ENDPOINT: "https://myDomain.com:8080/v2_0/ReportService",
+  // Analytics 9 UI (protocol + hostname + port)
+  A9_URL: "http://myA9ui:7099",
+};

@@ -4,8 +4,8 @@ import CryptoJS from "crypto-js";
 import useSessionStorageState from "use-session-storage-state";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const DX_SERVER = window?.config?.DX_SERVER || process.env.REACT_APP_DX_SERVER;
-const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
+const DX_ENDPOINT =
+  window?.config?.DX_ENDPOINT || process.env.REACT_APP_DX_ENDPOINT;
 const SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "webtrends";
 
 export const AuthContext = React.createContext<AuthProviderProps>(undefined!);
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }: any) => {
   const handleLogin = async (creds: any) => {
     try {
       setIsLoggingIn(true);
-      const res = await axios.get(`${WT_DX_2_0_ENDPOINT}/profiles`, {
+      const res = await axios.get(`${DX_ENDPOINT}/profiles`, {
         auth: {
           username: creds.username,
           password: creds.password,

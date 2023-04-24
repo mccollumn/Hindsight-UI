@@ -3,8 +3,8 @@ import axios from "axios";
 import { AuthContext } from "../providers/AuthProvider";
 import { KeyMetricsProps } from "../interfaces/interfaces";
 
-const DX_SERVER = window?.config?.DX_SERVER || process.env.REACT_APP_DX_SERVER;
-const WT_DX_2_0_ENDPOINT = `${DX_SERVER}/v2_0/ReportService`;
+const DX_ENDPOINT =
+  window?.config?.DX_ENDPOINT || process.env.REACT_APP_DX_ENDPOINT;
 
 const useGetData = () => {
   const { auth } = React.useContext(AuthContext);
@@ -45,8 +45,8 @@ const useGetData = () => {
   const getWtData = React.useCallback(
     async ({ params = {}, profileID = "", reportID = "" }: getWtDataProps) => {
       const url = profileID
-        ? `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
-        : `${WT_DX_2_0_ENDPOINT}/profiles/`;
+        ? `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
+        : `${DX_ENDPOINT}/profiles/`;
       const res = await getAxios(url, params);
       return res;
     },
@@ -55,7 +55,7 @@ const useGetData = () => {
 
   const getReportDefinition = React.useCallback(
     async ({ params = {}, profileID = "", reportID = "" }: getWtDataProps) => {
-      const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
+      const url = `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
       const res = await getAxios(url, params);
       return res;
     },
@@ -64,7 +64,7 @@ const useGetData = () => {
 
   const getKeyMetrics = React.useCallback(
     async ({ params = {}, profileID = "" }: getWtDataProps) => {
-      const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
+      const url = `${DX_ENDPOINT}/keymetrics/${profileID}`;
       const res = await getAxios(url, params);
       return res.data as KeyMetricsProps;
     },
@@ -75,8 +75,8 @@ const useGetData = () => {
     const [_key, { profileID = "", reportID = "", params = {} }] =
       parameters.queryKey;
     const url = profileID
-      ? `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
-      : `${WT_DX_2_0_ENDPOINT}/profiles/`;
+      ? `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
+      : `${DX_ENDPOINT}/profiles/`;
     const res = await getAxios(url, params);
     return res;
   };
@@ -84,21 +84,21 @@ const useGetData = () => {
   const getReportDefinitionQuery = async (parameters: Params) => {
     const [_key, { profileID = "", reportID = "", params = {} }] =
       parameters.queryKey;
-    const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
+    const url = `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
     const res = await getAxios(url, params);
     return res;
   };
 
   const getKeyMetricsQuery = async (parameters: Params) => {
     const [_key, { params = {}, profileID = "" }] = parameters.queryKey;
-    const url = `${WT_DX_2_0_ENDPOINT}/keymetrics/${profileID}`;
+    const url = `${DX_ENDPOINT}/keymetrics/${profileID}`;
     const res = await getAxios(url, params);
     return res as KeyMetricsProps;
   };
 
   const getReportPeriodsQuery = async (parameters: Params) => {
     const [_key, { profileID = "", params = {} }] = parameters.queryKey;
-    const url = `${WT_DX_2_0_ENDPOINT}/profiles/${profileID}/periods/`;
+    const url = `${DX_ENDPOINT}/profiles/${profileID}/periods/`;
     const res = await getAxios(url, params);
     return res;
   };

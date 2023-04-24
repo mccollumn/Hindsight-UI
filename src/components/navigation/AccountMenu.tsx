@@ -45,6 +45,8 @@ const AccountMenu = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const a9Url = window?.config?.A9_URL || process.env.A9_URL || null;
+
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -100,12 +102,14 @@ const AccountMenu = () => {
           </ListItemIcon>
           Home
         </MenuItem>
-        <MenuItem component={Link} href={window.config.A9_URL} target="_blank">
-          <ListItemIcon>
-            <AnalyticsIcon fontSize="small" />
-          </ListItemIcon>
-          Analytics 9
-        </MenuItem>
+        {a9Url && (
+          <MenuItem component={Link} href={a9Url} target="_blank">
+            <ListItemIcon>
+              <AnalyticsIcon fontSize="small" />
+            </ListItemIcon>
+            Analytics 9
+          </MenuItem>
+        )}
         <MenuItem
           component={Link}
           href="https://onpremises.webtrends.help/docs"
