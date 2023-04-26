@@ -52,6 +52,11 @@
   "plugins": [
     "lodash-fp"
   ],
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(axios)/)"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
