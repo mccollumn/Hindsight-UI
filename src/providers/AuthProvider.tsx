@@ -8,7 +8,14 @@ const DX_ENDPOINT =
   window?.config?.DX_ENDPOINT || process.env.REACT_APP_DX_ENDPOINT;
 const SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "webtrends";
 
-export const AuthContext = React.createContext<AuthProviderProps>(undefined!);
+export const AuthContext = React.createContext<AuthProviderProps>({
+  auth: null,
+  setAuth: () => {},
+  handleLogin: () => {},
+  handleLogout: () => {},
+  errorMessage: "",
+  isLoggingIn: false,
+});
 
 export const AuthProvider = ({ children }: any) => {
   const [auth, setAuth] = React.useState<credentialProps | null>(null);

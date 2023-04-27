@@ -8,11 +8,7 @@ const MockLogo = () => {
 
 describe("<Layout />", () => {
   it("Should load without error", async () => {
-    render(
-      <Layout
-        isAuthorized={false}
-      />
-    );
+    render(<Layout isAuthorized={false} />);
     expect(screen.getByLabelText("Base application")).toBeInTheDocument();
   });
 
@@ -28,10 +24,10 @@ describe("<Layout />", () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText("Navigation drawer")).toHaveTextContent(
-        "Reports"
+        "Profiles"
       );
     });
-    fireEvent.click(screen.getByText("Reports"));
+    fireEvent.click(screen.getByText("Profiles"));
     await waitFor(() => {
       expect(mockNavigationClick).toBeCalledWith(mockNavActions[1]);
     });
@@ -50,44 +46,28 @@ describe("<Layout />", () => {
           },
         ]}
         isAuthorized={false}
-      />);
+      />
+    );
     expect(screen.getByText("Mock Logo")).toBeInTheDocument();
   });
 
   it("Should expand and contract left navigation", () => {
-    render(
-      <Layout
-        navigationActions={mockNavActions}
-        isAuthorized={false}
-      />);
+    render(<Layout navigationActions={mockNavActions} isAuthorized={false} />);
 
     // Expand
     fireEvent.click(screen.getByLabelText("Expand Left Navigation"));
 
-    expect(
-      screen.getByLabelText("Base application")
-    ).toHaveClass('expanded')
-
+    expect(screen.getByLabelText("Base application")).toHaveClass("expanded");
 
     // Contract
     fireEvent.click(screen.getByLabelText("Collapse Left Navigation"));
 
-    expect(
-      screen.getByLabelText("Base application")
-    ).toHaveClass('contracted')
-
+    expect(screen.getByLabelText("Base application")).toHaveClass("contracted");
   });
 
   it("Should filter non-authorized nav actions", () => {
-    render(
-      <Layout
-        navigationActions={mockNavActions}
-        isAuthorized={false}
-      />);
+    render(<Layout navigationActions={mockNavActions} isAuthorized={false} />);
 
-    expect(
-      screen.getByLabelText("Login")
-    ).toBeInTheDocument();
-
+    expect(screen.getByLabelText("Login")).toBeInTheDocument();
   });
 });
