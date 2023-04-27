@@ -13,6 +13,8 @@ import { AuthProvider } from "./providers/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CssBaseline } from "@mui/material";
+import { ErrorBoundary } from "react-error-boundary";
+import Error, { logError } from "./pages/Error";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,10 +36,12 @@ root.render(
         <QueryParamProvider adapter={ReactRouter6Adapter}>
           <DateProvider>
             <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <App />
-                <ReactQueryDevtools initialIsOpen={false} />
-              </AuthProvider>
+              <ErrorBoundary FallbackComponent={Error} onError={logError}>
+                <AuthProvider>
+                  <App />
+                  <ReactQueryDevtools initialIsOpen={false} />
+                </AuthProvider>
+              </ErrorBoundary>
             </QueryClientProvider>
           </DateProvider>
         </QueryParamProvider>
