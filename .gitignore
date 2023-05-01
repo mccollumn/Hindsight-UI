@@ -10,6 +10,7 @@
 
 # production
 /build
+/installer/Output
 
 # misc
 .DS_Store

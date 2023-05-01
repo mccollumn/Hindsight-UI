@@ -5,16 +5,15 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [master]
   pull_request:
-    branches: [ "master" ]
-    
+    branches: [master, release*]
+
 env:
   CI: ""
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -23,12 +22,31 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm run test-CI a
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run test-CI a
+
+  installer:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Build Installer with Script
+        shell: bash
+        run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
+
+      - name: Zip Installer
+        run: zip -r wtr_setup.zip .
+        working-directory: ./installer/Output
