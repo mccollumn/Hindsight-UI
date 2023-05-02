@@ -34,6 +34,46 @@ jobs:
           echo "PRODUCT_VERSION=$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           echo "ARTIFACT_NAME=$REPO_NAME-$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
+      - name: Test $ variables
+        run: |
+          echo $PRODUCT_VERSION
+          echo $ARTIFACT_NAME
+
+      - name: Test env variables
+        run: |
+          echo $Env.PRODUCT_VERSION
+          echo $Env.ARTIFACT_NAME
+        
+      - name: Test $ quoted variables
+        run: |
+          echo "$PRODUCT_VERSION"
+          echo "$ARTIFACT_NAME"
+
+      - name: Test env quoted variables
+        run: |
+          echo "$Env.PRODUCT_VERSION"
+          echo "$Env.ARTIFACT_NAME"
+
+      - name: Test ${ variables
+        run: |
+          echo ${PRODUCT_VERSION}
+          echo ${ARTIFACT_NAME}
+
+      - name: Test env{ variables
+        run: |
+          echo ${Env.PRODUCT_VERSION}
+          echo ${Env.ARTIFACT_NAME}
+
+        - name: Test ${{ variables
+        run: |
+          echo ${{ PRODUCT_VERSION }}
+          echo ${{ ARTIFACT_NAME }}
+
+      - name: Test env{{ variables
+        run: |
+          echo ${{ Env.PRODUCT_VERSION }}
+          echo ${{ Env.ARTIFACT_NAME }}
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
