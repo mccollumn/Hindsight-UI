@@ -51,8 +51,8 @@ jobs:
         run: ./installer/build_installer.sh -v $Env:PRODUCT_VERSION
 
       - name: Zip Installer
-        shell: pwsh
-        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/${Env.ARTIFACT_NAME}.zip
+        # shell: pwsh
+        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
 
       - run: ls ./installer
 
