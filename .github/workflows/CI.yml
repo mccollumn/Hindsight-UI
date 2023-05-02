@@ -50,3 +50,9 @@ jobs:
       - name: Zip Installer
         run: zip -r wtr_setup.zip .
         working-directory: ./installer/Output
+
+      - name: Upload the installer as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: "installer/Output/wtr_setup.zip"
+          name: wtr_setup
