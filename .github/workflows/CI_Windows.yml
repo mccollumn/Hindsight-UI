@@ -54,6 +54,8 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/$Env.ARTIFACT_NAME.zip
 
+      - run: ls ./installer
+
       - name: Upload the installer as an artifact
         uses: actions/upload-artifact@v3
         with:
