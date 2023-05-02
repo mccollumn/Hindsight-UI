@@ -39,13 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+      #- name: get-npm-version
+      #  id: package-version
+      #  uses: martinbeentjes/npm-get-version-action@v1.3.1
 
       - name: Build Installer with Script
         shell: bash
-        run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
+        #  run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
+        run: ./installer/build_installer.sh
 
       - name: Zip Installer
         run: zip -r wtr_setup.zip .
