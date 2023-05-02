@@ -52,10 +52,10 @@ jobs:
 
       - name: Zip Installer
         shell: pwsh
-        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/$Env.ARTIFACT_NAME-$Env:PRODUCT_VERSION.zip
+        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/$Env.ARTIFACT_NAME.zip
 
       - name: Upload the installer as an artifact
         uses: actions/upload-artifact@v3
         with:
-          path: "installer/$Env.ARTIFACT_NAME-$Env:PRODUCT_VERSION.zip"
+          path: "./installer/$Env.ARTIFACT_NAME.zip"
           name: $Env.ARTIFACT_NAME
