@@ -52,7 +52,7 @@ jobs:
 
       - name: Zip Installer
         shell: pwsh
-        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/$Env.ARTIFACT_NAME.zip
+        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath ./installer/${Env.ARTIFACT_NAME}.zip
 
       - run: ls ./installer
 
