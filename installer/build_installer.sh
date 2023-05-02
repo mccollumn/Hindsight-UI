@@ -22,7 +22,8 @@ rm -rfv ${InstallerOutputDir}
 
 # Compile the installer
 echo -e "\nCompiling Inno Setup script ${InnoScriptName}"
-"${InnoSetupDir}/ISCC.exe" /O"${InstallerOutputDir}" /F"wtr_setup${version}" "./installer/${InnoScriptName}"
+# "${InnoSetupDir}/ISCC.exe" /O"${InstallerOutputDir}" /F"wtr_setup${version}" "./installer/${InnoScriptName}"
+"${InnoSetupDir}/ISCC.exe" "./installer/${InnoScriptName}"
 
 if [ $? -ne 0 ]
 then
