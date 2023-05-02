@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Installer with Script
         shell: bash
-        run: ./installer/build_installer.sh -v ${cat ${package.json | jq '.version' | tr -d '"'}
+        run: ./installer/build_installer.sh -v ${cat package.json | jq '.version' | tr -d '"'}
 
       - name: Zip Installer
         shell: pwsh
