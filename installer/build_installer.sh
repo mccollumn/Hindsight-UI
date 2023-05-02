@@ -2,7 +2,7 @@
 InstallerOutputDir="./installer/Output"
 InstallerAppDir="${InstallerOutputDir}/app"
 InstallerMsiDir="${InstallerOutputDir}/msi"
-InnoSetupDir="./installer/Inno Setup 6"
+InnoSetupDir="./installer/inno_setup_6"
 InnoScriptName="wtrui.iss"
 
 echo "*** Building Installer ***"
