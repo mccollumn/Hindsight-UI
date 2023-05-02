@@ -57,5 +57,5 @@ jobs:
       - name: Upload the installer as an artifact
         uses: actions/upload-artifact@v3
         with:
-          path: "./installer/$Env.ARTIFACT_NAME.zip"
+          path: ./installer/$Env.ARTIFACT_NAME.zip
           name: $Env.ARTIFACT_NAME
