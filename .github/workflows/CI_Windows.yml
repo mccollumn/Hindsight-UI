@@ -30,32 +30,18 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build --if-present
-      #- run: npm run test-CI a
-
-      # installer:
-      #   needs: build
-      #   runs-on: windows-latest
-
-      #   steps:
-      #     - uses: actions/checkout@v3
-
-      #- name: get-npm-version
-      #  id: package-version
-      #  uses: martinbeentjes/npm-get-version-action@v1.3.1
+      - run: npm run test a
 
       - name: Build Installer with Script
         shell: bash
-        #  run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
-        run: ./installer/build_installer.sh
+        run: ./installer/build_installer.sh -v ${cat ${package.json | jq '.version' | tr -d '"'}
 
       - name: Zip Installer
         shell: pwsh
         run: Compress-Archive -Path ./installer/Output/* -DestinationPath ./installer/wtr_setup.zip
-      #   run: zip -r wtr_setup.zip .
-      #   working-directory: ./installer/Output
 
       - name: Upload the installer as an artifact
         uses: actions/upload-artifact@v3
         with:
-          path: "installer/Output/wtr_setup.zip"
+          path: "installer/wtr_setup.zip"
           name: wtr_setup
