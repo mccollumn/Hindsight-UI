@@ -1,0 +1,58 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master, release*]
+
+env:
+  CI: ""
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run test-CI a
+
+  installer:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+
+      - name: Build Installer with Script
+        shell: bash
+        run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
+
+      - name: Zip Installer
+        run: zip -r wtr_setup.zip .
+        working-directory: ./installer/Output
+
+      - name: Upload the installer as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: "installer/Output/wtr_setup.zip"
+          name: wtr_setup
