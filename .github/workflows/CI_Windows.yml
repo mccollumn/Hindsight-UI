@@ -49,11 +49,13 @@ jobs:
         run: ./installer/build_installer.sh
 
       - name: Zip Installer
-        run: zip -r wtr_setup.zip .
-        working-directory: ./installer/Output
+        shell: pwsh
+        run: Compress-Archive -Path ./installer/Output/* -DestinationPath ./installer/wtr_setup.zip
+      #   run: zip -r wtr_setup.zip .
+      #   working-directory: ./installer/Output
 
       - name: Upload the installer as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: "installer/Output/wtr_setup.zip"
           name: wtr_setup
