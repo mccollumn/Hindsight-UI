@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const ProfileList = ({ profileNames, setSection }: ProfileListProps) => {
   const navigate = useNavigate();
   const profileClick = (event: MouseEvent, children: any) => {
-    console.log("Profile Click:", children);
     setSection("reports");
     navigate("/dashboard");
   };

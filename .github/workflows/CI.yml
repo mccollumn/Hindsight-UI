@@ -5,17 +5,16 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [master]
   pull_request:
-    branches: [ "master" ]
-    
+    branches: [master, release*]
+
 env:
   CI: ""
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -23,12 +22,39 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm run test-CI a
+      - uses: actions/checkout@v3
+
+      - name: Set env variables
+        run: |
+          $REPO_NAME = $Env:GITHUB_REPOSITORY.Split('/').Split('\')[1..99] -join '-'
+          echo "REPO_NAME=$REPO_NAME" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $PACKAGE_JSON = './package.json'
+          echo "PACKAGE_JSON=$PACKAGE_JSON" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $PRODUCT_VERSION = (node -p "require('$PACKAGE_JSON').version") -replace '(\d+\.\d+\.\d+).*','$1'
+          echo "PRODUCT_VERSION=$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "ARTIFACT_NAME=$REPO_NAME-$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - run: npm ci
+
+      - run: npm run build --if-present
+
+      - run: npm run test-CI
+
+      - name: Build Installer with Script
+        shell: bash
+        run: ./installer/build_installer.sh -v ${{ Env.PRODUCT_VERSION }}
+
+      # - name: Zip Installer
+      #   run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
+
+      - name: Upload the installer as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./installer/Output/
+          name: ${{ Env.ARTIFACT_NAME }}

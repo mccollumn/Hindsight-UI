@@ -29,8 +29,6 @@ function App() {
     setEndDate(endDate);
   }, []);
 
-  console.log("Profiles:", profiles);
-
   const clickHandler = (navAction: any) => {
     navigate(navAction.path);
   };
@@ -39,7 +37,6 @@ function App() {
     value: ProfileProps,
     event?: React.SyntheticEvent<Element, Event>
   ) => {
-    console.log("Selected profile:", value);
     setProfile(value.ID);
     setSelectedProfile(value);
     let params = `?profile=${value.ID}`;

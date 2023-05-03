@@ -72,6 +72,7 @@ const useGetData = () => {
   );
 
   const getDataQuery = async (parameters: Params) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, { profileID = "", reportID = "", params = {} }] =
       parameters.queryKey;
     const url = profileID
@@ -82,6 +83,7 @@ const useGetData = () => {
   };
 
   const getReportDefinitionQuery = async (parameters: Params) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, { profileID = "", reportID = "", params = {} }] =
       parameters.queryKey;
     const url = `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
@@ -90,6 +92,7 @@ const useGetData = () => {
   };
 
   const getKeyMetricsQuery = async (parameters: Params) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, { params = {}, profileID = "" }] = parameters.queryKey;
     const url = `${DX_ENDPOINT}/keymetrics/${profileID}`;
     const res = await getAxios(url, params);
@@ -97,6 +100,7 @@ const useGetData = () => {
   };
 
   const getReportPeriodsQuery = async (parameters: Params) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_key, { profileID = "", params = {} }] = parameters.queryKey;
     const url = `${DX_ENDPOINT}/profiles/${profileID}/periods/`;
     const res = await getAxios(url, params);
@@ -106,7 +110,6 @@ const useGetData = () => {
   const cancelAllRequests = React.useCallback(() => {
     controllers?.forEach((controller) => {
       controller.abort();
-      console.log("Aborting:", controller);
     });
   }, [controllers]);
 
