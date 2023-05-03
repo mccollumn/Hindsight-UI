@@ -34,46 +34,6 @@ jobs:
           echo "PRODUCT_VERSION=$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           echo "ARTIFACT_NAME=$REPO_NAME-$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Test $ variables
-        run: |
-          echo $PRODUCT_VERSION
-          echo $ARTIFACT_NAME
-
-      - name: Test env variables
-        run: |
-          echo $Env.PRODUCT_VERSION
-          echo $Env.ARTIFACT_NAME
-        
-      - name: Test $ quoted variables
-        run: |
-          echo "$PRODUCT_VERSION"
-          echo "$ARTIFACT_NAME"
-
-      - name: Test env quoted variables
-        run: |
-          echo "$Env.PRODUCT_VERSION"
-          echo "$Env.ARTIFACT_NAME"
-
-      - name: Test ${ variables
-        run: |
-          echo ${PRODUCT_VERSION}
-          echo ${ARTIFACT_NAME}
-
-      - name: Test env{ variables
-        run: |
-          echo ${Env.PRODUCT_VERSION}
-          echo ${Env.ARTIFACT_NAME}
-
-        - name: Test ${{ variables
-        run: |
-          echo ${{ PRODUCT_VERSION }}
-          echo ${{ ARTIFACT_NAME }}
-
-      - name: Test env{{ variables
-        run: |
-          echo ${{ Env.PRODUCT_VERSION }}
-          echo ${{ Env.ARTIFACT_NAME }}
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -88,16 +48,13 @@ jobs:
 
       - name: Build Installer with Script
         shell: bash
-        run: ./installer/build_installer.sh -v $Env:PRODUCT_VERSION
+        run: ./installer/build_installer.sh -v ${{ Env.PRODUCT_VERSION }}
 
-      - name: Zip Installer
-        # shell: pwsh
-        run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
-
-      - run: ls ./installer
+      # - name: Zip Installer
+      #   run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
 
       - name: Upload the installer as an artifact
         uses: actions/upload-artifact@v3
         with:
-          path: ./installer/$Env.ARTIFACT_NAME.zip
-          name: $Env.ARTIFACT_NAME
+          path: ./installer/Output/
+          name: ${{ Env.ARTIFACT_NAME }}
