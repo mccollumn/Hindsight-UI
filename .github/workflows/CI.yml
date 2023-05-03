@@ -14,7 +14,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -23,36 +23,38 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set env variables
+        run: |
+          $REPO_NAME = $Env:GITHUB_REPOSITORY.Split('/').Split('\')[1..99] -join '-'
+          echo "REPO_NAME=$REPO_NAME" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $PACKAGE_JSON = './package.json'
+          echo "PACKAGE_JSON=$PACKAGE_JSON" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          $PRODUCT_VERSION = (node -p "require('$PACKAGE_JSON').version") -replace '(\d+\.\d+\.\d+).*','$1'
+          echo "PRODUCT_VERSION=$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "ARTIFACT_NAME=$REPO_NAME-$PRODUCT_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
       - run: npm ci
+
       - run: npm run build --if-present
-      - run: npm run test-CI a
 
-  installer:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
+      - run: npm run test-CI
 
       - name: Build Installer with Script
         shell: bash
-        run: ./installer/build_installer.sh -v ${{ steps.package-version.outputs.current-version}}
+        run: ./installer/build_installer.sh -v ${{ Env.PRODUCT_VERSION }}
 
-      - name: Zip Installer
-        run: zip -r wtr_setup.zip .
-        working-directory: ./installer/Output
+      # - name: Zip Installer
+      #   run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
 
       - name: Upload the installer as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          path: "installer/Output/wtr_setup.zip"
-          name: wtr_setup
+          path: ./installer/Output/
+          name: ${{ Env.ARTIFACT_NAME }}
