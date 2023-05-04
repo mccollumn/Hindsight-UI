@@ -108,18 +108,7 @@ const ReportModal = ({
     React.useContext(DateContext);
   const [gridRef, setGridRef] = React.useState<GridApiPremium | null>(null);
   const [graphExpanded, setGraphExpanded] = React.useState(true);
-
-  const { /*getReportDefinitionQuery,*/ getDataQuery: getReport } =
-    useGetData();
-  // const {
-  //   isLoading: loadingDefinition,
-  //   isError: reportDefinitionisError,
-  //   data: reportDefinition,
-  //   error: reportDefinitionError,
-  // } = useQuery(
-  //   ["reportDefinition", { profileID: profile?.ID, reportID: report?.ID }],
-  //   getReportDefinitionQuery
-  // );
+  const { getDataQuery: getReport } = useGetData();
 
   const { isLoading: loadingReportData, data } = useQuery(
     [
@@ -142,6 +131,8 @@ const ReportModal = ({
     setGridRef(ref);
   }, []);
 
+  // Currently using the export feature built into MUI Data Grid instead of an export button in the modal
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const exportCSV = React.useCallback(() => {
     const dateFormat = "yyyy-MM-dd";
     const reportName = report?.name || "webtrends_export";

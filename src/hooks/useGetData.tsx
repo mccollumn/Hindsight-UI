@@ -42,34 +42,36 @@ const useGetData = () => {
     }
   };
 
-  const getWtData = React.useCallback(
-    async ({ params = {}, profileID = "", reportID = "" }: getWtDataProps) => {
-      const url = profileID
-        ? `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
-        : `${DX_ENDPOINT}/profiles/`;
-      const res = await getAxios(url, params);
-      return res;
-    },
-    []
-  );
+  const getWtData = async ({
+    params = {},
+    profileID = "",
+    reportID = "",
+  }: getWtDataProps) => {
+    const url = profileID
+      ? `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/`
+      : `${DX_ENDPOINT}/profiles/`;
+    const res = await getAxios(url, params);
+    return res;
+  };
 
-  const getReportDefinition = React.useCallback(
-    async ({ params = {}, profileID = "", reportID = "" }: getWtDataProps) => {
-      const url = `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
-      const res = await getAxios(url, params);
-      return res;
-    },
-    []
-  );
+  const getReportDefinition = async ({
+    params = {},
+    profileID = "",
+    reportID = "",
+  }: getWtDataProps) => {
+    const url = `${DX_ENDPOINT}/profiles/${profileID}/reports/${reportID}/info`;
+    const res = await getAxios(url, params);
+    return res;
+  };
 
-  const getKeyMetrics = React.useCallback(
-    async ({ params = {}, profileID = "" }: getWtDataProps) => {
-      const url = `${DX_ENDPOINT}/keymetrics/${profileID}`;
-      const res = await getAxios(url, params);
-      return res.data as KeyMetricsProps;
-    },
-    []
-  );
+  const getKeyMetrics = async ({
+    params = {},
+    profileID = "",
+  }: getWtDataProps) => {
+    const url = `${DX_ENDPOINT}/keymetrics/${profileID}`;
+    const res = await getAxios(url, params);
+    return res.data as KeyMetricsProps;
+  };
 
   const getDataQuery = async (parameters: Params) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

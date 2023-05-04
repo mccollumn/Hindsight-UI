@@ -1,12 +1,5 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import {
-  Person,
-  Notifications,
-  Settings,
-  Assessment,
-  Apps,
-} from "@mui/icons-material";
 import { Layout } from "./Layout";
 import { mockNavActions } from "./mocks/navActions";
 
@@ -18,8 +11,9 @@ export default {
     (Story) => (
       <div
         style={{
-          margin: '-1rem',  // Offset parent storybook padding
-        }}>
+          margin: "-1rem", // Offset parent storybook padding
+        }}
+      >
         <Story />
       </div>
     ),
@@ -30,8 +24,8 @@ export default {
       defaultValue: mockNavActions,
     },
     isAuthorized: {
-      value: true
-    }
+      value: true,
+    },
   },
 } as ComponentMeta<typeof Layout>;
 

@@ -9,8 +9,8 @@ export const useProfiles = () => {
   const { getDataQuery } = useGetData();
   const {
     isLoading,
-    isSuccess,
     isError,
+    error,
     data: profiles,
   } = useQuery(["profiles", {}], getDataQuery, {
     enabled: auth !== null,
@@ -27,5 +27,13 @@ export const useProfiles = () => {
     });
   }, [profile, profiles]);
 
-  return { profiles, profileID: profile, selectedProfile, setProfile };
+  return {
+    profiles,
+    profileID: profile,
+    selectedProfile,
+    setProfile,
+    isLoading,
+    isError,
+    error,
+  };
 };

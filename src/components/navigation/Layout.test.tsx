@@ -1,4 +1,4 @@
-import { Layout, NavigationAction } from "./Layout";
+import { Layout } from "./Layout";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { mockNavActions } from "./mocks/navActions";
 

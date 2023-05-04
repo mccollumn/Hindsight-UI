@@ -27,7 +27,7 @@ function App() {
   React.useEffect(() => {
     setStartDate(startDate);
     setEndDate(endDate);
-  }, []);
+  }, [endDate, setEndDate, setStartDate, startDate]);
 
   const clickHandler = (navAction: any) => {
     navigate(navAction.path);

@@ -10,8 +10,8 @@ export const useReports = () => {
   const {
     isLoading,
     isError,
-    data: reports = [],
     error,
+    data: reports = [],
   } = useQuery(
     ["reportDefinition", { profileID: selectedProfile?.ID }],
     getProfileReports
@@ -28,5 +28,13 @@ export const useReports = () => {
     });
   }, [report, reports]);
 
-  return { reports, reportID: report, selectedReport, setReport };
+  return {
+    reports,
+    reportID: report,
+    selectedReport,
+    setReport,
+    isLoading,
+    isError,
+    error,
+  };
 };

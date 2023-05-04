@@ -62,10 +62,10 @@ const getPeriodStr = (wtDate: string) => {
 };
 
 export const generateWtDate = (
-  year: Date | number,
-  month: Date | number = 0,
-  day: Date | number = 0,
-  hour: Date | number = 0
+  year: number,
+  month: number = 0,
+  day: number = 0,
+  hour: number = 0
 ) => {
   let date: string = year.toString();
   if (month > 0) {
@@ -104,6 +104,7 @@ export const getPrimaryMeasureFromReportDef = (
   return reportDefinition.measures[0];
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const shorten = (str: string, len = 20) => {
   if (str.length > len) {
     return `...${str.slice(-len - 3)}`;
@@ -255,6 +256,8 @@ const getDailyPeriods = (interval: Interval) => {
   return periods;
 };
 
+// Hourly trends are not currently supported
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getHourlyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
   const hours = eachHourOfInterval(interval);

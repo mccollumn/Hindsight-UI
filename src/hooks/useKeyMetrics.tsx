@@ -11,8 +11,8 @@ export const useKeyMetrics = (profile: ProfileProps) => {
   const {
     isLoading,
     isError,
-    data: keyMetrics,
     error,
+    data: keyMetrics,
   } = useQuery(
     [
       "keyMetrics",
@@ -24,5 +24,5 @@ export const useKeyMetrics = (profile: ProfileProps) => {
     getKeyMetricsQuery
   );
 
-  return { keyMetrics };
+  return { keyMetrics, isLoading, isError, error };
 };

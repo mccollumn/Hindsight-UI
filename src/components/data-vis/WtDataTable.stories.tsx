@@ -3,8 +3,8 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import WtDataTable from "./WtDataTable";
 import {
   pageData,
-  referringSiteData,
-  browserVersionsData,
+  // referringSiteData,
+  // browserVersionsData,
 } from "../../mocks/data/agg";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
