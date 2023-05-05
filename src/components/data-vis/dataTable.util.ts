@@ -7,6 +7,11 @@ import {
   ColumnDefProps,
 } from "../../interfaces/interfaces";
 
+/**
+ * Provides the names of the dimensions used by the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Array of dimension names
+ */
 export const getDimensionNames = (reportData: ReportProps) => {
   if (reportData.definition === undefined) return [];
   let dimensionNames: Array<string> = [];
@@ -24,16 +29,31 @@ export const getDimensionNames = (reportData: ReportProps) => {
   return dimensionNames;
 };
 
+/**
+ * Provides the measures used by the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Array of measure configs
+ */
 export const getMeasures = (reportData: ReportProps) => {
   if (reportData.definition === undefined) return [];
   return reportData?.definition?.measures;
 };
 
+/**
+ * Provides the names of the measures used by the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Array of measure names
+ */
 export const getMeasureNames = (reportData: ReportProps) => {
   const measures = getMeasures(reportData);
   return measures.map((measure) => measure.name);
 };
 
+/**
+ * Provides column definitions for use by MUI Data Grid
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Array of column definitions
+ */
 export const generateColumnDefs = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return [];
   const columnNames = [...getMeasureNames(reportData)];
@@ -70,11 +90,21 @@ export const generateColumnDefs = (reportData: ReportProps) => {
   return [...dimensionDefs, ...columnDefs];
 };
 
+/**
+ * Provides the total for each measure in the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Object with measure totals
+ */
 export const getTotals = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return {};
   return Object.values(reportData.data)[0].measures;
 };
 
+/**
+ * Provides the attribute values for a report row.
+ * @param row A sub row object from the DX 2.0 API report data
+ * @returns String containing row attribute values
+ */
 export const getDimensionAttributes = (row: ReportSubRowProps) => {
   if (row.Attributes === null) return null;
   let attributes: Array<string> = [];
@@ -86,12 +116,22 @@ export const getDimensionAttributes = (row: ReportSubRowProps) => {
   return attributes.join(" - ");
 };
 
+/**
+ * Provides the header used by the data table dimensions column.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns String containing header
+ */
 export const getDimColumnHeader = (reportData: ReportProps) => {
   if (reportData?.definition === undefined) return "";
   const dimNames = getDimensionNames(reportData);
   return dimNames.join(" > ");
 };
 
+/**
+ * Provides data formatted for display in MUI Data Grid.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Array of rows
+ */
 export const getTableData = (reportData: ReportProps) => {
   if (!reportData || reportData?.definition === undefined) return [];
   let tableData: Array<RowProps> = [];

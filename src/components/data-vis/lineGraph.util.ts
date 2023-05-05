@@ -24,6 +24,12 @@ import {
   SelectedCellProps,
 } from "../../interfaces/interfaces";
 
+/**
+ * Creates a space delimited string of the top dimension values,
+ * to be used with the DX API 'search' parameter.
+ * @param dimensions Array of report dimensions
+ * @returns Search string
+ */
 export const getSearchString = (dimensions: GridDimensionProps[]) => {
   if (dimensions.length === 0) return "";
   const MAX_NUM_DIMENSIONS = 5;
@@ -42,6 +48,11 @@ export const getSearchString = (dimensions: GridDimensionProps[]) => {
     .join("+");
 };
 
+/**
+ * Provides the date range of the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Object containing startperiod and endperiod
+ */
 export const getDateRange = (reportData: ReportProps) => {
   const dateRange = reportData?.definition?.dimension?.Range;
   return dateRange;
@@ -61,6 +72,14 @@ const getPeriodStr = (wtDate: string) => {
   return "";
 };
 
+/**
+ * Provides a date string formatted for the DX API.
+ * @param year Number representing the year
+ * @param month Number representing the month
+ * @param day Number representing the da
+ * @param hour Number representing the hour
+ * @returns Date string
+ */
 export const generateWtDate = (
   year: number,
   month: number = 0,
@@ -77,11 +96,21 @@ export const generateWtDate = (
   return date;
 };
 
+/**
+ * Provides the profile ID of the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Profile ID
+ */
 export const getProfileID = (reportData: ReportProps) => {
   if (!reportData || Object.keys(reportData).length === 0) return "";
   return reportData?.definition?.profileID;
 };
 
+/**
+ * Provides the report ID of the report.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @returns Report ID
+ */
 export const getReportID = (reportData: ReportProps) => {
   if (!reportData || Object.keys(reportData).length === 0) return "";
   return reportData.definition.ID;
@@ -98,6 +127,11 @@ const getPrimaryMeasure = (reportData: ReportProps) => {
   return measure;
 };
 
+/**
+ * Provides the first (primary) measure of the report.
+ * @param reportDefinition Report definition object from the DX 2.0 API
+ * @returns Measure
+ */
 export const getPrimaryMeasureFromReportDef = (
   reportDefinition: ReportDefinitionProps
 ) => {
@@ -152,6 +186,13 @@ const getYValue = (
   return Number(dimension?.measures[measureName]) || 0;
 };
 
+/**
+ * Provides data for the Nivo line graph.
+ * @param reportData Report data object returned from the DX 2.0 API
+ * @param searchString The dimension value(s)
+ * @param selectedCell The cell selected in the data table
+ * @returns Time series data
+ */
 export const getLineGraphData = (
   reportData: ReportProps,
   searchString: string,
@@ -176,7 +217,7 @@ export const getLineGraphData = (
   );
   let lineGraphData: Serie[] = [];
 
-  Object.entries(/*dimensions*/ filteredDimensions).forEach(([key, value]) => {
+  Object.entries(filteredDimensions).forEach(([key, value]) => {
     const yValue = getYValue(key, value, measureName, selectedCell);
     lineGraphData.push({
       // Not shortening the values anymore since only one value will be displayed in the graph.
@@ -189,8 +230,6 @@ export const getLineGraphData = (
   return lineGraphData;
 };
 
-// Possible TODO: Clamp start / end dates
-// https://date-fns.org/v2.29.3/docs/clamp
 const getMonthlyPeriods = (interval: Interval) => {
   let periods: ReportDateRangeProps[] = [];
   // Add an extra month to extend the graph past the endDate marker
@@ -275,6 +314,11 @@ const getHourlyPeriods = (interval: Interval) => {
   return periods;
 };
 
+/**
+ * Generates trends periods based on the size of the overall date range.
+ * @param param0 Object containing report data and start/end dates
+ * @returns Array of report periods
+ */
 export const getTrendPeriods = ({
   reportData,
   wtStartPeriod,
