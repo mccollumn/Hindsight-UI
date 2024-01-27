@@ -1,6 +1,6 @@
-# Webtrends Reporting
+# Analytics Reporting
 
-This is a user interface for viewing Webtrends Analytics reporting. All data is retrieved using the Data Extraction v2.0 API.
+This is a user interface for viewing website analytics reporting. All data is retrieved using the Data Extraction v2.0 API.
 
 ## Setup
 

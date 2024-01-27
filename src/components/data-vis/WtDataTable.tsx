@@ -163,8 +163,7 @@ const WtDataTable = ({
 
   const getExportFileName = React.useCallback(() => {
     const dateFormat = "yyyy-MM-dd";
-    const reportName =
-      data.definition.name.replaceAll(" ", "_") || "webtrends_export";
+    const reportName = data.definition.name.replaceAll(" ", "_") || "export";
     const dateRange = `${format(dateFormat, startDate)}_${format(
       dateFormat,
       endDate

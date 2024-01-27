@@ -1,6 +1,6 @@
 {
-  "short_name": "Webtrends",
-  "name": "Webtrends Reporting",
+  "short_name": "Analytics",
+  "name": "Analytics Reporting",
   "icons": [
     {
       "src": "favicon.ico",
