@@ -2,6 +2,38 @@
 
 This is a user interface for viewing website analytics reporting. All data is retrieved using the Data Extraction v2.0 API.
 
+## Overview
+
+The Analytics Reporting interface offers a modern experience for users wanting easy access to their data without the extra complexity of the traditional Analytics 9 interface.
+
+Built to complement your existing Analytics reporting environment, Analytics Reporting provides several advantages:
+
+**Easy Navigation** – Simple and intuitive. Quickly find the metrics you need using a categorized report view with integrated search functionality.
+
+![Easy Navigation](./documentation/easy_nav.png)
+
+**Export Report Data** – Save report data directly to your computer with no additional software required.
+
+**Modern Browser Support** – Works in the latest versions of Chrome, Edge, Firefox, and Safari.
+
+**Interactive Trend Graphs** – Get easy insights into your site’s performance over time. Trends are available for all dimensions and measures.
+
+![Trend Graph](./documentation/trend_graph.png)
+
+**Improved Data Tables** – Advanced search and filtering makes it easy to find relevant metrics. Sort, rearrange, and hide columns to focus on only the important data points.
+
+![Table Filtering](./documentation/table_filter.png)
+
+**Key Metrics** – Compare key metrics among your profiles in a single view. Understand site performance at a glance with the key metrics dashboard.
+
+![Key Metrics](./documentation/key_metrics.png)
+
+**Shareable URLs** – Easily share reports with colleagues by simply copying the URL from your browser.
+
+**Easy Deployment** – Lightweight web application that can be deployed on any Windows server in minutes.
+
+[Analytics Reporting UI Overview.docx](./documentation/Analytics_Reporting_UI_Overview.docx)
+
 ## Setup
 
 ```bash
