@@ -1,5 +1,5 @@
 {
-  "name": "webtrends_reporting",
+  "name": "analytics_reporting",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

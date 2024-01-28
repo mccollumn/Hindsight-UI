@@ -4,7 +4,7 @@ import KeyMetricsDashboard from "./KeyMetricsDashboard";
 
 const profile = {
   ID: "QM3oqOS1Ak8",
-  name: "Webtrends.com  (test)",
+  name: "My Profile",
   AccountID: 1,
   TimeZoneID: 0,
 };

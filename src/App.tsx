@@ -55,7 +55,7 @@ function App() {
 
   return (
     <Layout
-      label="Webtrends"
+      label="Analytics"
       isAuthorized={true}
       navigationActions={[
         {

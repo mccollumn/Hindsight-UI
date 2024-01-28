@@ -6,7 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const DX_ENDPOINT =
   window?.config?.DX_ENDPOINT || process.env.REACT_APP_DX_ENDPOINT;
-const SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "webtrends";
+const SECRET = process.env.REACT_APP_ENCRYPTION_SECRET || "analytics";
 
 export const AuthContext = React.createContext<AuthProviderProps>({
   auth: null,

@@ -135,7 +135,7 @@ const ReportModal = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const exportCSV = React.useCallback(() => {
     const dateFormat = "yyyy-MM-dd";
-    const reportName = report?.name || "webtrends_export";
+    const reportName = report?.name || "export";
     const dateRange = `${format(dateFormat, startDate)}_${format(
       dateFormat,
       endDate
