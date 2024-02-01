@@ -1,12 +1,10 @@
 # Analytics Reporting
 
-This is a user interface for viewing website analytics reporting. All data is retrieved using the Data Extraction v2.0 API.
+This is a user interface for viewing website analytics reporting. All data is retrieved using the Webtrends Data Extraction v2.0 API.
 
 ## Overview
 
-The Analytics Reporting interface offers a modern experience for users wanting easy access to their data without the extra complexity of the traditional Analytics 9 interface.
-
-Built to complement your existing Analytics reporting environment, Analytics Reporting provides several advantages:
+The Analytics Reporting interface provides interactive visualizations of multidimensional website analytics data. It offers a modern experience for users wanting easy access to the data needed to make informed business decisions.
 
 **Easy Navigation** – Simple and intuitive. Quickly find the metrics you need using a categorized report view with integrated search functionality.
 
