@@ -54,7 +54,7 @@ jobs:
       #   run: Compress-Archive -Force -Path ./installer/Output/* -DestinationPath "./installer/$Env.ARTIFACT_NAME.zip"
 
       - name: Upload the installer as an artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: ./installer/Output/
           name: ${{ Env.ARTIFACT_NAME }}
