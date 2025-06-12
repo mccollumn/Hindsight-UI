@@ -13,11 +13,13 @@ const LineGraph = ({ data = [], config = {}, ...props }: LineGraphProps) => {
 };
 
 interface LineGraphProps {
-  data: Serie[];
+  data?: Serie[];
   /**
+   * Additional configuration object to be spread into ResponsiveLine props
    * https://nivo.rocks/line/
    */
   config?: any;
+  [key: string]: any;
 }
 
 export default LineGraph;
