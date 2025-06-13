@@ -163,13 +163,13 @@ const WtDataTable = ({
 
   const getExportFileName = React.useCallback(() => {
     const dateFormat = "yyyy-MM-dd";
-    const reportName = data.definition.name.replaceAll(" ", "_") || "export";
+    const reportName = data.definition?.name?.replaceAll(" ", "_") || "export";
     const dateRange = `${format(dateFormat, startDate)}_${format(
       dateFormat,
       endDate
     )}`;
     return `${reportName}_${dateRange}`;
-  }, [data.definition.name, endDate, startDate]);
+  }, [data.definition?.name, endDate, startDate]);
 
   const getCSVExportOptions = React.useCallback(() => {
     const fileName = getExportFileName();
@@ -437,19 +437,24 @@ const getApplyFilterFnTreeData = (value: string) => {
 
 const getColumnVisibilityModel = (columnDefs: any[]) => {
   let columnVisibilityModel = {};
-  columnDefs.forEach((columnDef) => {
-    if (columnDef.type === "string") {
-      columnVisibilityModel = {
-        ...columnVisibilityModel,
-        [columnDef.field]: false,
-      };
-    }
-  });
+  if (columnDefs && Array.isArray(columnDefs)) {
+    columnDefs.forEach((columnDef) => {
+      if (columnDef.type === "string") {
+        columnVisibilityModel = {
+          ...columnVisibilityModel,
+          [columnDef.field]: false,
+        };
+      }
+    });
+  }
   return columnVisibilityModel;
 };
 
 const getHiddenToolbarColumnButtons = (columnDefs: any[]) => {
   const HIDDEN_BUTTON_START_POSITION = 2;
+  if (!columnDefs || !Array.isArray(columnDefs)) {
+    return {};
+  }
   const dimensionDefs = columnDefs.filter((def) => def.type === "string");
   const range = dimensionDefs.length - 1;
   const selector = `& .MuiDataGrid-columnsPanelRow:nth-of-type(n+${HIDDEN_BUTTON_START_POSITION}):nth-of-type(-n+${
