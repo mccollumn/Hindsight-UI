@@ -48,7 +48,7 @@ export default function DateRange({ profile, ...props }: DateRangeProps) {
     return null;
   }
   return (
-    <Typography variant="body2" color="InfoText" gutterBottom>
+    <Typography variant="body2" color="InfoText" gutterBottom {...props}>
       {range}
     </Typography>
   );
