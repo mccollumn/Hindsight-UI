@@ -13,7 +13,7 @@ const FunnelGraph = ({
   title = "",
 }: FunnelGraphProps) => (
   <React.Fragment>
-    <Title>{title}</Title>
+    {title && <Title>{title}</Title>}
     <div style={{ height: 400 }}>
       <ResponsiveFunnel
         {...config}
