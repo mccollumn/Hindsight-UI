@@ -55,12 +55,28 @@ const KeyMetricTile = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
 };
 
 const KeyMetricsDashboard = ({ profile }: KeyMetricsDashboardProps) => {
-  const { keyMetrics } = useKeyMetrics(profile);
+  const { keyMetrics, isLoading, isError } = useKeyMetrics(profile);
   const [measureNames, setMeasureNames] = React.useState<string[]>([]);
   React.useEffect(() => {
     if (!keyMetrics) return;
     setMeasureNames(getMeasures(keyMetrics));
   }, [keyMetrics]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ flexGrow: 1, marginBottom: "2rem", textAlign: "center" }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box sx={{ flexGrow: 1, marginBottom: "2rem", textAlign: "center" }}>
+        <Typography>Error loading key metrics</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ flexGrow: 1, marginBottom: "2rem" }}>
@@ -122,12 +138,20 @@ const getTotal = ({ metricName, keyMetricsData }: KeyMetricTileProps) => {
   ) {
     return convertSecondsToMinutes(measureValue);
   }
-  return measureValue || 0;
+  // Format numbers with commas for better readability
+  const numericValue = measureValue || 0;
+  return typeof numericValue === "number"
+    ? numericValue.toLocaleString()
+    : numericValue;
 };
 
 const getMeasures = (keyMetricsData: KeyMetricsProps) => {
   if (keyMetricsData === null || keyMetricsData === undefined) return [];
-  return Object.keys(Object.values(keyMetricsData.data)[0].measures);
+  if (!keyMetricsData.data || Object.keys(keyMetricsData.data).length === 0)
+    return [];
+  const firstDataEntry = Object.values(keyMetricsData.data)[0];
+  if (!firstDataEntry || !firstDataEntry.measures) return [];
+  return Object.keys(firstDataEntry.measures);
 };
 
 const formatPointLabels = (obj: any, metricName: string) => {
