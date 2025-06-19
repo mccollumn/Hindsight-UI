@@ -13,7 +13,7 @@ const SankeyGraph = ({
   title = "",
 }: SankeyGraphProps) => (
   <React.Fragment>
-    <Title>{title}</Title>
+    {title && <Title>{title}</Title>}
     <div style={{ height: 400 }}>
       <ResponsiveSankey
         {...config}
