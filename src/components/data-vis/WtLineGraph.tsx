@@ -53,8 +53,9 @@ const WtLineGraph = ({
         tickPadding: 5,
         tickRotation: 0,
         legend:
-          selectedCell.selectedColumn ||
-          getPrimaryMeasureFromReportDef(reportDefinition).name,
+          selectedCell?.selectedColumn ||
+          getPrimaryMeasureFromReportDef(reportDefinition)?.name ||
+          "Value",
         legendOffset: -45,
         legendPosition: "middle",
       },
@@ -104,7 +105,7 @@ const WtLineGraph = ({
         },
       ],
     };
-  }, [selectedCell.selectedColumn, reportDefinition, trendInterval]);
+  }, [selectedCell?.selectedColumn, reportDefinition, trendInterval]);
 
   const { trendDataQueries } = useWtLineGraphQueries(
     reportDefinition,
@@ -131,7 +132,7 @@ const WtLineGraph = ({
 
   React.useEffect(() => {
     setLoadingGraph(
-      trendDataQueries.some((element) => element.isLoading === true)
+      trendDataQueries?.some((element) => element.isLoading === true) || false
     );
   }, [trendDataQueries]);
 
@@ -139,6 +140,7 @@ const WtLineGraph = ({
     <div className="line-graph" style={{ position: "relative" }}>
       {loadingGraph && (
         <CircularProgress
+          role="progressbar"
           sx={{ position: "absolute", top: "33%", left: "50%", zIndex: "1" }}
         />
       )}
