@@ -86,6 +86,7 @@ interface DatePickerProps {
    * If not provided, no minimum date will be used.
    */
   minDate?: any;
+  [key: string]: any; // Allow additional props for customization
 }
 
 export default DatePicker;
