@@ -35,8 +35,9 @@ export const TopNavBar = ({
         sx={{
           height: topNavHeight,
         }}
+        data-testid="top-nav-bar"
       >
-        <Box className="top-nav-left">
+        <Box className="top-nav-left" data-testid="top-nav-left">
           <IconButton
             onClick={expandNav}
             size="large"
@@ -63,9 +64,13 @@ export const TopNavBar = ({
           {left}
         </Box>
 
-        <Box className="top-nav-center">{center}</Box>
+        <Box className="top-nav-center" data-testid="top-nav-center">
+          {center}
+        </Box>
 
-        <Box className="top-nav-right">{right}</Box>
+        <Box className="top-nav-right" data-testid="top-nav-right">
+          {right}
+        </Box>
       </Toolbar>
     </AppBarStyled>
   );
