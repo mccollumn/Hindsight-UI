@@ -8,7 +8,13 @@ const KeyMetricsLabel = ({
 }: KeyMetricsLabelProps) => {
   const textContent = `${label}: ${metric}`;
   return (
-    <Chip label={textContent} color="primary" variant="outlined" icon={icon} />
+    <Chip
+      label={textContent}
+      color="primary"
+      variant="outlined"
+      icon={icon}
+      {...props}
+    />
   );
 };
 
