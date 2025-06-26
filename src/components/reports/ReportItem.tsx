@@ -31,6 +31,7 @@ const ReportItem = ({ children, clickHandler, ...props }: ReportItemProps) => {
 interface ReportItemProps {
   children: any;
   clickHandler: (event: MouseEvent, children: any) => void;
+  [key: string]: any;
 }
 
 export default ReportItem;
