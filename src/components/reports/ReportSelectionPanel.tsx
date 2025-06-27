@@ -1,4 +1,5 @@
 import * as React from "react";
+import { isEqual } from "lodash/fp";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import ReportCategoryTabs from "./ReportCategoryTabs";
@@ -54,6 +55,8 @@ const ReportSelectionPanel = ({
   const { reports } = useReports();
   const [filteredReports, setFilteredReports] = React.useState(reports);
 
+  const prevReportsRef = React.useRef(reports);
+
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
@@ -80,8 +83,15 @@ const ReportSelectionPanel = ({
   }, [selectedReport, handleSelection]);
 
   React.useEffect(() => {
-    if (reports.length === 0) return;
-    setFilteredReports(reports);
+    if (!reports || reports.length === 0) return;
+
+    // Only update if reports actually changed (deep comparison)
+    const reportsChanged = isEqual(prevReportsRef.current, reports);
+
+    if (reportsChanged) {
+      prevReportsRef.current = reports;
+      setFilteredReports(reports);
+    }
   }, [reports]);
 
   return (
