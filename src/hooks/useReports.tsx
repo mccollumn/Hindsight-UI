@@ -28,13 +28,16 @@ export const useReports = () => {
     });
   }, [report, reports]);
 
-  return {
-    reports,
-    reportID: report,
-    selectedReport,
-    setReport,
-    isLoading,
-    isError,
-    error,
-  };
+  return React.useMemo(
+    () => ({
+      reports,
+      reportID: report,
+      selectedReport,
+      setReport,
+      isLoading,
+      isError,
+      error,
+    }),
+    [reports, report, selectedReport, setReport, isLoading, isError, error]
+  );
 };
